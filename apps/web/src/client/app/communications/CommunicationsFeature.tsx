@@ -94,6 +94,8 @@ export function CommunicationsFeature({ onProtectedStateCleared }: Props) {
         </div>
       </header>
 
+      <CommunicationsRoutingGuide />
+
       {data && (
         <section className="communications-truth" aria-label="Communications source truth">
           <span>One Time account email only</span>
@@ -231,6 +233,50 @@ export function CommunicationsFeature({ onProtectedStateCleared }: Props) {
           )}
         </>
       )}
+    </section>
+  );
+}
+
+export function CommunicationsRoutingGuide() {
+  return (
+    <section className="communications-routing" aria-labelledby="communications-routing-heading">
+      <h2 id="communications-routing-heading">Where communications work happens</h2>
+      <p>
+        This page is read-only context. Use the source of truth below for live adult communication
+        work.
+      </p>
+      <dl className="communications-routing-grid">
+        <div>
+          <dt>Office, access, schedule, and support</dt>
+          <dd>
+            Use <strong>One Time Mishnayos &lt;info@onetimeonetime.com&gt;</strong>. Continue adult
+            conversations and replies in GHL Conversations.
+          </dd>
+        </div>
+        <div>
+          <dt>Rabbi teaching and program mail</dt>
+          <dd>
+            Use <strong>Rabbi Eli Scheller &lt;rabbielischeller@onetimeonetime.com&gt;</strong> and
+            keep the adult conversation in GHL.
+          </dd>
+        </div>
+        <div>
+          <dt>Class reminders</dt>
+          <dd>
+            Live schedule, adult recipient, enrollment, and delivery truth stays in GHL. This page
+            does not schedule or send reminders.{' '}
+            <a href="/app/communications/OT-09">Open OT-09 readback</a>.
+          </dd>
+        </div>
+        <div>
+          <dt>Support tickets</dt>
+          <dd>
+            One Time is the ticket source of truth; an adult ticket may keep a safe GHL conversation
+            reference. Student support stays in One Time and never creates a GHL contact.{' '}
+            <a href="/app/tickets">Open ticket queue</a>.
+          </dd>
+        </div>
+      </dl>
     </section>
   );
 }
