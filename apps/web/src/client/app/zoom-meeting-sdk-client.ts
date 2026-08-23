@@ -23,6 +23,7 @@ export type ZoomParticipantJoinInput = {
   customerKey?: string;
   zak?: string;
   disablePreview?: boolean;
+  studentFocusMode?: boolean;
   userName: string;
   leaveUrl: string;
   onMeetingStatus?: ((status: ZoomMeetingStatus) => void) | undefined;
@@ -118,6 +119,13 @@ export function joinZoomMeetingParticipantWithApi(
         leaveOnPageUnload: true,
         disableCORP: !window.crossOriginIsolated,
         disablePreview: input.disablePreview ?? false,
+        ...(input.studentFocusMode
+          ? {
+              showMeetingHeader: false,
+              isLockBottom: false,
+              showPureSharingContent: true,
+            }
+          : {}),
         success: () => {
           if (settled) return;
           try {
@@ -164,6 +172,19 @@ export function joinZoomMeetingProductionBasic(
   >,
 ) {
   return joinZoomMeetingParticipant({ ...input, disablePreview: true });
+}
+
+export function joinZoomMeetingStudentProductionBasic(
+  input: Omit<
+    ZoomParticipantJoinInput,
+    'registrantToken' | 'userEmail' | 'customerKey' | 'disablePreview' | 'studentFocusMode'
+  >,
+) {
+  return joinZoomMeetingParticipant({
+    ...input,
+    disablePreview: true,
+    studentFocusMode: true,
+  });
 }
 
 export function startZoomMeetingProductionBasic(

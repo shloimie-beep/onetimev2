@@ -23,11 +23,38 @@ describe('production-basic native Meeting SDK adapter', () => {
   it('has a dedicated registration-off adapter and conditionally omits registration-only fields', async () => {
     const source = await readFile('apps/web/src/client/app/zoom-meeting-sdk-client.ts', 'utf8');
     expect(source).toContain('joinZoomMeetingProductionBasic');
+    expect(source).toContain('joinZoomMeetingStudentProductionBasic');
     expect(source).toContain('startZoomMeetingProductionBasic');
     expect(source).toContain('{ ...input, disablePreview: true }');
     expect(source).toContain('...(input.registrantToken ? { tk: input.registrantToken } : {})');
     expect(source).toContain('...(input.userEmail ? { userEmail: input.userEmail } : {})');
     expect(source).toContain('...(input.customerKey ? { customerKey: input.customerKey } : {})');
+  });
+
+  it('unlocks inactive Zoom controls and removes overlay chrome only for Student focus mode', async () => {
+    const studentSdk = fakeZoomSdk();
+    const studentJoin = joinZoomMeetingParticipantWithApi(
+      studentSdk.api,
+      input({ studentFocusMode: true }),
+    );
+    expect(studentSdk.api.init).toHaveBeenCalledWith(
+      expect.objectContaining({
+        showMeetingHeader: false,
+        isLockBottom: false,
+        showPureSharingContent: true,
+      }),
+    );
+    studentSdk.emit(2);
+    await expect(studentJoin).resolves.toBeUndefined();
+
+    const standardSdk = fakeZoomSdk();
+    const standardJoin = joinZoomMeetingParticipantWithApi(standardSdk.api, input());
+    const standardOptions = vi.mocked(standardSdk.api.init).mock.calls[0]?.[0];
+    expect(standardOptions).not.toHaveProperty('showMeetingHeader');
+    expect(standardOptions).not.toHaveProperty('isLockBottom');
+    expect(standardOptions).not.toHaveProperty('showPureSharingContent');
+    standardSdk.emit(2);
+    await expect(standardJoin).resolves.toBeUndefined();
   });
 
   it.each([
