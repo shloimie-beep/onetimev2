@@ -1,0 +1,289 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://onetimeonetime.com/schemas/marketing/content-asset.v1.json",
+  "title": "One Time Marketing Content Asset",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "asset_id",
+    "asset_type",
+    "title",
+    "workflow_state",
+    "contains_student",
+    "contains_rabbi",
+    "contains_private_data",
+    "rights_status",
+    "allowed_destinations",
+    "created_at",
+    "updated_at"
+  ],
+  "properties": {
+    "asset_id": {
+      "type": "string",
+      "pattern": "^OTM-A[0-9]{6}$"
+    },
+    "asset_type": {
+      "type": "string",
+      "enum": [
+        "source_video",
+        "source_image",
+        "atomic_clip",
+        "dialogue_clip",
+        "still_frame",
+        "cover",
+        "first_frame",
+        "final_video",
+        "static_graphic",
+        "carousel_panel",
+        "copy_document"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1000
+    },
+    "source_asset_id": {
+      "type": ["string", "null"],
+      "pattern": "^OTM-A[0-9]{6}$"
+    },
+    "source_drive_file_id": {
+      "type": ["string", "null"],
+      "maxLength": 200
+    },
+    "source_drive_url": {
+      "type": ["string", "null"],
+      "format": "uri"
+    },
+    "source_filename": {
+      "type": ["string", "null"],
+      "maxLength": 255
+    },
+    "source_sha256": {
+      "type": ["string", "null"],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "source_in_ms": {
+      "type": ["integer", "null"],
+      "minimum": 0
+    },
+    "source_out_ms": {
+      "type": ["integer", "null"],
+      "minimum": 0
+    },
+    "duration_ms": {
+      "type": ["integer", "null"],
+      "minimum": 0
+    },
+    "orientation": {
+      "type": ["string", "null"],
+      "enum": ["vertical", "horizontal", "square", "mixed", null]
+    },
+    "aspect_ratio": {
+      "type": ["string", "null"],
+      "maxLength": 20
+    },
+    "width": {
+      "type": ["integer", "null"],
+      "minimum": 1
+    },
+    "height": {
+      "type": ["integer", "null"],
+      "minimum": 1
+    },
+    "category": {
+      "type": ["string", "null"],
+      "enum": [
+        "rabbi_teaching",
+        "rabbi_gesture",
+        "student_engagement",
+        "rabbi_student_conversation",
+        "class_wide",
+        "mishnah_screen",
+        "sefer",
+        "community",
+        "voice_bite",
+        "hero_opener",
+        "cta",
+        "other",
+        null
+      ]
+    },
+    "contains_student": {
+      "type": "boolean"
+    },
+    "contains_rabbi": {
+      "type": "boolean"
+    },
+    "contains_private_data": {
+      "type": "boolean"
+    },
+    "rights_status": {
+      "type": "string",
+      "enum": [
+        "operator_attested_all_marketing_channels",
+        "operator_attested_organic_only",
+        "documented_all_marketing_channels",
+        "documented_organic_only",
+        "not_required",
+        "rights_pending",
+        "do_not_use"
+      ]
+    },
+    "consent_policy_version": {
+      "type": ["string", "null"],
+      "maxLength": 120
+    },
+    "allowed_destinations": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "facebook_organic",
+          "facebook_paid",
+          "instagram_organic",
+          "instagram_paid",
+          "youtube_organic",
+          "youtube_paid",
+          "whatsapp_status",
+          "whatsapp_forward",
+          "whatsapp_broadcast",
+          "landing_page",
+          "email",
+          "vimeo_private",
+          "one_time_portal_private"
+        ]
+      }
+    },
+    "workflow_state": {
+      "type": "string",
+      "enum": [
+        "source_only",
+        "inventoried",
+        "selected",
+        "derivative_ready",
+        "rabbi_pack_ready",
+        "final_review",
+        "ready_to_schedule",
+        "scheduled",
+        "published",
+        "measured",
+        "rights_pending",
+        "private_data_blocked",
+        "third_party_blocked",
+        "song_rights_pending",
+        "do_not_use",
+        "superseded"
+      ]
+    },
+    "drive_file_id": {
+      "type": ["string", "null"],
+      "maxLength": 200
+    },
+    "drive_folder_id": {
+      "type": ["string", "null"],
+      "maxLength": 200
+    },
+    "drive_view_url": {
+      "type": ["string", "null"],
+      "format": "uri"
+    },
+    "drive_download_url": {
+      "type": ["string", "null"],
+      "format": "uri"
+    },
+    "rabbi_filename": {
+      "type": ["string", "null"],
+      "maxLength": 255
+    },
+    "package_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^OTM-CP-[0-9]{3}$"
+      }
+    },
+    "hook_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "maxLength": 80
+      }
+    },
+    "campaign_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "maxLength": 80
+      }
+    },
+    "first_frame_asset_id": {
+      "type": ["string", "null"],
+      "pattern": "^OTM-A[0-9]{6}$"
+    },
+    "cover_asset_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^OTM-A[0-9]{6}$"
+      }
+    },
+    "editor": {
+      "type": ["string", "null"],
+      "enum": ["Rabbi Eli Scheller", "Shloimie Dratler", "Developer/agent", null]
+    },
+    "notes": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "contains_student": { "const": true }
+        }
+      },
+      "then": {
+        "properties": {
+          "rights_status": {
+            "not": { "const": "not_required" }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["source_in_ms", "source_out_ms"],
+        "properties": {
+          "source_in_ms": { "type": "integer" },
+          "source_out_ms": { "type": "integer" }
+        }
+      },
+      "then": {
+        "properties": {
+          "source_out_ms": {
+            "exclusiveMinimum": 0
+          }
+        }
+      }
+    }
+  ]
+}

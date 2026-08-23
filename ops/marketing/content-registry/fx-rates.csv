@@ -1,0 +1,2 @@
+rate_date,usd_ils_reference,source,source_series,retrieved_at,notes
+2026-08-07,3.0060,Bank of Israel,RER_USD_ILS,2026-08-13T00:00:00Z,Latest value returned by the official public exchange-rate API at research time; representative rate is indicative and actual settlement may differ.
