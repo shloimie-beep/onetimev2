@@ -6,7 +6,7 @@
 ## 2. Canonical class operation
 
 - [ ] 2.1 Implement and test canonical class readiness and automatic entitled membership presentation.
-- [x] 2.2 Implement and test Start, bounded provider End, durable unknown-effect reconciliation, proof-bound cleanup, and cleanup-only retry.
+- [x] 2.2 Implement and test safe Start and bounded automatic learner-access expiry. Zoom-native End Meeting for All is the launch procedure; provider-verified End/Reconcile/Cleanup is LATER.
 - [ ] 2.3 Preserve occurrence-scoped attendance and Parent/Student identity separation in focused tests.
 
 ## 3. People and communications boundaries

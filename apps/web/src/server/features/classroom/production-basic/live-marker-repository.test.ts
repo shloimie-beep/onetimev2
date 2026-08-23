@@ -76,33 +76,6 @@ describe('production-basic live-class receipt', () => {
     expect(jerusalemLocalDate(new Date('2026-08-12T21:00:00.000Z'))).toBe('2026-08-13');
   });
 
-  it('clears only the exact current Jerusalem occurrence and meeting digest', async () => {
-    const query = vi.fn().mockResolvedValue({ rowCount: 1, rows: [] });
-    const marker = createProductionBasicHostLiveMarker({ query } as unknown as DbPool);
-
-    await marker.clear({
-      scope: { account_key: STUDENT.account_key, product_key: STUDENT.product_key },
-      meeting_ref_digest: MEETING_DIGEST,
-      cleared_at: NOW,
-    });
-    const [sql, parameters] = query.mock.calls[0] as [string, unknown[]];
-    expect(sql).toMatch(/^UPDATE onetime\.class_occurrences/u);
-    expect(sql).not.toContain('UPDATE onetime.class_occurrences AS');
-    expect(sql).not.toContain('FROM onetime.class_series AS series\n          WHERE');
-    expect(sql).toContain('local_class_date = $5::date');
-    expect(sql).toContain('production_basic_meeting_ref_digest = $3');
-    expect(sql).toContain('occurrence_key = (');
-    expect(sql).toContain('ORDER BY candidate.starts_at, candidate.occurrence_key');
-    expect(sql).not.toContain('AT TIME ZONE');
-    expect(parameters).toEqual([
-      STUDENT.account_key,
-      STUDENT.product_key,
-      MEETING_DIGEST,
-      NOW,
-      '2026-08-13',
-    ]);
-  });
-
   it('reads live state only through the exact Student enrollment and meeting digest', async () => {
     const query = vi.fn().mockResolvedValue({ rowCount: 1, rows: [{ '?column?': 1 }] });
     const marker = createProductionBasicHostLiveMarker({ query } as unknown as DbPool);

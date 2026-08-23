@@ -6,7 +6,7 @@ The launch product has one recurring class, but its Admin surfaces still present
 
 - Converge Admin and Rabbi navigation on a stable role-correct shell.
 - Present the one canonical Sunday–Thursday 7:00 PM Asia/Jerusalem class as Today.
-- Add governed host start, confirmed end, reconciliation, and local cleanup behavior.
+- Add safe governed host start and bounded automatic learner-access expiry.
 - Present One Time People rather than a duplicate adult CRM.
 - Restrict Communications to read-only info@ account-email history and move workflow readback to technical Operations.
 
@@ -20,7 +20,7 @@ None.
 
 - `product`: Admin/Rabbi daily class workflow.
 - `ui-shell`: Admin/Rabbi role shell and navigation grammar.
-- `classroom-zoom`: host lifecycle and automatic canonical access.
+- `classroom-zoom`: host start and automatic canonical access expiry.
 - `communications`: account-email history boundary.
 - `identity-access`: People privacy and membership projection.
 - `billing-access`: Admin access presentation.
@@ -28,4 +28,4 @@ None.
 
 ## Impact
 
-Admin/Rabbi client routes, production-basic host lifecycle, class/access projection, communications contracts and route, brand styles, governed action registry, and focused verification. Migration `2288_production_basic_host_lifecycle.sql` stores only account/product/occurrence-scoped lifecycle state plus hashed meeting, actor, and opaque-context references. No provider, production data, GHL, email, billing, or deployment mutation is in scope.
+Admin/Rabbi client routes, production-basic host start, bounded class/access projection, communications contracts and route, brand styles, governed action registry, and focused verification. No provider End mutation, provider-proof persistence, migration, production data, GHL, email, billing, or deployment mutation is in scope.

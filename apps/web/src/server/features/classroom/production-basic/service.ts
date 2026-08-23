@@ -8,10 +8,6 @@ import {
   createLearnerZoomSdkSignature,
   createZoomHostZakClient,
 } from '../../../../../../../packages/domain/src/providers/zoom-rest.ts';
-import type {
-  ProductionBasicHostLifecycleState,
-  ProductionBasicHostLifecycleStore,
-} from './host-lifecycle-repository.ts';
 
 export const PRODUCTION_BASIC_LIVE_MARKER_TTL_MS = 2 * 60 * 60_000;
 
@@ -116,11 +112,6 @@ export interface ProductionBasicHostLiveMarker {
     meeting_ref_digest: string;
     observed_at: Date;
   }): Promise<boolean>;
-  clear(input: {
-    scope: ProductionBasicScope;
-    meeting_ref_digest: string;
-    cleared_at: Date;
-  }): Promise<void>;
 }
 
 export type ProductionBasicLaunchResult =
@@ -129,14 +120,11 @@ export type ProductionBasicLaunchResult =
 
 export type ProductionBasicHostLiveResult = {
   disposition: 'ready' | 'denied' | 'unavailable';
-  lifecycle_context?: string | undefined;
-  state?: ProductionBasicHostLifecycleState | undefined;
 };
 
 export function createProductionBasicLaunchService(input: {
   binding: ProductionBasicMeetingBinding;
   hostLiveMarker?: ProductionBasicHostLiveMarker | undefined;
-  hostLifecycle?: ProductionBasicHostLifecycleStore | undefined;
   clock?: () => Date;
 }) {
   const clock = input.clock ?? (() => new Date());
@@ -175,104 +163,8 @@ export function createProductionBasicLaunchService(input: {
         meeting_ref_digest: meetingRefDigest,
         confirmed_at: clock(),
       });
-      if (!confirmed || !input.hostLifecycle) return { disposition: 'unavailable' };
-      const lifecycle = await input.hostLifecycle.createLive({
-        scope: actor.scope,
-        meetingRefDigest,
-        actorUserRef: actor.actor_user_ref,
-        now: clock(),
-      });
-      return lifecycle && lifecycle.context
-        ? { disposition: 'ready', lifecycle_context: lifecycle.context, state: lifecycle.state }
-        : { disposition: 'unavailable' };
+      return { disposition: confirmed ? 'ready' : 'unavailable' };
     },
-    async beginHostEnd(actor: ProductionBasicActor, lifecycleContext: string) {
-      const lifecycle = await authorizeLifecycle(input, actor, lifecycleContext, clock());
-      if (!lifecycle) return { disposition: 'denied' as const };
-      const state = await input.hostLifecycle!.beginEnd(lifecycle);
-      return state ? { disposition: 'ready' as const, state } : { disposition: 'denied' as const };
-    },
-    async markHostEndUnknown(actor: ProductionBasicActor, lifecycleContext: string) {
-      const lifecycle = await authorizeLifecycle(input, actor, lifecycleContext, clock());
-      if (!lifecycle) return { disposition: 'denied' as const };
-      const state = await input.hostLifecycle!.markUnknown(lifecycle);
-      return state ? { disposition: 'ready' as const, state } : { disposition: 'denied' as const };
-    },
-    async confirmHostEnded(actor: ProductionBasicActor, lifecycleContext: string) {
-      const lifecycle = await authorizeLifecycle(input, actor, lifecycleContext, clock());
-      if (!lifecycle) return { disposition: 'denied' as const };
-      const state = await input.hostLifecycle!.confirmEnded(lifecycle);
-      return state ? { disposition: 'ready' as const, state } : { disposition: 'denied' as const };
-    },
-    async hostEndStatus(actor: ProductionBasicActor) {
-      if ((actor.kind !== 'admin' && actor.kind !== 'rabbi') || !actor.authorized_to_start) {
-        return { disposition: 'denied' as const };
-      }
-      const meetingRefDigest = input.binding.referenceDigest();
-      if (!meetingRefDigest || !input.hostLifecycle) return { disposition: 'unavailable' as const };
-      const lifecycle = await input.hostLifecycle.read({
-        scope: actor.scope,
-        meetingRefDigest,
-        actorUserRef: actor.actor_user_ref,
-        now: clock(),
-      });
-      return lifecycle
-        ? {
-            disposition: 'ready' as const,
-            state: lifecycle.state,
-            lifecycle_context: lifecycle.context ?? undefined,
-          }
-        : { disposition: 'unavailable' as const };
-    },
-    async cleanupHostEnd(actor: ProductionBasicActor, lifecycleContext: string) {
-      const lifecycle = await authorizeLifecycle(input, actor, lifecycleContext, clock());
-      if (!lifecycle || !input.hostLiveMarker) return { disposition: 'denied' as const };
-      const state = await input.hostLifecycle!.beginCleanup(lifecycle);
-      if (!state) return { disposition: 'denied' as const };
-      try {
-        await input.hostLiveMarker.clear({
-          scope: actor.scope,
-          meeting_ref_digest: lifecycle.meetingRefDigest,
-          cleared_at: lifecycle.now,
-        });
-        const ended = await input.hostLifecycle!.finishCleanup(lifecycle);
-        return ended
-          ? { disposition: 'ready' as const, state: ended }
-          : { disposition: 'unavailable' as const };
-      } catch {
-        await input.hostLifecycle!.markCleanupPending(lifecycle);
-        return { disposition: 'unavailable' as const, state: 'cleanup_pending' as const };
-      }
-    },
-  };
-}
-
-async function authorizeLifecycle(
-  input: {
-    binding: ProductionBasicMeetingBinding;
-    hostLifecycle?: ProductionBasicHostLifecycleStore | undefined;
-  },
-  actor: ProductionBasicActor,
-  lifecycleContext: string,
-  now: Date,
-) {
-  if (
-    (actor.kind !== 'admin' && actor.kind !== 'rabbi') ||
-    !actor.authorized_to_start ||
-    !input.hostLifecycle ||
-    !lifecycleContext ||
-    lifecycleContext.length > 200
-  ) {
-    return null;
-  }
-  const meetingRefDigest = input.binding.referenceDigest();
-  if (!meetingRefDigest) return null;
-  return {
-    scope: actor.scope,
-    meetingRefDigest,
-    actorUserRef: actor.actor_user_ref,
-    context: lifecycleContext,
-    now,
   };
 }
 

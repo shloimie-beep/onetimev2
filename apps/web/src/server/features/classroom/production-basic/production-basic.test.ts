@@ -161,7 +161,7 @@ describe('production-basic Meeting SDK launch', () => {
     expect(studentConfirm).not.toHaveBeenCalled();
   });
 
-  it('rejects naked legacy cleanup before provider-ended proof', async () => {
+  it('retires every app-managed host end, status, and cleanup route', async () => {
     const admin: ProductionBasicActor = {
       kind: 'admin',
       scope: STUDENT.scope,
@@ -169,54 +169,19 @@ describe('production-basic Meeting SDK launch', () => {
       display_name: 'Admin',
       authorized_to_start: true,
     };
-    const clear = vi.fn<ProductionBasicHostLiveMarker['clear']>().mockResolvedValue(undefined);
-    const baseUrl = await start({ actor: admin, issue: async () => artifact(1), clear });
-
-    expect((await post(baseUrl, '/host-ended')).status).toBe(409);
-    expect((await post(baseUrl, '/host-ended')).status).toBe(409);
-    expect(clear).not.toHaveBeenCalled();
-
-    const studentClear = vi
-      .fn<ProductionBasicHostLiveMarker['clear']>()
-      .mockResolvedValue(undefined);
-    const studentBaseUrl = await start({
-      actor: STUDENT,
-      boundary: 'host',
-      issue: async () => artifact(0),
-      clear: studentClear,
-    });
-    expect((await post(studentBaseUrl, '/host-ended')).status).toBe(403);
-    expect(studentClear).not.toHaveBeenCalled();
-  });
-
-  it('cleans up only after the durable provider-ended transition and accepts a replay-safe status read', async () => {
-    const admin: ProductionBasicActor = {
-      kind: 'admin',
-      scope: STUDENT.scope,
-      actor_user_ref: 'admin-derived',
-      display_name: 'Admin',
-      authorized_to_start: true,
-    };
-    const clear = vi.fn<ProductionBasicHostLiveMarker['clear']>().mockResolvedValue(undefined);
-    const baseUrl = await start({ actor: admin, issue: async () => artifact(1), clear });
-    const live = await post(baseUrl, '/host-live');
-    const context = ((await live.json()) as { data: { lifecycle_context: string } }).data
-      .lifecycle_context;
-    const headers = { 'x-ot-production-basic-lifecycle': context };
-
-    expect((await post(baseUrl, '/host-ended')).status).toBe(409);
-    expect((await post(baseUrl, '/host-end-attempt', undefined, headers)).status).toBe(200);
-    expect((await post(baseUrl, '/host-end-confirmed', undefined, headers)).status).toBe(200);
-    expect(clear).not.toHaveBeenCalled();
-    expect((await post(baseUrl, '/host-ended', undefined, headers)).status).toBe(200);
-    expect(clear).toHaveBeenCalledOnce();
-
-    const status = await fetch(`${baseUrl}/host-end-status`);
-    expect(status.status).toBe(200);
-    await expect(status.json()).resolves.toMatchObject({
-      success: true,
-      data: { state: 'ended', lifecycle_context: expect.any(String) },
-    });
+    const baseUrl = await start({ actor: admin, issue: async () => artifact(1) });
+    for (const path of [
+      '/host-end-attempt',
+      '/host-end-unknown',
+      '/host-end-confirmed',
+      '/host-end-status',
+      '/host-end-cleanup',
+      '/host-ended',
+    ]) {
+      const response =
+        path === '/host-end-status' ? await fetch(`${baseUrl}${path}`) : await post(baseUrl, path);
+      expect(response.status).toBe(404);
+    }
   });
 
   it('keeps Student readiness and launch unavailable until the host live receipt is current', async () => {
@@ -309,17 +274,15 @@ describe('production-basic Meeting SDK launch', () => {
   it('fails a dual-session conflict before artifact, ZAK, provider, or live-marker work', async () => {
     const issue = vi.fn(async () => artifact(1));
     const confirm = vi.fn<ProductionBasicHostLiveMarker['confirm']>().mockResolvedValue(true);
-    const clear = vi.fn<ProductionBasicHostLiveMarker['clear']>().mockResolvedValue(undefined);
     const baseUrl = await start({
       actor: null,
       boundary: 'host',
       identityStatus: 'session_context_conflict',
       issue,
       confirm,
-      clear,
     });
 
-    for (const path of ['/launch', '/host-live', '/host-ended']) {
+    for (const path of ['/launch', '/host-live']) {
       const response = await post(baseUrl, path);
       expect(response.status).toBe(409);
       await expect(response.json()).resolves.toEqual({
@@ -330,7 +293,6 @@ describe('production-basic Meeting SDK launch', () => {
     }
     expect(issue).not.toHaveBeenCalled();
     expect(confirm).not.toHaveBeenCalled();
-    expect(clear).not.toHaveBeenCalled();
   });
 
   it('requires an injected, current read-only verification receipt even when canonical config exists', async () => {
@@ -543,13 +505,8 @@ async function start(input: {
   confirm?: ProductionBasicHostLiveMarker['confirm'];
   current?: ProductionBasicHostLiveMarker['currentForStudent'];
   currentForParent?: ProductionBasicHostLiveMarker['currentForParent'];
-  clear?: ProductionBasicHostLiveMarker['clear'];
   onLaunchFailure?: ((event: ProductionBasicLaunchFailureEvent) => void) | undefined;
 }) {
-  let lifecycleState:
-    'live' | 'end_requested' | 'unknown_effect' | 'provider_ended' | 'cleanup_pending' | 'ended' =
-    'live';
-  const lifecycleContext = 'test-lifecycle-context';
   const service = createProductionBasicLaunchService({
     binding: input.issue
       ? {
@@ -561,29 +518,15 @@ async function start(input: {
           issue: async (launch) => input.issue!({ actor: launch.actor, role: launch.role }),
         }
       : createUnavailableProductionBasicMeetingBinding(),
-    ...(input.issue || input.confirm || input.current || input.clear
+    ...(input.issue || input.confirm || input.current
       ? {
           hostLiveMarker: {
             confirm: input.confirm ?? (async () => true),
             currentForStudent: input.current ?? (async () => true),
             currentForParent: input.currentForParent ?? (async () => true),
-            clear: input.clear ?? (async () => undefined),
           },
         }
       : {}),
-    hostLifecycle: {
-      createLive: async () => ({ state: 'live', context: lifecycleContext }),
-      beginEnd: async () => (lifecycleState = 'end_requested'),
-      markUnknown: async () => (lifecycleState = 'unknown_effect'),
-      confirmEnded: async () => (lifecycleState = 'provider_ended'),
-      read: async () => ({ state: lifecycleState, context: lifecycleContext }),
-      beginCleanup: async () =>
-        lifecycleState === 'provider_ended' || lifecycleState === 'cleanup_pending'
-          ? (lifecycleState = 'cleanup_pending')
-          : null,
-      finishCleanup: async () => (lifecycleState = 'ended'),
-      markCleanupPending: async () => (lifecycleState = 'cleanup_pending'),
-    },
     clock: () => new Date('2026-08-12T10:00:00.000Z'),
   });
   const app = express();

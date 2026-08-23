@@ -21,7 +21,6 @@ import {
   createProductionBasicHostLiveMarker,
   createProductionBasicLiveClassAccessAdapter,
 } from './features/classroom/production-basic/live-marker-repository.ts';
-import { createProductionBasicHostLifecycleStore } from './features/classroom/production-basic/host-lifecycle-repository.ts';
 import {
   decideProductionBasicSessionContext,
   sanitizeStudentZoomDisplayName,
@@ -635,7 +634,6 @@ export function createApp({
   const productionBasicClassroomService = createProductionBasicLaunchService({
     binding: productionBasicMeetingBinding,
     hostLiveMarker: createProductionBasicHostLiveMarker(pool),
-    hostLifecycle: createProductionBasicHostLifecycleStore(pool),
     ...(clock ? { clock } : {}),
   });
   const productionBasicAdminReadyForRequest = async (req: Request) => {

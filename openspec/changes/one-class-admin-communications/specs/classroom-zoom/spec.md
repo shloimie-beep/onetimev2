@@ -1,23 +1,22 @@
 ## ADDED Requirements
 
-### Requirement: Governed host class lifecycle
+### Requirement: Launch-first host class operation
 
-Only an authorized Admin or Rabbi SHALL start or end the canonical class through role-1 host artifacts; provider confirmation SHALL precede local access cleanup.
+Only an authorized Admin or Rabbi SHALL start the canonical class through a role-1 host artifact with a non-empty ZAK. The host SHALL use Zoom’s native End Meeting for All control; One Time SHALL not issue a provider End command or claim immediate server-confirmed closure.
 
-#### Scenario: Provider end is ambiguous
+#### Scenario: Zoom ends in the current host browser
 
-- **WHEN** host end is interrupted, rejected, or times out
-- **THEN** the durable live receipt remains and the UI offers reconciliation without a blind second provider end.
+- **WHEN** the Meeting SDK reports status 3
+- **THEN** One Time may show local explanatory UI that access will close automatically, and SHALL not call an End confirmation, reconciliation, cleanup, or live-marker-clear endpoint.
 
-#### Scenario: A host reloads during an end
+#### Scenario: Bounded access expiry
 
-- **WHEN** an authorized host reloads after End was requested or confirmed
-- **THEN** the server reads the durable account/product/occurrence lifecycle and returns a fresh opaque actor-bound context without invoking provider End.
+- **WHEN** the current valid live marker reaches its existing two-hour safety TTL
+- **THEN** Parent and Student launch access is unavailable without provider mutation or a host cleanup action.
 
-#### Scenario: Cleanup lacks provider proof
+### LATER
 
-- **WHEN** a host calls legacy cleanup without a valid lifecycle context in `provider_ended` or `cleanup_pending`
-- **THEN** the request is rejected and the live receipt is not cleared.
+Verified Zoom `meeting.started`/`meeting.ended` ingestion, exact meeting-instance proof, exact host-session-bound lifecycle, server-authoritative reconciliation, and app-managed End/Cleanup are later work.
 
 ### Requirement: Automatic canonical membership
 

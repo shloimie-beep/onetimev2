@@ -7,7 +7,7 @@ The accepted controller already isolates Meeting SDK artifacts by role and brows
 **Goals:**
 
 - Route normal Admin/Rabbi work through one shell and contextual strip.
-- Keep provider-end confirmation ahead of local receipt cleanup and make unknown effects non-retriable at the provider layer.
+- Keep the launch classroom boundary truthful: One Time starts the Meeting SDK session, while the host ends it with Zoom’s native control.
 - Derive canonical learner access from current entitled identities without making Students CRM contacts.
 - Enforce the account-email-only boundary on the server and render safe history.
 
@@ -18,17 +18,17 @@ The accepted controller already isolates Meeting SDK artifacts by role and brows
 ## Decisions
 
 - The canonical Today route is `/app/today`; legacy Admin routes remain only as semantic redirects or advanced technical entry points. This removes duplicate primary navigation without breaking secure direct links.
-- The host client owns the single SDK End Meeting for All call. A status-3 event is the definitive confirmation; only then can the server clear the receipt. A rejected or interrupted end is an unknown effect, so the UI offers refresh, not another provider end.
+- The host client never issues a provider End command. A status-3 event may update local explanatory UI only; it never clears the live marker or claims server-confirmed closure. The host uses Zoom’s native End Meeting for All control.
 - Existing entitlement projections remain authoritative. The canonical class resolves eligible Parent and Student identities at access time, avoiding duplicate attendance/CRM identities.
-- Migration 2288 persists the host lifecycle by account, product, and canonical occurrence. It stores SHA-256 digests of the meeting reference, authorized actor, and a rotating opaque browser context; it never stores a provider meeting ID, token, signature, or raw context.
+- The live marker remains bounded at its existing two-hour TTL. Parent and Student launch checks require the current marker; expiry is automatic and does not mutate Zoom or require a cleanup route.
 - Communications uses an allow-list of app account lifecycle email sources/intents at its global endpoint. Workflow readback remains read-only but is surfaced only through Operations technical navigation.
 
 ## Risks / Trade-offs
 
-- [A host browser is interrupted during provider end] → retain the receipt and require reconciliation before allowing local cleanup.
+- [Zoom ends while the host browser is open] → show that One Time access will close automatically; do not infer provider-confirmed server closure.
 - [Existing legacy URLs have broader semantics] → retain only aliases whose title, active category, and Back/Forward behavior remain correct.
 - [Entitlement data is unavailable] → render unavailable state rather than a manual enrollment workaround.
 
 ## Migration Plan
 
-Apply migration 2288 before enabling the host lifecycle. It is additive and retains expired lifecycle rows only as normal durable history; application rollback leaves those harmless opaque digests unread. No external or provider effect is introduced by the migration.
+No migration is required. Migration 2288 is removed because it is unmerged and undeployed. Provider-verified event ingestion, exact meeting-instance proof, host-session lifecycle, reconciliation, and app-managed End/Cleanup remain later work.

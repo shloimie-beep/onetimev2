@@ -1,7 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   confirmProductionBasicHostLive,
-  createProductionBasicHostEndController,
   readStudentProductionBasicReadiness,
   requestHostProductionBasicLaunch,
   requestStudentProductionBasicLaunch,
@@ -118,14 +117,14 @@ describe('production-basic launch client', () => {
         new Response(
           JSON.stringify({
             success: true,
-            data: { state: 'live', lifecycle_context: 'opaque-context' },
+            data: { state: 'live' },
           }),
           { status: 200 },
         ),
     );
     vi.stubGlobal('fetch', fetchMock);
 
-    await expect(confirmProductionBasicHostLive('csrf-derived')).resolves.toBe('opaque-context');
+    await expect(confirmProductionBasicHostLive('csrf-derived')).resolves.toBeUndefined();
     expect(fetchMock).toHaveBeenCalledWith(
       '/api/v1/admin/classroom/production-basic/host-live',
       expect.objectContaining({
@@ -136,101 +135,6 @@ describe('production-basic launch client', () => {
     );
     const [, requestInit] = (fetchMock.mock.calls as unknown as Array<[string, RequestInit]>)[0]!;
     expect(requestInit).not.toHaveProperty('body');
-  });
-
-  it('keeps the receipt on an unknown provider end and permits only status-confirmed cleanup', async () => {
-    const endMeetingForAll = vi.fn(async () => {
-      throw new Error('interrupted');
-    });
-    const clear = vi.fn(async () => 'ended' as const);
-    const controller = createProductionBasicHostEndController({
-      csrfToken: 'csrf-derived',
-      lifecycleContext: 'lifecycle-context',
-      endMeetingForAll,
-      clear,
-      beginEnd: async () => 'end_requested',
-      markUnknown: async () => 'unknown_effect',
-    });
-    await controller.markLive();
-    await controller.requestEnd();
-    await controller.requestEnd();
-    await Promise.resolve();
-    expect(controller.state).toBe('unknown_effect');
-    expect(endMeetingForAll).toHaveBeenCalledOnce();
-    expect(clear).not.toHaveBeenCalled();
-
-    await controller.observeMeetingStatus(3);
-    expect(controller.state).toBe('ended');
-    expect(clear).toHaveBeenCalledOnce();
-  });
-
-  it('retries cleanup only after a provider-confirmed end and never calls provider end twice', async () => {
-    const endMeetingForAll = vi.fn(async () => undefined);
-    const clear = vi
-      .fn<(csrfToken: string, lifecycleContext: string) => Promise<'ended'>>()
-      .mockRejectedValueOnce(new Error('local transient'))
-      .mockResolvedValueOnce('ended');
-    const controller = createProductionBasicHostEndController({
-      csrfToken: 'csrf-derived',
-      lifecycleContext: 'lifecycle-context',
-      endMeetingForAll,
-      clear,
-    });
-    await controller.markLive();
-    await controller.requestEnd();
-    await controller.observeMeetingStatus(3);
-    expect(controller.state).toBe('cleanup_pending');
-    await controller.retryAccessCleanup();
-    expect(controller.state).toBe('ended');
-    expect(endMeetingForAll).toHaveBeenCalledOnce();
-    expect(clear).toHaveBeenCalledTimes(2);
-  });
-
-  it('converges a missing SDK callback to unknown effect at the injected command deadline', async () => {
-    const timers: Array<() => void> = [];
-    const endMeetingForAll = vi.fn(() => new Promise<void>(() => undefined));
-    const markUnknown = vi.fn(async () => 'unknown_effect' as const);
-    const controller = createProductionBasicHostEndController({
-      csrfToken: 'csrf-derived',
-      lifecycleContext: 'lifecycle-context',
-      endMeetingForAll,
-      beginEnd: async () => 'end_requested',
-      markUnknown,
-      schedule: (callback) => {
-        timers.push(callback);
-        return 1 as unknown as ReturnType<typeof setTimeout>;
-      },
-      cancel: () => undefined,
-    });
-    await controller.markLive();
-    void controller.requestEnd();
-    await Promise.resolve();
-    timers[0]!();
-    await Promise.resolve();
-    expect(controller.state).toBe('unknown_effect');
-    expect(endMeetingForAll).toHaveBeenCalledOnce();
-    expect(markUnknown).toHaveBeenCalledOnce();
-  });
-
-  it('converges a successful SDK callback without status 3 to unknown effect at confirmation deadline', async () => {
-    const timers: Array<() => void> = [];
-    const controller = createProductionBasicHostEndController({
-      csrfToken: 'csrf-derived',
-      lifecycleContext: 'lifecycle-context',
-      endMeetingForAll: async () => undefined,
-      beginEnd: async () => 'end_requested',
-      markUnknown: async () => 'unknown_effect',
-      schedule: (callback) => {
-        timers.push(callback);
-        return 1 as unknown as ReturnType<typeof setTimeout>;
-      },
-      cancel: () => undefined,
-    });
-    await controller.markLive();
-    await controller.requestEnd();
-    timers.at(-1)!();
-    await Promise.resolve();
-    expect(controller.state).toBe('unknown_effect');
   });
 });
 

@@ -307,12 +307,8 @@ describe('OT-71 mounted parent and student portals', () => {
         },
       );
       expect(hostLive.status).toBe(200);
-      const hostLivePayload = (await hostLive.json()) as {
-        success: true;
-        data: { state: 'live'; lifecycle_context: string };
-      };
+      const hostLivePayload = (await hostLive.json()) as { success: true; data: { state: 'live' } };
       expect(hostLivePayload).toMatchObject({ success: true, data: { state: 'live' } });
-      expect(hostLivePayload.data.lifecycle_context).toEqual(expect.any(String));
       await expectProductionBasicStatus(server.baseUrl, student.cookies, true);
       const studentLaunch = await fetch(
         `${server.baseUrl}/api/v1/portals/student/classroom/production-basic/launch`,
@@ -353,47 +349,23 @@ describe('OT-71 mounted parent and student portals', () => {
       await expectProductionBasicStatus(server.baseUrl, student.cookies, false);
       await expectProductionBasicLaunchStatus(server.baseUrl, student, 403);
 
-      const liveVersion = await productionBasicOccurrenceVersion();
-      const lifecycleHeaders = {
-        cookie: admin.cookies,
-        'x-csrf-token': admin.json.csrf_token,
-        'x-ot-production-basic-lifecycle': hostLivePayload.data.lifecycle_context,
-      };
-      const hostEndAttempt = await fetch(
-        `${server.baseUrl}/api/v1/admin/classroom/production-basic/host-end-attempt`,
-        { method: 'POST', headers: lifecycleHeaders },
-      );
-      expect(hostEndAttempt.status).toBe(200);
-      const hostEndConfirmed = await fetch(
-        `${server.baseUrl}/api/v1/admin/classroom/production-basic/host-end-confirmed`,
-        { method: 'POST', headers: lifecycleHeaders },
-      );
-      expect(hostEndConfirmed.status).toBe(200);
-      const hostEnded = await fetch(
-        `${server.baseUrl}/api/v1/admin/classroom/production-basic/host-ended`,
-        {
-          method: 'POST',
-          headers: lifecycleHeaders,
-        },
-      );
-      expect(hostEnded.status).toBe(200);
-      await expect(hostEnded.json()).resolves.toEqual({
-        success: true,
-        data: { state: 'ended' },
-      });
-      await expectProductionBasicStatus(server.baseUrl, student.cookies, false);
-
-      const clearedVersion = await productionBasicOccurrenceVersion();
-      expect(clearedVersion).toBe(liveVersion + 1);
-      const hostEndedRetry = await fetch(
-        `${server.baseUrl}/api/v1/admin/classroom/production-basic/host-ended`,
-        {
-          method: 'POST',
-          headers: lifecycleHeaders,
-        },
-      );
-      expect(hostEndedRetry.status).toBe(409);
-      expect(await productionBasicOccurrenceVersion()).toBe(clearedVersion);
+      for (const path of [
+        'host-end-attempt',
+        'host-end-unknown',
+        'host-end-confirmed',
+        'host-end-status',
+        'host-end-cleanup',
+        'host-ended',
+      ]) {
+        const response = await fetch(
+          `${server.baseUrl}/api/v1/admin/classroom/production-basic/${path}`,
+          {
+            method: path === 'host-end-status' ? 'GET' : 'POST',
+            headers: { cookie: admin.cookies },
+          },
+        );
+        expect(response.status, path).toBe(404);
+      }
     } finally {
       await server.close();
     }
@@ -2038,20 +2010,6 @@ async function seedLegacyOccurrenceEntitlement() {
              'household_alpha', 'learner_alpha', 'active', 'isolated_acceptance')`,
     [config.accountKey, config.productKey],
   );
-}
-
-async function productionBasicOccurrenceVersion() {
-  const result = await pool.query<{ version: number }>(
-    `SELECT version
-       FROM onetime.class_occurrences
-      WHERE account_key = $1
-        AND product_key = $2
-        AND occurrence_key = 'production-basic-current'`,
-    [config.accountKey, config.productKey],
-  );
-  const version = result.rows[0]?.version;
-  if (typeof version !== 'number') throw new Error('production-basic occurrence version missing');
-  return version;
 }
 
 async function expectProductionBasicStatus(baseUrl: string, cookies: string, available: boolean) {

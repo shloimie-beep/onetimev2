@@ -185,39 +185,6 @@ export function createProductionBasicHostLiveMarker(pool: DbPool): ProductionBas
       );
       return (result.rowCount ?? 0) === 1;
     },
-    async clear({ scope, meeting_ref_digest, cleared_at }) {
-      const localClassDate = jerusalemLocalDate(cleared_at);
-      await pool.query(
-        `UPDATE onetime.class_occurrences
-            SET production_basic_live_confirmed_at = NULL,
-                production_basic_live_expires_at = NULL,
-                production_basic_meeting_ref_digest = NULL,
-                version = version + 1,
-                updated_at = $4
-          WHERE account_key = $1
-            AND product_key = $2
-            AND local_class_date = $5::date
-            AND production_basic_meeting_ref_digest = $3
-            AND production_basic_live_confirmed_at <= $4
-            AND occurrence_key = (
-              SELECT candidate.occurrence_key
-                FROM onetime.class_occurrences AS candidate
-                JOIN onetime.class_series AS series
-                  ON series.account_key = candidate.account_key
-                 AND series.product_key = candidate.product_key
-                 AND series.class_series_key = candidate.class_series_key
-               WHERE candidate.account_key = $1
-                 AND candidate.product_key = $2
-                 AND candidate.local_class_date = $5::date
-                 AND series.is_canonical = true
-                 AND series.status = 'active'
-                 AND series.series_state = 'active'
-               ORDER BY candidate.starts_at, candidate.occurrence_key
-               LIMIT 1
-            )`,
-        [scope.account_key, scope.product_key, meeting_ref_digest, cleared_at, localClassDate],
-      );
-    },
   };
 }
 

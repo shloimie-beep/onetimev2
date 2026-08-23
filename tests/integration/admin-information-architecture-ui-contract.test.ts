@@ -60,8 +60,11 @@ describe('OT-LAUNCH-01 Admin IA client contract', () => {
     expect(live).toContain('<h3 id="live-zoom-heading">Zoom</h3>');
   });
 
-  it('keeps ordinary Zoom lifecycle controls occurrence-scoped', () => {
-    expect(live).toContain('Refresh Status');
+  it('keeps launch-first Zoom controls occurrence-scoped', () => {
+    expect(live).toContain('Start Class');
+    expect(live).toContain('Continue Class');
+    expect(live).toContain('End the meeting using Zoom’s End Meeting for All control.');
+    expect(live).not.toMatch(/End Class|Reconcile \/ Refresh Status|Retry access cleanup/u);
     expect(live).toContain('Open Secure One Time Classroom');
     expect(live).toContain('Choose and Provision a Class');
     expect(classManagement).toContain('Provision Zoom');

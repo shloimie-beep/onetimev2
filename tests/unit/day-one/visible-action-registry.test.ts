@@ -258,27 +258,6 @@ const EXPECTED_ACTION_BINDINGS = [
     '/api/v1/admin/classroom/production-basic/launch',
   ],
   [
-    'admin.production_basic.start.button.end',
-    '/app/live',
-    ['admin', 'rabbi'],
-    'CLIENT',
-    'apps/web/src/client/app/live-entry.tsx',
-  ],
-  [
-    'admin.production_basic.start.button.reconcile_status',
-    '/app/live',
-    ['admin', 'rabbi'],
-    'GET',
-    '/api/v1/admin/classroom/production-basic/host-end-status',
-  ],
-  [
-    'admin.production_basic.start.button.retry_access_cleanup',
-    '/app/live',
-    ['admin', 'rabbi'],
-    'POST',
-    '/api/v1/admin/classroom/production-basic/host-ended',
-  ],
-  [
     'admin.question_moderation.transition.form',
     '/app/classroom/questions',
     ['admin'],
@@ -791,7 +770,7 @@ describe('v2.1 visible action registry', () => {
     );
     const actionIds = registry.actions.map(({ action_id }) => action_id);
     const sourcePaths = new Set(registry.source_inputs.map(({ path }) => path));
-    expect(registry.actions).toHaveLength(100);
+    expect(registry.actions).toHaveLength(97);
     expect(actionIds).toEqual([...actionIds].sort());
     expect(new Set(actionIds).size).toBe(actionIds.length);
     expect(actionIds).not.toContain('admin.directory.student.setup.form');
@@ -842,7 +821,6 @@ describe('v2.1 visible action registry', () => {
         .map(({ action_id }) => action_id),
     ).toEqual([
       'admin.production_basic.start.button',
-      'admin.production_basic.start.button.end',
       'portal.parent.classroom.production_basic_join.button',
       'portal.student.classroom.production_basic_join.button',
     ]);
