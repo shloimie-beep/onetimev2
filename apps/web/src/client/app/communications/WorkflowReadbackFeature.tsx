@@ -187,7 +187,7 @@ function ReadbackList({
 
 async function requestWorkflowReadback(workflowId: string, signal: AbortSignal) {
   const response = await fetch(
-    `/api/v1/communications/workflows/${encodeURIComponent(workflowId)}`,
+    `/api/v1/operations/workflow-readback/${encodeURIComponent(workflowId)}`,
     {
       headers: { accept: 'application/json' },
       signal,

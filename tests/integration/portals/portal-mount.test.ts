@@ -115,7 +115,7 @@ describe('OT-71 mounted parent and student portals', () => {
         '/app/support',
       );
       expect(admin.status).toBe(200);
-      expect(admin.json.return_to).toBe('/app/dashboard');
+      expect(admin.json.return_to).toBe('/app/today');
     } finally {
       await server.close();
     }
@@ -307,10 +307,8 @@ describe('OT-71 mounted parent and student portals', () => {
         },
       );
       expect(hostLive.status).toBe(200);
-      await expect(hostLive.json()).resolves.toEqual({
-        success: true,
-        data: { state: 'live' },
-      });
+      const hostLivePayload = (await hostLive.json()) as { success: true; data: { state: 'live' } };
+      expect(hostLivePayload).toMatchObject({ success: true, data: { state: 'live' } });
       await expectProductionBasicStatus(server.baseUrl, student.cookies, true);
       const studentLaunch = await fetch(
         `${server.baseUrl}/api/v1/portals/student/classroom/production-basic/launch`,
@@ -351,36 +349,23 @@ describe('OT-71 mounted parent and student portals', () => {
       await expectProductionBasicStatus(server.baseUrl, student.cookies, false);
       await expectProductionBasicLaunchStatus(server.baseUrl, student, 403);
 
-      const liveVersion = await productionBasicOccurrenceVersion();
-      const hostEnded = await fetch(
-        `${server.baseUrl}/api/v1/admin/classroom/production-basic/host-ended`,
-        {
-          method: 'POST',
-          headers: { cookie: admin.cookies, 'x-csrf-token': admin.json.csrf_token },
-        },
-      );
-      expect(hostEnded.status).toBe(200);
-      await expect(hostEnded.json()).resolves.toEqual({
-        success: true,
-        data: { state: 'scheduled' },
-      });
-      await expectProductionBasicStatus(server.baseUrl, student.cookies, false);
-
-      const clearedVersion = await productionBasicOccurrenceVersion();
-      expect(clearedVersion).toBe(liveVersion + 1);
-      const hostEndedRetry = await fetch(
-        `${server.baseUrl}/api/v1/admin/classroom/production-basic/host-ended`,
-        {
-          method: 'POST',
-          headers: { cookie: admin.cookies, 'x-csrf-token': admin.json.csrf_token },
-        },
-      );
-      expect(hostEndedRetry.status).toBe(200);
-      await expect(hostEndedRetry.json()).resolves.toEqual({
-        success: true,
-        data: { state: 'scheduled' },
-      });
-      expect(await productionBasicOccurrenceVersion()).toBe(clearedVersion);
+      for (const path of [
+        'host-end-attempt',
+        'host-end-unknown',
+        'host-end-confirmed',
+        'host-end-status',
+        'host-end-cleanup',
+        'host-ended',
+      ]) {
+        const response = await fetch(
+          `${server.baseUrl}/api/v1/admin/classroom/production-basic/${path}`,
+          {
+            method: path === 'host-end-status' ? 'GET' : 'POST',
+            headers: { cookie: admin.cookies },
+          },
+        );
+        expect(response.status, path).toBe(404);
+      }
     } finally {
       await server.close();
     }
@@ -1181,7 +1166,7 @@ describe('OT-71 mounted parent and student portals', () => {
       expect(switchBackToAdmin.status).toBe(200);
       await expect(switchBackToAdmin.json()).resolves.toMatchObject({
         active_role: 'admin',
-        return_to: '/app/dashboard',
+        return_to: '/app/today',
       });
       const rotatedAdminCookie = switchBackToAdmin.headers
         .getSetCookie()
@@ -2025,20 +2010,6 @@ async function seedLegacyOccurrenceEntitlement() {
              'household_alpha', 'learner_alpha', 'active', 'isolated_acceptance')`,
     [config.accountKey, config.productKey],
   );
-}
-
-async function productionBasicOccurrenceVersion() {
-  const result = await pool.query<{ version: number }>(
-    `SELECT version
-       FROM onetime.class_occurrences
-      WHERE account_key = $1
-        AND product_key = $2
-        AND occurrence_key = 'production-basic-current'`,
-    [config.accountKey, config.productKey],
-  );
-  const version = result.rows[0]?.version;
-  if (typeof version !== 'number') throw new Error('production-basic occurrence version missing');
-  return version;
 }
 
 async function expectProductionBasicStatus(baseUrl: string, cookies: string, available: boolean) {

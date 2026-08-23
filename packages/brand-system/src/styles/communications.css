@@ -1,7 +1,7 @@
 .communications-surface {
   display: grid;
   gap: 1rem;
-  color: #101214;
+  color: var(--ot-color-text, #f8faf7);
 }
 
 .communications-header p,
@@ -23,9 +23,9 @@
 
 .communications-truth span,
 .communications-draft-note {
-  border: 1px solid #83d9ee;
-  background: #eefbff;
-  color: #101214;
+  border: 1px solid var(--ot-color-border-strong, #66777d);
+  background: var(--ot-color-surface-muted, #122229);
+  color: var(--ot-color-text-warm, #f8faf7);
   border-radius: 999px;
   padding: 0.35rem 0.65rem;
   font-size: 0.9rem;
@@ -38,9 +38,9 @@
   align-items: end;
   overflow-x: auto;
   padding: 0.85rem;
-  border: 1px solid #101214;
+  border: 1px solid var(--ot-color-border, #34464d);
   border-radius: 8px;
-  background: #fff8d6;
+  background: var(--ot-color-surface-raised, #071117);
   scroll-snap-type: x proximity;
 }
 
@@ -58,10 +58,10 @@
 .communications-filters input,
 .communications-filters select {
   min-height: 2.5rem;
-  border: 1px solid #101214;
+  border: 1px solid var(--ot-color-border-strong, #66777d);
   border-radius: 6px;
-  background: #fff;
-  color: #101214;
+  background: var(--ot-color-surface, #0d1a20);
+  color: var(--ot-color-text, #ffffff);
   padding: 0.45rem 0.55rem;
 }
 
@@ -75,36 +75,36 @@
 .communications-load-more,
 .communications-error button {
   min-height: 2.5rem;
-  border: 1px solid #101214;
+  border: 1px solid var(--ot-color-border-strong, #66777d);
   border-radius: 6px;
-  background: #101214;
-  color: #ffd32a;
+  background: var(--ot-color-primary, #ffd21f);
+  color: var(--ot-color-ink, #050505);
   padding: 0.45rem 0.8rem;
   font-weight: 800;
 }
 
 .communications-filter-actions button[type='button'] {
-  background: #fff;
-  color: #101214;
+  background: var(--ot-color-surface-raised, #071117);
+  color: var(--ot-color-text, #ffffff);
 }
 
 .communications-table {
   width: 100%;
   border-collapse: collapse;
-  border: 1px solid #101214;
+  border: 1px solid var(--ot-color-border, #34464d);
 }
 
 .communications-table th,
 .communications-table td {
-  border-bottom: 1px solid #d7dde8;
+  border-bottom: 1px solid var(--ot-color-border, #34464d);
   padding: 0.65rem;
   text-align: left;
   vertical-align: top;
 }
 
 .communications-table th {
-  background: #101214;
-  color: #ffd32a;
+  background: var(--ot-color-surface-muted, #122229);
+  color: var(--ot-color-text, #ffffff);
 }
 
 .communications-table td span {
@@ -118,10 +118,10 @@
 }
 
 .communications-card {
-  border: 1px solid #101214;
+  border: 1px solid var(--ot-color-border-strong, #66777d);
   border-radius: 8px;
   padding: 1rem;
-  background: #fff;
+  background: var(--ot-color-surface-raised, #071117);
   box-shadow: 0 0 0 3px rgba(255, 211, 42, 0.25);
 }
 
@@ -146,10 +146,10 @@
 .communications-loading,
 .communications-state,
 .communications-error {
-  border: 1px solid #101214;
+  border: 1px solid var(--ot-color-border, #34464d);
   border-radius: 8px;
   padding: 1rem;
-  background: #fff;
+  background: var(--ot-color-surface-raised, #071117);
 }
 
 .communications-load-more {

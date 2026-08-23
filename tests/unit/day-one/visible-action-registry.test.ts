@@ -79,12 +79,14 @@ const EXPECTED_SOURCE_INPUT_PATHS = [
   'apps/web/src/server/features/signup/school/router.ts',
   'apps/web/src/server/features/v21-canonical-routes/router.ts',
   'apps/web/src/client/app/admin-ia.ts',
+  'apps/web/src/client/app/admin-directory/AdminDirectoryPanel.tsx',
   'apps/web/src/client/app/admin/learning/AdminLearningWorkspace.tsx',
   'apps/web/src/client/app/admin/search/AdminGlobalSearch.tsx',
   'apps/web/src/client/app/admin/support/AdminSupportWorkspace.tsx',
   'apps/web/src/client/app/communications/CommunicationsFeature.tsx',
   'apps/web/src/client/app/communications/WorkflowReadbackFeature.tsx',
   'apps/web/src/client/app/crm-api.ts',
+  'apps/web/src/client/app/classes/ClassManagementWorkspace.tsx',
   'apps/web/src/client/app/crm-entry.tsx',
   'apps/web/src/client/app/live-entry.tsx',
   'apps/web/src/client/app/zoom-meeting-sdk-client.ts',
@@ -145,10 +147,10 @@ const EXPECTED_ACTION_BINDINGS = [
   ],
   [
     'admin.communications.workflow_readback.view.route',
-    '/app/communications/:workflowId',
+    '/app/operations/workflow-readback/:workflowId',
     ['admin'],
     'GET',
-    '/api/v1/communications/workflows/:workflowId',
+    '/api/v1/operations/workflow-readback/:workflowId',
   ],
   [
     'admin.content.review.artifact_approve.button',
@@ -742,10 +744,10 @@ describe('v2.1 visible action registry', () => {
         handler_disposition: route.handlerDisposition,
       })),
     );
-    expect(registry.canonical_routes).toHaveLength(96);
+    expect(registry.canonical_routes).toHaveLength(111);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'ready'),
-    ).toHaveLength(96);
+    ).toHaveLength(111);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'isolated'),
     ).toHaveLength(0);

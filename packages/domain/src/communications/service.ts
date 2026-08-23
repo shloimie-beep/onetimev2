@@ -33,7 +33,8 @@ export type ReadOnlySessionScope = {
   role: CommunicationsRole;
 };
 
-export type CommunicationsMode = { kind: 'global' } | { kind: 'contact'; contactId: string };
+/** The public Communications surface is intentionally global account-email history only. */
+export type CommunicationsMode = { kind: 'global' };
 
 export type CommunicationsQuery = {
   from?: string | undefined;
@@ -84,18 +85,12 @@ export type CommunicationIntentListInput = {
   rawEventType?: string | undefined;
 };
 
-export type CommunicationContactLookupInput = {
-  scope: ReadOnlySessionScope;
-  contactId: string;
-};
-
 export type CommunicationIntentListResult = {
   rows: CommunicationIntentRow[];
   sourceAvailable: boolean;
 };
 
 export interface CommunicationsReadRepository {
-  contactExists(input: CommunicationContactLookupInput): Promise<boolean>;
   list(input: CommunicationIntentListInput): Promise<CommunicationIntentListResult>;
 }
 
@@ -132,9 +127,30 @@ export type BuildCommunicationsListInput = {
 const MAX_RANGE_MS = 90 * 24 * 60 * 60 * 1000;
 const DEFAULT_RANGE_MS = 30 * 24 * 60 * 60 * 1000;
 const CURSOR_TTL_MS = 30 * 60 * 1000;
+const ACCOUNT_EMAIL_INTENT_TYPES = new Set<CommunicationsIntentType>([
+  'password_reset',
+  'account_activation',
+  'student_pin_setup',
+  'student_pin_reset',
+]);
+
+function isAllowedAccountEmailRow(row: CommunicationIntentRow) {
+  const event = normalizeCommunicationsEvent(row.eventType, row.channel);
+  return (
+    row.channel === 'email' &&
+    normalizeDirection(row.direction, event.channel) === 'outbound' &&
+    row.source === 'account_lifecycle_outbox' &&
+    ACCOUNT_EMAIL_INTENT_TYPES.has(event.intentType)
+  );
+}
 
 export function canReadCommunications(role: unknown) {
   return role === 'owner' || role === 'admin' || role === 'rabbi';
+}
+
+/** Account-lifecycle delivery history is not part of the Rabbi teaching role. */
+export function canReadAccountEmailHistory(role: unknown) {
+  return role === 'owner' || role === 'admin';
 }
 
 export async function buildCommunicationsListResponse({
@@ -146,25 +162,24 @@ export async function buildCommunicationsListResponse({
   now = new Date(),
 }: BuildCommunicationsListInput): Promise<CommunicationsListResponse> {
   if (!session) throw new CommunicationsAuthorizationError(401);
-  if (!canReadCommunications(session.role)) throw new CommunicationsAuthorizationError(403);
+  if (!canReadAccountEmailHistory(session.role)) throw new CommunicationsAuthorizationError(403);
 
   const requestedFilters = parseCommunicationsFilters(query, now);
-  const filters: CommunicationsFilters =
-    mode.kind === 'global'
-      ? {
-          ...requestedFilters,
-          channel: 'email',
-          direction: 'outbound',
-          source: 'account_lifecycle_outbox',
-        }
-      : requestedFilters;
-  if (mode.kind === 'contact') {
-    const contactExists = await repository.contactExists({
-      scope: session,
-      contactId: mode.contactId,
-    });
-    if (!contactExists) throw new CommunicationsNotFoundError('Contact was not found.');
+  if (
+    requestedFilters.intent_type &&
+    !ACCOUNT_EMAIL_INTENT_TYPES.has(requestedFilters.intent_type)
+  ) {
+    throw new CommunicationsValidationError(
+      'ACCOUNT_EMAIL_INTENT_FORBIDDEN',
+      'Only One Time account-email history is available here.',
+    );
   }
+  const filters: CommunicationsFilters = {
+    ...requestedFilters,
+    channel: 'email',
+    direction: 'outbound',
+    source: 'account_lifecycle_outbox',
+  };
   const rawEventType = filters.intent_type
     ? (eventTypeForIntent(filters.intent_type) ?? undefined)
     : undefined;
@@ -197,7 +212,9 @@ export async function buildCommunicationsListResponse({
     };
   }
 
-  const pageRows = result.rows.slice(0, filters.limit);
+  // Recheck returned data as well as query filters: a repository anomaly must never
+  // widen this browser-visible account-email boundary.
+  const pageRows = result.rows.filter(isAllowedAccountEmailRow).slice(0, filters.limit);
   const items = pageRows.map((row) => {
     const event = normalizeCommunicationsEvent(row.eventType, row.channel);
     const status = normalizeCommunicationsStatus({
@@ -209,11 +226,9 @@ export async function buildCommunicationsListResponse({
     const source = normalizeSource(row.source);
     const provenance = normalizeProvenance(row.provenance);
     const direction = normalizeDirection(row.direction, event.channel);
-    const contactPath = row.contactKey
-      ? `/app/crm/contacts/${encodeURIComponent(row.contactKey)}`
-      : null;
+    const contactPath = null;
     const householdPath = row.householdKey
-      ? `/app/parent/households/${encodeURIComponent(row.householdKey)}`
+      ? `/app/people/families/${encodeURIComponent(row.householdKey)}`
       : null;
     return {
       event_id: row.id,
@@ -258,8 +273,6 @@ export async function buildCommunicationsListResponse({
           v: 1,
           mode: mode.kind,
           scope_hash: scopeHash(cursorSecret, session),
-          contact_hash:
-            mode.kind === 'contact' ? contactHash(cursorSecret, mode.contactId) : undefined,
           filters_hash: hashCursorFilters(cursorSecret, filters),
           last_created_at: toIso(last.createdAt),
           last_id: last.id,
@@ -366,13 +379,7 @@ function parseCursor(input: {
     hashCursorFilters(input.secret, input.filters),
     'CURSOR_FILTER_MISMATCH',
   );
-  if (input.mode.kind === 'contact') {
-    assertCursorBinding(
-      payload.contact_hash ?? '',
-      contactHash(input.secret, input.mode.contactId),
-      'CURSOR_CONTACT_MISMATCH',
-    );
-  } else if (payload.contact_hash) {
+  if (payload.contact_hash) {
     throw new CommunicationsCursorError('CURSOR_MODE_MISMATCH');
   }
   return { lastCreatedAt: payload.last_created_at, lastId: payload.last_id };
@@ -391,10 +398,6 @@ function parseInstant(value: string, field: string) {
 
 function scopeHash(secret: string, session: ReadOnlySessionScope) {
   return hashCursorScope(secret, [session.accountKey, session.productKey]);
-}
-
-function contactHash(secret: string, contactId: string) {
-  return hashCursorScope(secret, ['contact', contactId]);
 }
 
 function isChannel(value: string): value is CommunicationsChannel {

@@ -8,7 +8,6 @@ import type {
 import './communications.css';
 
 type Props = {
-  contactId?: string | undefined;
   onProtectedStateCleared?: (() => void) | undefined;
 };
 
@@ -23,28 +22,22 @@ type LoadState =
   | { kind: 'not_found'; message: string }
   | { kind: 'error'; message: string };
 
-export function CommunicationsFeature({ contactId, onProtectedStateCleared }: Props) {
-  const lifecycleOnly = !contactId;
+export function CommunicationsFeature({ onProtectedStateCleared }: Props) {
   const [from, setFrom] = useState(() => dateInput(daysAgo(30)));
   const [to, setTo] = useState(() => dateInput(new Date()));
-  const [channel, setChannel] = useState('');
-  const [direction, setDirection] = useState('');
   const [intentType, setIntentType] = useState('');
   const [status, setStatus] = useState('');
-  const [source, setSource] = useState(() => (lifecycleOnly ? 'account_lifecycle_outbox' : ''));
   const [state, setState] = useState<LoadState>({ kind: 'loading' });
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [loadingMore, setLoadingMore] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
   const retryRef = useRef<HTMLButtonElement | null>(null);
 
-  const endpoint = contactId
-    ? `/api/v1/crm/contacts/${encodeURIComponent(contactId)}/communications`
-    : '/api/v1/communications';
+  const endpoint = '/api/v1/communications';
 
   const filters = useMemo(
-    () => ({ from, to, channel, direction, intent_type: intentType, status, source }),
-    [channel, direction, from, intentType, source, status, to],
+    () => ({ from, to, intent_type: intentType, status }),
+    [from, intentType, status, to],
   );
 
   useEffect(() => {
@@ -72,9 +65,7 @@ export function CommunicationsFeature({ contactId, onProtectedStateCleared }: Pr
         if (!data.items.length) return { kind: 'empty', data };
         return { kind: 'ready', data };
       });
-      performance.mark(
-        contactId ? 'ot-communications-contact-usable' : 'ot-communications-global-usable',
-      );
+      performance.mark('ot-communications-global-usable');
     } catch (error) {
       if (controller.signal.aborted) return;
       const mapped = mapError(error);
@@ -96,19 +87,17 @@ export function CommunicationsFeature({ contactId, onProtectedStateCleared }: Pr
         <div>
           <h1 id="communications-heading">Communications</h1>
           <p>
-            {lifecycleOnly
-              ? 'Active One Time accounts and their redacted login, setup, password-reset, and PIN delivery history. Message content and secure credentials are never shown.'
-              : 'Read-only local communication history for this existing One Time record.'}
+            One Time account-email delivery history from info@. This read-only list covers setup,
+            password reset, and Student credentials; general adult communication lives in GHL, and
+            Students never become GHL contacts.
           </p>
         </div>
       </header>
 
       {data && (
         <section className="communications-truth" aria-label="Communications source truth">
-          <span>
-            {lifecycleOnly ? 'Active One Time accounts only' : 'Existing One Time record'}
-          </span>
-          <span>{lifecycleOnly ? 'Setup, reset, and PIN delivery' : 'Local history'}</span>
+          <span>One Time account email only</span>
+          <span>Read-only info@ delivery history</span>
           <span>Redacted and read-only</span>
         </section>
       )}
@@ -129,54 +118,14 @@ export function CommunicationsFeature({ contactId, onProtectedStateCleared }: Pr
           <span>To</span>
           <input type="date" value={to} onChange={(event) => setTo(event.target.value)} />
         </label>
-        {!lifecycleOnly && (
-          <>
-            <label>
-              <span>Channel</span>
-              <select value={channel} onChange={(event) => setChannel(event.target.value)}>
-                <option value="">All</option>
-                <option value="email">Email</option>
-                <option value="whatsapp">WhatsApp</option>
-                <option value="internal_email">Internal email</option>
-              </select>
-            </label>
-            <label>
-              <span>Direction</span>
-              <select value={direction} onChange={(event) => setDirection(event.target.value)}>
-                <option value="">All</option>
-                <option value="inbound">Inbound</option>
-                <option value="outbound">Outbound</option>
-                <option value="internal">Internal</option>
-              </select>
-            </label>
-          </>
-        )}
         <label>
           <span>Intent type</span>
           <select value={intentType} onChange={(event) => setIntentType(event.target.value)}>
             <option value="">All</option>
-            {!lifecycleOnly && (
-              <>
-                <option value="family_signup_email_ack">Family signup email acknowledgement</option>
-                <option value="family_signup_whatsapp_confirmation">
-                  Family signup WhatsApp confirmation
-                </option>
-                <option value="internal_lead_alert">Internal owner alert</option>
-                <option value="single_recipient_reply">Single-recipient reply</option>
-              </>
-            )}
             <option value="password_reset">Password reset</option>
             <option value="account_activation">Account setup</option>
             <option value="student_pin_setup">Student PIN setup</option>
             <option value="student_pin_reset">Student PIN reset</option>
-            {!lifecycleOnly && (
-              <>
-                <option value="whatsapp_inbound_message">WhatsApp inbound message</option>
-                <option value="whatsapp_provider_event">WhatsApp provider event</option>
-                <option value="historical_import_event">Historical import event</option>
-                <option value="history_unavailable">History unavailable</option>
-              </>
-            )}
           </select>
         </label>
         <label>
@@ -185,42 +134,19 @@ export function CommunicationsFeature({ contactId, onProtectedStateCleared }: Pr
             <option value="">All</option>
             <option value="queued">Queued</option>
             <option value="provider_accepted">Provider accepted</option>
-            {!lifecycleOnly && <option value="provider_sent">Provider sent</option>}
             <option value="delivered">Delivered</option>
-            {!lifecycleOnly && <option value="read">Read</option>}
-            {!lifecycleOnly && <option value="received">Received</option>}
-            {!lifecycleOnly && <option value="processed">Processed</option>}
             <option value="sink_delivered">Processed by non-provider sink</option>
             <option value="failed">Failed</option>
             <option value="bounced">Bounced</option>
             <option value="complained">Complained</option>
-            {!lifecycleOnly && <option value="suppressed">Suppressed</option>}
-            {!lifecycleOnly && <option value="draft_saved">Draft saved/provider off</option>}
-            {!lifecycleOnly && <option value="duplicate">Duplicate ignored</option>}
             <option value="unknown">Unknown</option>
             <option value="retrying">Retry scheduled</option>
             <option value="expired">Expired</option>
             <option value="superseded">Superseded</option>
             <option value="provider_off">Provider off</option>
             <option value="cleared">Sensitive payload cleared</option>
-            {!lifecycleOnly && <option value="history_unavailable">History unavailable</option>}
           </select>
         </label>
-        {!lifecycleOnly && (
-          <label>
-            <span>Source</span>
-            <select value={source} onChange={(event) => setSource(event.target.value)}>
-              <option value="">All</option>
-              <option value="canonical_history_event">Canonical history</option>
-              <option value="local_outbox_intent">Local outbound intent</option>
-              <option value="crm_reply_draft">Provider-off draft</option>
-              <option value="stored_whatsapp_webhook">Stored WhatsApp webhook</option>
-              <option value="stored_provider_delivery_event">Stored provider status</option>
-              <option value="historical_import">Historical import</option>
-              <option value="provider_history_unavailable">History unavailable</option>
-            </select>
-          </label>
-        )}
         <div className="communications-filter-actions">
           <button type="submit">Apply</button>
           <button
@@ -228,11 +154,8 @@ export function CommunicationsFeature({ contactId, onProtectedStateCleared }: Pr
             onClick={() => {
               setFrom(dateInput(daysAgo(30)));
               setTo(dateInput(new Date()));
-              setChannel('');
-              setDirection('');
               setIntentType('');
               setStatus('');
-              setSource(lifecycleOnly ? 'account_lifecycle_outbox' : '');
               void load();
             }}
           >
@@ -243,16 +166,13 @@ export function CommunicationsFeature({ contactId, onProtectedStateCleared }: Pr
 
       {state.kind === 'loading' && (
         <p className="communications-loading" role="status">
-          {lifecycleOnly
-            ? 'Loading account delivery history...'
-            : 'Loading communication history...'}
+          Loading account delivery history...
         </p>
       )}
       {state.kind === 'empty' && (
-        <StatePanel title={lifecycleOnly ? 'No matching account delivery history' : 'No history'}>
-          {lifecycleOnly
-            ? 'No setup, reset, or PIN delivery records for active One Time accounts matched these filters.'
-            : 'No local communication records matched these filters.'}
+        <StatePanel title="No matching account delivery history">
+          No setup, reset, or PIN delivery records for active One Time accounts matched these
+          filters.
         </StatePanel>
       )}
       {state.kind === 'unavailable' && (
@@ -276,24 +196,16 @@ export function CommunicationsFeature({ contactId, onProtectedStateCleared }: Pr
           <table className="communications-table">
             <thead>
               <tr>
-                <th scope="col">{lifecycleOnly ? 'Account and destination' : 'Recipient'}</th>
-                <th scope="col">{lifecycleOnly ? 'Delivery' : 'Thread'}</th>
-                <th scope="col">Channel</th>
-                <th scope="col">Direction</th>
-                <th scope="col">Truth status</th>
-                <th scope="col">Source</th>
+                <th scope="col">Account and destination</th>
+                <th scope="col">Account email</th>
+                <th scope="col">Delivery state</th>
                 <th scope="col">Time</th>
                 <th scope="col">State time</th>
-                {!lifecycleOnly && <th scope="col">Contact</th>}
               </tr>
             </thead>
             <tbody>
               {data.items.map((item, index) => (
-                <CommunicationRow
-                  item={item}
-                  lifecycleOnly={lifecycleOnly}
-                  key={`${item.queued_at}-${index}`}
-                />
+                <CommunicationRow item={item} key={`${item.queued_at}-${index}`} />
               ))}
             </tbody>
           </table>
@@ -325,26 +237,20 @@ export function CommunicationsFeature({ contactId, onProtectedStateCleared }: Pr
 
 type Item = CommunicationsListResponse['items'][number];
 
-function CommunicationRow({ item, lifecycleOnly }: { item: Item; lifecycleOnly: boolean }) {
+function CommunicationRow({ item }: { item: Item }) {
   return (
     <tr>
       <td>
-        {lifecycleOnly && <strong>{item.participant_label}</strong>}
+        <strong>{item.participant_label}</strong>
         <span>{item.recipient_masked}</span>
       </td>
       <td>
         <strong>{item.thread_label}</strong>
         <span>{item.preview_redacted}</span>
       </td>
-      <td>{labelChannel(item.channel)}</td>
-      <td>{labelDirection(item.direction)}</td>
       <td>{item.state_label}</td>
-      <td>{item.source_label}</td>
       <td>{formatDate(item.occurred_at)}</td>
       <td>{item.state_at ? formatDate(item.state_at) : 'Unavailable'}</td>
-      {!lifecycleOnly && (
-        <td>{item.contact_path ? <a href={item.contact_path}>View contact</a> : 'Unavailable'}</td>
-      )}
     </tr>
   );
 }
@@ -364,14 +270,6 @@ function CommunicationSummary({ item }: { item: Item }) {
           <dd>{item.recipient_masked}</dd>
         </div>
         <div>
-          <dt>Channel</dt>
-          <dd>{labelChannel(item.channel)}</dd>
-        </div>
-        <div>
-          <dt>Direction</dt>
-          <dd>{labelDirection(item.direction)}</dd>
-        </div>
-        <div>
           <dt>Truth status</dt>
           <dd>{item.state_label}</dd>
         </div>
@@ -387,10 +285,7 @@ function CommunicationSummary({ item }: { item: Item }) {
       {item.draft_only && (
         <p className="communications-draft-note">Draft only. No send happened.</p>
       )}
-      {item.contact_path && <a href={item.contact_path}>View contact</a>}
-      {!item.contact_path && item.household_path && (
-        <a href={item.household_path}>View household</a>
-      )}
+      {item.household_path && <a href={item.household_path}>View Family</a>}
     </>
   );
 }
@@ -434,11 +329,8 @@ async function requestCommunications(
   filters: {
     from: string;
     to: string;
-    channel: string;
-    direction: string;
     intent_type: string;
     status: string;
-    source: string;
   },
   cursor: string | undefined,
   signal: AbortSignal,
@@ -446,11 +338,8 @@ async function requestCommunications(
   const params = new URLSearchParams();
   params.set('from', new Date(`${filters.from}T00:00:00.000Z`).toISOString());
   params.set('to', new Date(`${filters.to}T23:59:59.999Z`).toISOString());
-  if (filters.channel) params.set('channel', filters.channel);
-  if (filters.direction) params.set('direction', filters.direction);
   if (filters.intent_type) params.set('intent_type', filters.intent_type);
   if (filters.status) params.set('status', filters.status);
-  if (filters.source) params.set('source', filters.source);
   const headers: Record<string, string> = { accept: 'application/json' };
   if (cursor) headers['x-ot-communications-cursor'] = cursor;
   const response = await fetch(`${endpoint}?${params.toString()}`, {
@@ -506,36 +395,28 @@ function emptyUnavailableResponse(): CommunicationsListResponse {
       provider_acceptance: false,
       provider_delivery: false,
       inbound_import: false,
-      replies: true,
-      threads: true,
+      replies: false,
+      threads: false,
       subject_body_access: false,
       attachments: false,
       reminder_execution: false,
-      compose: true,
-      draft_only_replies: true,
+      compose: false,
+      draft_only_replies: false,
       transport_send: false,
       resend: false,
       campaigns: false,
       templates: false,
       integration_settings: false,
-      historical_backfill_dry_run: true,
+      historical_backfill_dry_run: false,
       provider_history_complete: false,
-      stored_webhooks: true,
-      channels: ['email', 'whatsapp', 'internal_email'] satisfies CommunicationsChannel[],
-      directions: ['inbound', 'outbound', 'internal'],
+      stored_webhooks: false,
+      channels: ['email'] satisfies CommunicationsChannel[],
+      directions: ['outbound'],
       intent_types: [
-        'family_signup_email_ack',
-        'family_signup_whatsapp_confirmation',
-        'internal_lead_alert',
-        'single_recipient_reply',
         'password_reset',
         'account_activation',
         'student_pin_setup',
         'student_pin_reset',
-        'whatsapp_inbound_message',
-        'whatsapp_provider_event',
-        'historical_import_event',
-        'history_unavailable',
       ] satisfies CommunicationsIntentType[],
       local_states: [
         'queued',
@@ -560,16 +441,7 @@ function emptyUnavailableResponse(): CommunicationsListResponse {
         'cleared',
         'history_unavailable',
       ] satisfies CommunicationsLocalState[],
-      sources: [
-        'canonical_history_event',
-        'local_outbox_intent',
-        'crm_reply_draft',
-        'stored_whatsapp_webhook',
-        'stored_provider_delivery_event',
-        'account_lifecycle_outbox',
-        'historical_import',
-        'provider_history_unavailable',
-      ],
+      sources: ['account_lifecycle_outbox'],
     },
     applied_filters: {
       from: daysAgo(30).toISOString(),
@@ -579,18 +451,6 @@ function emptyUnavailableResponse(): CommunicationsListResponse {
     items: [],
     next_cursor: null,
   };
-}
-
-function labelChannel(value: string) {
-  return value === 'internal_email'
-    ? 'Internal email'
-    : value.replace(/^\w/, (letter) => letter.toUpperCase());
-}
-
-function labelDirection(value: string) {
-  if (value === 'inbound') return 'Inbound';
-  if (value === 'outbound') return 'Outbound';
-  return 'Internal';
 }
 
 function formatDate(value: string) {

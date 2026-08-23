@@ -64,19 +64,6 @@ export async function confirmProductionBasicHostLive(csrfToken: string): Promise
   }
 }
 
-export async function clearProductionBasicHostLive(csrfToken: string): Promise<void> {
-  const response = await fetch(`${HOST_ENDPOINT}/host-ended`, {
-    method: 'POST',
-    credentials: 'same-origin',
-    headers: { 'x-csrf-token': csrfToken },
-  });
-  const payload = (await response.json()) as
-    { success: true; data: { state: 'scheduled' } } | { success: false; message?: string };
-  if (!response.ok || payload.success !== true || payload.data.state !== 'scheduled') {
-    throw new Error('Live class status could not be cleared.');
-  }
-}
-
 export function isStudentProductionBasicLaunchArtifact(
   value: unknown,
 ): value is StudentProductionBasicLaunchArtifact {
@@ -144,38 +131,4 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function invalidLaunchResponse() {
   return new Error('Classroom launch response is invalid.');
-}
-
-/** Couples the durable live receipt to the real Meeting SDK lifecycle. */
-export async function startAndConfirmProductionBasicHostLive(input: {
-  csrfToken: string;
-  startMeeting: (onMeetingStatus: (status: 1 | 2 | 3 | 4) => void) => Promise<void>;
-  confirm?: ((csrfToken: string) => Promise<void>) | undefined;
-  clear?: ((csrfToken: string) => Promise<void>) | undefined;
-}): Promise<void> {
-  const confirm = input.confirm ?? confirmProductionBasicHostLive;
-  const clear = input.clear ?? clearProductionBasicHostLive;
-  let confirmed = false;
-  let disconnected = false;
-  let clearPromise: Promise<void> | null = null;
-
-  const clearConfirmedReceipt = () => {
-    if (!confirmed || clearPromise) return;
-    clearPromise = clear(input.csrfToken).catch(() => undefined);
-  };
-
-  await input.startMeeting((status) => {
-    if (status !== 3) return;
-    disconnected = true;
-    clearConfirmedReceipt();
-  });
-  if (disconnected) throw new Error('Meeting disconnected before live status was confirmed.');
-
-  await confirm(input.csrfToken);
-  confirmed = true;
-  if (disconnected) {
-    clearConfirmedReceipt();
-    await clearPromise;
-    throw new Error('Meeting disconnected while live status was being confirmed.');
-  }
 }

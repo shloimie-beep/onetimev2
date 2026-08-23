@@ -194,16 +194,16 @@ export function AdminDirectoryPanel({
   );
 
   const title = selectedUser
-    ? 'User details'
+    ? 'Parent details'
     : selectedLearner
       ? 'Student details'
       : mode === 'households'
-        ? 'Households'
+        ? 'Families'
         : mode === 'users'
-          ? 'Users and roles'
+          ? 'Parents'
           : mode === 'learners'
-            ? 'Learners'
-            : 'Audit history';
+            ? 'Students'
+            : 'Audit';
 
   return (
     <section className="admin-directory" aria-labelledby={`admin-directory-${mode}-title`}>
@@ -213,11 +213,11 @@ export function AdminDirectoryPanel({
           <p>{descriptionFor(mode)}</p>
         </div>
         {selectedUser ? (
-          <Button type="button" onClick={() => window.location.assign('/app/users')}>
-            Back to Users
+          <Button type="button" onClick={() => window.location.assign('/app/people/parents')}>
+            Back to Parents
           </Button>
         ) : selectedLearner ? (
-          <Button type="button" onClick={() => window.location.assign('/app/students')}>
+          <Button type="button" onClick={() => window.location.assign('/app/people/students')}>
             Back to Students
           </Button>
         ) : mode !== 'audit' ? (
@@ -227,10 +227,10 @@ export function AdminDirectoryPanel({
             onClick={() => window.location.assign('/app/crm/contact-operations')}
           >
             {mode === 'households'
-              ? 'Add household'
+              ? 'Create Family'
               : mode === 'users'
-                ? 'Create account setup'
-                : 'Add learner'}
+                ? 'Create Parent account'
+                : 'Add Student'}
           </Button>
         ) : null}
       </div>
@@ -1225,15 +1225,15 @@ function ActionGroup({ children }: { children: React.ReactNode }) {
 
 function descriptionFor(mode: AdminDirectoryMode) {
   if (mode === 'households') {
-    return 'Create and maintain family records, guardians, access state, and setup state.';
+    return 'Family records, Parent accounts, active Student count, access, setup, and next-class eligibility.';
   }
   if (mode === 'users') {
-    return 'Create secure setup, assign permitted roles, reset passwords, and control access.';
+    return 'Parent identity, Family, secure account setup, learning status, and access state.';
   }
   if (mode === 'audit') {
-    return 'Review timestamped local CRM and account administration activity.';
+    return 'Technical details and timestamped One Time account administration activity.';
   }
-  return 'Add, edit, archive, and restore local learners with a transactional three-seat limit.';
+  return 'Student display identity, Family, credential setup, class access, and active, suspended, or archived state.';
 }
 
 function statusOptions(mode: AdminDirectoryMode) {

@@ -26,7 +26,6 @@ type ProductionBasicRouterInput = {
     ready(actor: ProductionBasicActor): Promise<boolean>;
     request(actor: ProductionBasicActor): Promise<ProductionBasicLaunchResult>;
     confirmHostLive(actor: ProductionBasicActor): Promise<ProductionBasicHostLiveResult>;
-    clearHostLive(actor: ProductionBasicActor): Promise<ProductionBasicHostLiveResult>;
   };
   onLaunchFailure?: ((event: ProductionBasicLaunchFailureEvent) => void) | undefined;
 };
@@ -84,12 +83,7 @@ function createRoleBoundProductionBasicRouter(
     response.json({ success: true, data: { launch_artifact: result.artifact } });
   });
   if (boundary === 'host') {
-    router.post('/host-live', (request, response) =>
-      handleHostMarker(input, request, response, 'live'),
-    );
-    router.post('/host-ended', (request, response) =>
-      handleHostMarker(input, request, response, 'ended'),
-    );
+    router.post('/host-live', (request, response) => handleHostMarker(input, request, response));
   }
   router.get('/status', async (request, response) => {
     const identity = await input.identities.resolve(request, response);
@@ -111,7 +105,6 @@ async function handleHostMarker(
   input: ProductionBasicRouterInput,
   request: Request,
   response: Response,
-  marker: 'live' | 'ended',
 ) {
   if (requestHasBody(request)) {
     response.status(400).json(unavailable());
@@ -124,10 +117,7 @@ async function handleHostMarker(
   }
   let result: ProductionBasicHostLiveResult;
   try {
-    result =
-      marker === 'live'
-        ? await input.service.confirmHostLive(identity.actor)
-        : await input.service.clearHostLive(identity.actor);
+    result = await input.service.confirmHostLive(identity.actor);
   } catch (error) {
     reportLaunchFailure(input.onLaunchFailure, classifyLaunchFailure(error));
     response.status(503).json(unavailable());
@@ -139,7 +129,7 @@ async function handleHostMarker(
   }
   response.json({
     success: true,
-    data: { state: marker === 'live' ? ('live' as const) : ('scheduled' as const) },
+    data: { state: 'live' as const },
   });
 }
 

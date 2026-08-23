@@ -1,11 +1,9 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
-  clearProductionBasicHostLive,
   confirmProductionBasicHostLive,
   readStudentProductionBasicReadiness,
   requestHostProductionBasicLaunch,
   requestStudentProductionBasicLaunch,
-  startAndConfirmProductionBasicHostLive,
 } from './production-basic-launch-client.ts';
 
 describe('production-basic launch client', () => {
@@ -116,7 +114,13 @@ describe('production-basic launch client', () => {
   it('confirms live state with one body-less request after the host join succeeds', async () => {
     const fetchMock = vi.fn(
       async () =>
-        new Response(JSON.stringify({ success: true, data: { state: 'live' } }), { status: 200 }),
+        new Response(
+          JSON.stringify({
+            success: true,
+            data: { state: 'live' },
+          }),
+          { status: 200 },
+        ),
     );
     vi.stubGlobal('fetch', fetchMock);
 
@@ -131,53 +135,6 @@ describe('production-basic launch client', () => {
     );
     const [, requestInit] = (fetchMock.mock.calls as unknown as Array<[string, RequestInit]>)[0]!;
     expect(requestInit).not.toHaveProperty('body');
-  });
-
-  it('clears live state with one body-less request', async () => {
-    const fetchMock = vi.fn(
-      async () =>
-        new Response(JSON.stringify({ success: true, data: { state: 'scheduled' } }), {
-          status: 200,
-        }),
-    );
-    vi.stubGlobal('fetch', fetchMock);
-
-    await expect(clearProductionBasicHostLive('csrf-derived')).resolves.toBeUndefined();
-    expect(fetchMock).toHaveBeenCalledWith(
-      '/api/v1/admin/classroom/production-basic/host-ended',
-      expect.objectContaining({
-        method: 'POST',
-        credentials: 'same-origin',
-        headers: { 'x-csrf-token': 'csrf-derived' },
-      }),
-    );
-    const [, requestInit] = (fetchMock.mock.calls as unknown as Array<[string, RequestInit]>)[0]!;
-    expect(requestInit).not.toHaveProperty('body');
-  });
-
-  it('confirms only after status 2 and clears once on a later status 3', async () => {
-    let emitStatus: ((status: 1 | 2 | 3 | 4) => void) | undefined;
-    const confirm = vi.fn(async () => undefined);
-    const clear = vi.fn(async () => undefined);
-
-    await startAndConfirmProductionBasicHostLive({
-      csrfToken: 'csrf-derived',
-      startMeeting: async (onMeetingStatus) => {
-        emitStatus = onMeetingStatus;
-        onMeetingStatus(2);
-      },
-      confirm,
-      clear,
-    });
-    expect(confirm).toHaveBeenCalledOnce();
-    expect(clear).not.toHaveBeenCalled();
-
-    emitStatus?.(4);
-    emitStatus?.(3);
-    emitStatus?.(3);
-    await Promise.resolve();
-    expect(clear).toHaveBeenCalledOnce();
-    expect(clear).toHaveBeenCalledWith('csrf-derived');
   });
 });
 

@@ -170,7 +170,7 @@ describe('PostgresCommunicationsReadRepository', () => {
     ).rejects.toThrow();
   });
 
-  it('filters by source and refuses cross-contact projection through scoped contact mode', async () => {
+  it('filters canonical history by source without a contact lookup surface', async () => {
     const webhookOnly = await repository.list({
       scope,
       mode: { kind: 'global' },
@@ -189,12 +189,6 @@ describe('PostgresCommunicationsReadRepository', () => {
       direction: 'inbound',
       providerReferenceDigest: 'a'.repeat(64),
     });
-
-    const missingContact = await repository.contactExists({
-      scope,
-      contactId: 'contact_other_account',
-    });
-    expect(missingContact).toBe(false);
   });
 });
 

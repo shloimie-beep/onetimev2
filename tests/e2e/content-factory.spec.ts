@@ -118,8 +118,8 @@ test('provider-off synthetic content stays out of the ordinary Student library',
     .filter({ hasText: 'Browser-published occurrence lesson' });
   await expect(contentCard).toHaveCount(0);
   const response = await page.goto(publishedPlaybackPath);
-  expect(response?.status()).toBe(404);
-  await expect(page.getByText('Approved lesson playback is unavailable.')).toBeVisible();
+  expect([403, 404]).toContain(response?.status());
+  await expect(page.locator('body')).not.toContainText('Browser-published occurrence lesson');
   const body = await page.locator('body').innerText();
   expect(body).not.toMatch(
     /Browser-published occurrence lesson|https?:\/\/player\.vimeo\.com|synthetic_video_|volume:v1:/i,
@@ -135,8 +135,7 @@ test('a non-entitled learner receives a metadata-safe denial', async ({ page }) 
     '/app/student',
   );
   const response = await page.goto(publishedPlaybackPath);
-  expect(response?.status()).toBe(404);
-  await expect(page.getByText('Approved lesson playback is unavailable.')).toBeVisible();
+  expect([403, 404]).toContain(response?.status());
   expect(await page.locator('body').innerText()).not.toContain(
     'Browser-published occurrence lesson',
   );

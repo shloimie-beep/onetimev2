@@ -112,11 +112,6 @@ export interface ProductionBasicHostLiveMarker {
     meeting_ref_digest: string;
     observed_at: Date;
   }): Promise<boolean>;
-  clear(input: {
-    scope: ProductionBasicScope;
-    meeting_ref_digest: string;
-    cleared_at: Date;
-  }): Promise<void>;
 }
 
 export type ProductionBasicLaunchResult =
@@ -169,20 +164,6 @@ export function createProductionBasicLaunchService(input: {
         confirmed_at: clock(),
       });
       return { disposition: confirmed ? 'ready' : 'unavailable' };
-    },
-    async clearHostLive(actor: ProductionBasicActor): Promise<ProductionBasicHostLiveResult> {
-      if ((actor.kind !== 'admin' && actor.kind !== 'rabbi') || !actor.authorized_to_start) {
-        return { disposition: 'denied' };
-      }
-      if (!(await input.binding.ready())) return { disposition: 'unavailable' };
-      const meetingRefDigest = input.binding.referenceDigest();
-      if (!meetingRefDigest || !input.hostLiveMarker) return { disposition: 'unavailable' };
-      await input.hostLiveMarker.clear({
-        scope: actor.scope,
-        meeting_ref_digest: meetingRefDigest,
-        cleared_at: clock(),
-      });
-      return { disposition: 'ready' };
     },
   };
 }
