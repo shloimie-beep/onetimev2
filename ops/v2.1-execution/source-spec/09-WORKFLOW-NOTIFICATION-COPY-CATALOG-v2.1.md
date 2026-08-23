@@ -1,8 +1,8 @@
 # One Time Mishnayos — Workflow, Notification, and Copy Catalog
 
-**Package:** `ONE-TIME-PRODUCTION-SPEC-v2.1`  
-**Document:** `09-WORKFLOW-NOTIFICATION-COPY-CATALOG-v2.1.md`  
-**Status:** Normative  
+**Package:** `ONE-TIME-PRODUCTION-SPEC-v2.1`
+**Document:** `09-WORKFLOW-NOTIFICATION-COPY-CATALOG-v2.1.md`
+**Status:** Normative
 **Effective date:** 2026-07-28
 
 ## WNC-1. Purpose and authority
@@ -15,27 +15,33 @@ The active HighLevel registry must use the identifiers and dispositions below. A
 
 ## WNC-2. Sender identities
 
-| Sender key | From name | From address | Reply-To | Permitted purposes |
-|---|---|---|---|---|
-| `rabbi_campaign` | Rabbi Eli Scheller \| One Time Mishnayos | `rabbi@onetimeonetime.com` | `info@onetimeonetime.com` | Migration, reactivation, lead nurture, Parent newsletter, teaching/program messages |
-| `office` | One Time Mishnayos | `info@onetimeonetime.com` | `info@onetimeonetime.com` | Billing, access, schedule changes, support, school acknowledgment, neutral operations |
-| `security_resend` | One Time Account Security | `info@onetimeonetime.com` | `info@onetimeonetime.com` | Setup, reset, security notice; Resend only |
+| Sender key        | From name                 | From address                          | Reply-To                              | Permitted purposes                                                                    |
+| ----------------- | ------------------------- | ------------------------------------- | ------------------------------------- | ------------------------------------------------------------------------------------- |
+| `rabbi_campaign`  | Rabbi Eli Scheller        | `rabbielischeller@onetimeonetime.com` | `rabbielischeller@onetimeonetime.com` | Migration, reactivation, lead nurture, Parent newsletter, teaching/program messages   |
+| `office`          | One Time Mishnayos        | `info@onetimeonetime.com`             | `info@onetimeonetime.com`             | Billing, access, schedule changes, support, school acknowledgment, neutral operations |
+| `security_resend` | One Time Account Security | `info@onetimeonetime.com`             | `info@onetimeonetime.com`             | Setup, reset, security notice; Resend only                                            |
 
 Sender authentication requires valid SPF, DKIM, DMARC alignment, verified domains, bounce/complaint webhooks, and provider readback before broad send.
 
+### WNC-2.1 Voice and tone contract
+
+Write like Rabbi Eli or a real One Time staff member speaking to one person: plain, specific, and in short paragraphs. Each email has one main purpose and leads with the actual reason for writing. State dates, actions, and access facts directly. Use one CTA only when the recipient needs to act; a request for a reply is a real reply request, not a disguised funnel.
+
+Do not use inflated phrases such as “exciting new chapter,” filler lists about “clarity, memory, consistency,” or corporate/AI padding. Do not add an opt-in form, over-explain internal architecture, consent law, durable IDs, or provider mechanics, or imply an account, payment, access, attendance, or consent state that has not been verified. Sender identity and reply routing remain separately verified operational facts.
+
 ## WNC-3. Communication purposes and consent
 
-| Purpose | Required? | Provider | Consent basis | Suppression behavior |
-|---|---:|---|---|---|
-| Setup, reset, credential/security notice | Yes | Resend | Requested account/security action | Security abuse controls; not marketing unsubscribe |
-| Billing, access, cancellation, payment failure | Yes | GHL email | Account/contract service | Deliver unless address is invalid; marketing opt-out does not suppress essential service email |
-| Class schedule change/cancellation | Yes | GHL email; in-app | Active service | Deliver to account owner and affected Student in-app |
-| Class reminder | Parent-configurable | GHL email; future WhatsApp; Student in-app | Service reminder preference | Respect channel preference, DND, invalid channel, and dedupe |
-| Recording available | Parent-configurable | GHL email; future WhatsApp; Student in-app | Service/content preference | Respect category/channel preference |
-| Parent newsletter | Optional | GHL email | Explicit newsletter permission | Suppression checked at execution |
-| Marketing/nurture/reactivation | Optional | GHL email | Explicit marketing permission | DND, unsubscribe, complaint, hard bounce, invalid address, and suppression block send |
-| School acknowledgment | Yes, one message | GHL email | Requested response | No automated school nurture |
-| Student question/support update | Yes, in-app | One Time | Authenticated product request | No GHL Student contact or Student outbound email |
+| Purpose                                        |           Required? | Provider                                   | Consent basis                     | Suppression behavior                                                                           |
+| ---------------------------------------------- | ------------------: | ------------------------------------------ | --------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Setup, reset, credential/security notice       |                 Yes | Resend                                     | Requested account/security action | Security abuse controls; not marketing unsubscribe                                             |
+| Billing, access, cancellation, payment failure |                 Yes | GHL email                                  | Account/contract service          | Deliver unless address is invalid; marketing opt-out does not suppress essential service email |
+| Class schedule change/cancellation             |                 Yes | GHL email; in-app                          | Active service                    | Deliver to account owner and affected Student in-app                                           |
+| Class reminder                                 | Parent-configurable | GHL email; future WhatsApp; Student in-app | Service reminder preference       | Respect channel preference, DND, invalid channel, and dedupe                                   |
+| Recording available                            | Parent-configurable | GHL email; future WhatsApp; Student in-app | Service/content preference        | Respect category/channel preference                                                            |
+| Parent newsletter                              |            Optional | GHL email                                  | Explicit newsletter permission    | Suppression checked at execution                                                               |
+| Marketing/nurture/reactivation                 |            Optional | GHL email                                  | Explicit marketing permission     | DND, unsubscribe, complaint, hard bounce, invalid address, and suppression block send          |
+| School acknowledgment                          |    Yes, one message | GHL email                                  | Requested response                | No automated school nurture                                                                    |
+| Student question/support update                |         Yes, in-app | One Time                                   | Authenticated product request     | No GHL Student contact or Student outbound email                                               |
 
 Consent and lifecycle are separate. “Active customer” does not imply marketing permission. “Marketing permitted” does not imply product access.
 
@@ -43,39 +49,76 @@ Consent and lifecycle are separate. “Active customer” does not imply marketi
 
 Until the WhatsApp provider, approved templates, consent gate, sender, webhook, registry, and production canary are all activated, optional Parent reminders use this exact matrix:
 
-| Saved preference | Optional Parent email | WhatsApp provider call | Required UI/status behavior |
-|---|---:|---:|---|
-| `email` | Yes | No | Show email as active |
-| `whatsapp` | Yes, as the temporary launch fallback | No | Persist intent and state plainly that WhatsApp is unavailable |
-| `both` | Yes | No | Persist both; state plainly that WhatsApp is unavailable |
-| `none` | No | No | Confirm that optional Parent reminders are off |
+| Saved preference |                 Optional Parent email | WhatsApp provider call | Required UI/status behavior                                   |
+| ---------------- | ------------------------------------: | ---------------------: | ------------------------------------------------------------- |
+| `email`          |                                   Yes |                     No | Show email as active                                          |
+| `whatsapp`       | Yes, as the temporary launch fallback |                     No | Persist intent and state plainly that WhatsApp is unavailable |
+| `both`           |                                   Yes |                     No | Persist both; state plainly that WhatsApp is unavailable      |
+| `none`           |                                    No |                     No | Confirm that optional Parent reminders are off                |
 
 The dormant-provider fallback never changes essential requested account/security email or essential billing/access email. It never creates a Student contact, claims a WhatsApp delivery, or delays the email branch. Activation of WhatsApp replaces this temporary matrix only after the gates in WNC-9 pass and a new approved registry digest is recorded.
 
 ## WNC-4. Canonical workflow registry
 
-| Workflow ID | Canonical name | Launch disposition |
-|---|---|---|
-| `OT-01` | Public Intake and Family Signup | Active |
-| `OT-02A` | Active Legacy Member Invitation | Active after copy/segment approval |
-| `OT-02B` | Interested Lead Nurture | Configured, paused until Admin starts |
-| `OT-03` | Checkout Started / Abandoned | Active when live billing is enabled |
-| `OT-04` | Payment Active / Access Recovery | Active when live billing is enabled |
-| `OT-05` | Payment Failed / Grace | Active when live billing is enabled |
-| `OT-06` | Subscription Canceled / Ending | Active when live billing is enabled |
-| `OT-07` | Parent Portal Invitation Companion | Active |
-| `OT-08` | Parent Portal Activated | Active |
-| `OT-09` | Parent Class Reminder and Schedule Change | Email active; WhatsApp branch dormant |
-| `OT-10` | Recording Available | Email active; WhatsApp branch dormant |
-| `OT-11` | Retired — former WhatsApp Lead Qualification | Permanently retired/reserved; must not execute |
-| `OT-12` | Adult Support Intake / Technical Escalation | Retained for adult support only |
-| `OT-13` | Refund / Chargeback Notice | Active when live billing is enabled |
-| `OT-14` | Parent Newsletter | Configured; first broad send requires approval |
-| `OT-15` | Former Member Reactivation | Configured; first broad send requires approval |
-| `OT-16` | Free-Period Conversion | Configured; activates relative to canonical expiry |
-| `OT-B01` | Website Lead-Capture Bot | Active on approved public funnel |
+| Workflow ID | Canonical name                                             | Launch disposition                                                                                                                                  |
+| ----------- | ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `OT-01`     | Family-account confirmation after a real application event | DRAFT/PROVIDER-CONFIGURATION PENDING                                                                                                                |
+| `OT-02A`    | Existing-subscriber migration                              | Immediate ongoing-email priority; retain Draft and unenrolled until its exact copy, cadence, sender, exit conditions, and seed proof are configured |
+| `OT-02B`    | Interested Lead Nurture                                    | Configured, paused until Admin starts                                                                                                               |
+| `OT-03`     | Checkout Started / Abandoned                               | Active when live billing is enabled                                                                                                                 |
+| `OT-04`     | Payment Active / Access Recovery                           | Active when live billing is enabled                                                                                                                 |
+| `OT-05`     | Payment Failed / Grace                                     | Active when live billing is enabled                                                                                                                 |
+| `OT-06`     | Subscription Canceled / Ending                             | Active when live billing is enabled                                                                                                                 |
+| `OT-07`     | Parent Portal Invitation Companion                         | Active                                                                                                                                              |
+| `OT-08`     | Parent Portal Activated                                    | Active                                                                                                                                              |
+| `OT-09`     | Parent Class Reminder and Schedule Change                  | Email active; WhatsApp branch dormant                                                                                                               |
+| `OT-10`     | Recording Available                                        | Email active; WhatsApp branch dormant                                                                                                               |
+| `OT-11`     | Retired — former WhatsApp Lead Qualification               | Permanently retired/reserved; must not execute                                                                                                      |
+| `OT-12`     | Adult Support Intake / Technical Escalation                | Retained for adult support only                                                                                                                     |
+| `OT-13`     | Refund / Chargeback Notice                                 | Active when live billing is enabled                                                                                                                 |
+| `OT-14`     | Parent Newsletter                                          | Configured; first broad send requires approval                                                                                                      |
+| `OT-15`     | Former Member Reactivation                                 | Configured; first broad send requires approval                                                                                                      |
+| `OT-16`     | Free-Period Conversion                                     | Configured; activates relative to canonical expiry                                                                                                  |
+| `OT-B01`    | Website Lead-Capture Bot                                   | Active on approved public funnel                                                                                                                    |
 
-Tisha B’Av assets are archived under an event-template namespace. They may be copied into a future event only through a new identifier, audience, approval fingerprint, and canary. They are not general One Time workflows.
+Tisha B’Av receives one direct HighLevel API event email. There is no opt-in form, “ongoing updates” request, automated drip, or `OT-02C`; do not create, repair, reuse, or maintain a Tisha follow-up workflow. Event registration does not grant general-marketing permission. A future event may use a new identifier and a newly approved audience, but it must not reactivate the 2026 workflow.
+
+### WNC-4.1 Approved Tisha B’Av one-event email (positive tone example)
+
+**Subject:** `Were you able to join the Tisha B'Av class?`
+
+```text
+Hi {{contact.first_name}},
+
+Were you able to join the Tisha B'Av class? I'd be interested to hear what you thought. Just reply to this email.
+
+We've been working behind the scenes to improve the technology and make One Time much easier to use. The new setup will include separate Parent and Student portals, live classes, recordings, and review tools.
+
+Classes begin August 16. You can pre-register now, and we'll email you as soon as your portal is ready. Access is free through September 11, and no card is required.
+
+Pre-register:
+https://join.onetimeonetime.com/signup
+
+Rabbi Eli Scheller
+One Time Mishnayos
+```
+
+This copy is exact except for provider normalization of curly apostrophes. It is one event follow-up, not consent for a general nurture program. Its direct, personal style is the positive example for WNC-2.1.
+
+### WNC-4.2 Current Family-account launch offer
+
+The preceding Tisha B’Av email is preserved historical delivered-email evidence. Do not rewrite, resend, or use it as current launch copy.
+
+Current public and program copy is:
+
+> Try One Time free through September 11. No card required.
+>
+> Create your Family account to receive immediate free access. A Family account can manage up to three separate Student accounts. Paid continuation, if wanted after the free period, requires an explicit later action; the signup form never charges automatically.
+>
+> Rabbi Eli Scheller
+> rabbielischeller@onetimeonetime.com
+
+Security, office, billing, and support messages use `info@onetimeonetime.com`. Program/teaching messages use `rabbielischeller@onetimeonetime.com`.
 
 ## WNC-5. Workflow execution contract
 
@@ -140,12 +183,12 @@ An ambiguous GHL match quarantines only the CRM/provider link. It does not roll 
 >
 > Welcome to One Time Mishnayos with Rabbi Eli Scheller.
 >
-> Your family has free access until September 13, 2026 at 7:24 p.m. Jerusalem time. There is no card required and no automatic charge.
+> Your family has free access until September 11, 2026 at 6:00 PM Asia/Jerusalem. There is no card required and no automatic charge.
 >
 > Sign in with the email and password you chose, then add up to three Student accounts. Each Student will use a separate username and password for class and recordings.
 >
-> Hatzlacha,  
-> Rabbi Eli Scheller  
+> Hatzlacha,
+> Rabbi Eli Scheller
 > One Time Mishnayos
 
 **Family account companion — accepted at or after free expiry**
@@ -177,7 +220,7 @@ An ambiguous GHL match quarantines only the CRM/provider link. It does not roll 
 >
 > No account or paid subscription has been created yet.
 >
-> One Time Mishnayos  
+> One Time Mishnayos
 > info@onetimeonetime.com
 
 ### WNC-6.2 Resend account setup
@@ -200,15 +243,17 @@ The setup URL contains an opaque single-use token, uses the app origin, has no t
 
 ### WNC-6.3 `OT-02A` Active Legacy Member Invitation
 
-Audience is the dated, explicitly approved active legacy segment. No existing password, child profile, consent, payment state, or access is inferred.
+For the current launch, Work sends one direct one-time email to the dated, explicitly approved active legacy segment. No existing password, child profile, consent, payment state, or access is inferred. The `OT-02A` workflow stays inactive; it is not activated merely to deliver this message.
 
-| Step | Timing | Subject | CTA |
-|---|---:|---|---|
-| 1 | Approval launch | `Your new One Time account is ready` | `Create my new account` |
-| 2 | 3 days later if not signed up | `A simpler way to join Rabbi Eli’s class` | `Set up One Time` |
-| 3 | 7 days later if not signed up | `Your free One Time access is waiting` | `Get free access` |
+| Step |                        Timing | Subject                                   | CTA                     |
+| ---- | ----------------------------: | ----------------------------------------- | ----------------------- |
+| 1    |               Approval launch | `Your new One Time account is ready`      | `Create my new account` |
+| 2    | 3 days later if not signed up | `A simpler way to join Rabbi Eli’s class` | `Set up One Time`       |
+| 3    | 7 days later if not signed up | `Your free One Time access is waiting`    | `Get free access`       |
 
 Exit on signup, suppression, invalid email, or explicit decline.
+
+Steps 2 and 3 above are retained as superseded historical copy, not as current-launch execution instructions.
 
 Step 1 copy:
 
@@ -218,24 +263,24 @@ Step 1 copy:
 >
 > Your old login will not move automatically. Please create a new Parent account, then add each Student with a separate username and password.
 >
-> If you sign up before September 13, 2026 at 7:24 p.m. Jerusalem time, access is free until that time. No card is required and you will not be charged automatically.
+> If you sign up before September 11, 2026 at 6:00 PM Asia/Jerusalem, access is free until that time. No card is required and you will not be charged automatically.
 >
 > **Create my new account**
 >
-> Hatzlacha,  
-> Rabbi Eli Scheller  
+> Hatzlacha,
+> Rabbi Eli Scheller
 > One Time Mishnayos
 
 ### WNC-6.4 `OT-02B` Interested Lead Nurture
 
 Audience: explicit opted-in leads only. Start requires Admin action.
 
-| Step | Timing | Subject | Main point |
-|---|---:|---|---|
-| 1 | Start | `A daily Mishnayos class Students look forward to` | Rabbi, live class, separate Student access |
-| 2 | Day 2 | `Live class, review, and recordings in one place` | Parent/Student experience |
-| 3 | Day 5 | `Ask Rabbi Eli directly from the Student portal` | Questions and connection |
-| 4 | Day 9 | `Free access through Rosh Hashanah` | Free period and no-card rule |
+| Step | Timing | Subject                                            | Main point                                 |
+| ---- | -----: | -------------------------------------------------- | ------------------------------------------ |
+| 1    |  Start | `A daily Mishnayos class Students look forward to` | Rabbi, live class, separate Student access |
+| 2    |  Day 2 | `Live class, review, and recordings in one place`  | Parent/Student experience                  |
+| 3    |  Day 5 | `Ask Rabbi Eli directly from the Student portal`   | Questions and connection                   |
+| 4    |  Day 9 | `Free access through Rosh Hashanah`                | Free period and no-card rule               |
 
 Every message has one CTA: `Start free`.
 
@@ -266,13 +311,13 @@ Subject: `Your One Time membership is active`
 
 ### WNC-6.7 `OT-05` Payment Failed / Grace
 
-| Event | Timing | Subject |
-|---|---:|---|
-| Grace starts | Immediate | `Action needed: update your One Time payment` |
-| Still unresolved | Grace day 3 | `Your One Time payment still needs attention` |
-| Final reminder | Grace day 6 | `One day remains in your One Time grace period` |
-| Grace expires | At verified expiry | `Student access is paused` |
-| Payment recovers | Immediate | `Your One Time access is restored` |
+| Event            |             Timing | Subject                                         |
+| ---------------- | -----------------: | ----------------------------------------------- |
+| Grace starts     |          Immediate | `Action needed: update your One Time payment`   |
+| Still unresolved |        Grace day 3 | `Your One Time payment still needs attention`   |
+| Final reminder   |        Grace day 6 | `One day remains in your One Time grace period` |
+| Grace expires    | At verified expiry | `Student access is paused`                      |
+| Payment recovers |          Immediate | `Your One Time access is restored`              |
 
 Each failure message links to the provider-hosted billing repair surface. It contains no card data. Parent restricted login remains available after expiry.
 
@@ -369,17 +414,17 @@ Default subject: `This week in One Time Mishnayos`
 
 Audience: former/canceled adults with current marketing permission who are not active Parents.
 
-| Step | Timing | Subject |
-|---|---:|---|
-| 1 | Approval launch | `See what is new in One Time Mishnayos` |
-| 2 | Day 4 | `A separate Student portal for live class and recordings` |
-| 3 | Day 9 | `Come back free until September 13` |
+| Step |          Timing | Subject                                                   |
+| ---- | --------------: | --------------------------------------------------------- |
+| 1    | Approval launch | `See what is new in One Time Mishnayos`                   |
+| 2    |           Day 4 | `A separate Student portal for live class and recordings` |
+| 3    |           Day 9 | `Come back free until September 11`                       |
 
 Exit on signup, suppression, active membership, school classification, or completion.
 
 ### WNC-6.17 `OT-16` Free-Period Conversion
 
-Relative to `2026-09-13T19:24:00+03:00`, or the replacement canonical configuration:
+Relative to `2026-09-11T18:00:00+03:00`, or the replacement canonical configuration:
 
 - 14 days before.
 - 7 days before.
@@ -418,12 +463,12 @@ The bot:
 
 WhatsApp is configuration-gated. These templates may exist in GHL but remain non-executable until provider, sender, templates, consent, webhook, opt-out handling, and a production canary are approved.
 
-| Template ID | Purpose | Exact short copy |
-|---|---|---|
-| `WA-OT-CLASS-30` | Class reminder | `One Time reminder: Rabbi Eli’s class begins in 30 minutes at {{1}}. Students should sign in on their own devices: {{2}}` |
-| `WA-OT-CLASS-CHANGE` | Schedule change | `One Time schedule update: {{1}}. View the current schedule here: {{2}}` |
-| `WA-OT-RECORDING` | Recording available | `A new One Time recording is ready. Students can open it from the Student Library: {{1}}` |
-| `WA-OT-PAYMENT-GRACE` | Billing service notice | `Your One Time payment needs attention. Student access remains available until {{1}}. Update billing securely: {{2}}` |
+| Template ID           | Purpose                | Exact short copy                                                                                                          |
+| --------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `WA-OT-CLASS-30`      | Class reminder         | `One Time reminder: Rabbi Eli’s class begins in 30 minutes at {{1}}. Students should sign in on their own devices: {{2}}` |
+| `WA-OT-CLASS-CHANGE`  | Schedule change        | `One Time schedule update: {{1}}. View the current schedule here: {{2}}`                                                  |
+| `WA-OT-RECORDING`     | Recording available    | `A new One Time recording is ready. Students can open it from the Student Library: {{1}}`                                 |
+| `WA-OT-PAYMENT-GRACE` | Billing service notice | `Your One Time payment needs attention. Student access remains available until {{1}}. Update billing securely: {{2}}`     |
 
 Disabled WhatsApp actions resolve as `channel_skipped_not_configured`; they do not fail, delay, or duplicate email.
 
@@ -433,16 +478,16 @@ Each in-app notification stores stable ID, recipient and scope, category, source
 
 ### WNC-8.1 Student notification catalog
 
-| Category | Title/body pattern | Action | Active lifetime |
-|---|---|---|---|
-| `class_reminder` | **Class begins in 30 minutes** / `Rabbi Eli’s class begins at {{student_local_time}}.` | **Open class** → own occurrence detail | Until occurrence close |
-| `class_changed` | **Class schedule updated** / `Your class is now {{student_local_time}}. {{admin_message}}` | **Open schedule** | Until occurrence close |
-| `class_canceled` | **Class canceled** / `The class scheduled for {{student_local_time}} was canceled. {{admin_message}}` | **Open schedule** | Until occurrence close |
-| `recording_available` | **New recording available** / `{{content_title}} is ready in your library.` | **Watch recording** | Until content is unpublished or archived |
-| `question_updated` | **Your question was updated** / `Status: {{student_safe_status}}.` | **Open question** | Until 90 days after terminal resolution |
-| `support_updated` | **Support request updated** / `Your request has a new status or reply.` | **Open support request** | Until 90 days after terminal resolution |
-| `badge_awarded` | **You earned {{badge_name}}** / `Open Progress to see what you achieved.` | **View progress** | 30 days |
-| `announcement` | `{{approved_title}}` / `{{approved_short_body}}` | Optional approved internal route | Configured expiry, never more than 90 days |
+| Category              | Title/body pattern                                                                                    | Action                                 | Active lifetime                            |
+| --------------------- | ----------------------------------------------------------------------------------------------------- | -------------------------------------- | ------------------------------------------ |
+| `class_reminder`      | **Class begins in 30 minutes** / `Rabbi Eli’s class begins at {{student_local_time}}.`                | **Open class** → own occurrence detail | Until occurrence close                     |
+| `class_changed`       | **Class schedule updated** / `Your class is now {{student_local_time}}. {{admin_message}}`            | **Open schedule**                      | Until occurrence close                     |
+| `class_canceled`      | **Class canceled** / `The class scheduled for {{student_local_time}} was canceled. {{admin_message}}` | **Open schedule**                      | Until occurrence close                     |
+| `recording_available` | **New recording available** / `{{content_title}} is ready in your library.`                           | **Watch recording**                    | Until content is unpublished or archived   |
+| `question_updated`    | **Your question was updated** / `Status: {{student_safe_status}}.`                                    | **Open question**                      | Until 90 days after terminal resolution    |
+| `support_updated`     | **Support request updated** / `Your request has a new status or reply.`                               | **Open support request**               | Until 90 days after terminal resolution    |
+| `badge_awarded`       | **You earned {{badge_name}}** / `Open Progress to see what you achieved.`                             | **View progress**                      | 30 days                                    |
+| `announcement`        | `{{approved_title}}` / `{{approved_short_body}}`                                                      | Optional approved internal route       | Configured expiry, never more than 90 days |
 
 `student_safe_status` uses only the canonical Student-visible lifecycle label. Private answer text never appears in a notification body or lock-screen-like browser surface.
 

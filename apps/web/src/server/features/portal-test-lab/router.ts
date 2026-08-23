@@ -869,7 +869,9 @@ async function seedPortalLabAccess(input: { pool: DbPool; config: AppConfig }) {
       household_key: W12_PORTAL_TEST_LAB.householdKey,
       idempotency_key: 'w12-portal-test-lab-free-pilot-v1',
       effective_at: '2026-07-15T12:00:00.000Z',
-      expires_at: '2026-08-17T12:00:00.000Z',
+      // Keep the isolated fixture valid across the current W12 acceptance window.
+      // The production access policy limits free-pilot grants to 366 days.
+      expires_at: '2027-07-16T12:00:00.000Z',
       opaque_source_reference: 'w12_portal_test_lab_free_pilot',
       policy_version: 'w12-current-access-v1',
     },

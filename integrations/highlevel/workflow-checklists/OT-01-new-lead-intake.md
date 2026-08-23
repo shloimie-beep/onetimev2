@@ -1,4 +1,4 @@
-# OT-01 New Lead Intake UI Checklist
+# OT-01 Family Account Confirmation UI Checklist
 
 Folder: 00 - Intake & Data
 Exact trigger: successful durable Family-account creation committed with immediate free access

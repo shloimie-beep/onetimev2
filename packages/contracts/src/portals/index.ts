@@ -1,8 +1,11 @@
+import { STUDENT_PIN_PATTERN } from '../identity/auth/index.ts';
+
 import { z } from 'zod';
 
 export * from './parent-household/index.ts';
 import { gamificationSummarySchema } from '../gamification/index.ts';
 import { contentFactoryPortalProjectionSchema } from '../content/content-factory.ts';
+import { protectedVimeoPortalProjectionSchema } from '../content/existing-vimeo-adoption.ts';
 import { sameOriginPathSchema } from '../content/pipeline.ts';
 
 export const portalActorRoleSchema = z.enum([
@@ -141,12 +144,7 @@ export const studentUsernameSchema = z
   .regex(/^[A-Za-z0-9][A-Za-z0-9._-]*[A-Za-z0-9]$/);
 export type StudentUsername = z.infer<typeof studentUsernameSchema>;
 
-export const studentPasswordSchema = z
-  .string()
-  .min(10)
-  .max(128)
-  .regex(/[A-Za-z]/)
-  .regex(/[0-9]/);
+export const studentPasswordSchema = z.string().regex(STUDENT_PIN_PATTERN);
 export type StudentPassword = z.infer<typeof studentPasswordSchema>;
 
 export const studentAccessStateSchema = z.object({
@@ -255,6 +253,7 @@ export const libraryItemSchema = z.object({
   open_action: protectedActionDescriptorSchema.nullable(),
   lesson: lessonPublicationSummarySchema.nullable().optional(),
   content_factory: contentFactoryPortalProjectionSchema.optional(),
+  protected_vimeo: protectedVimeoPortalProjectionSchema.optional(),
   featured: z.boolean().optional(),
   published_at: z.string().nullable().optional(),
 });
@@ -531,3 +530,7 @@ export function hasPortalCapability(
 export function normalizeStudentUsername(value: string) {
   return value.trim().toLowerCase();
 }
+
+export * from './parent-summary/index.ts';
+export * from './parent-welcome/index.ts';
+export * from './parent-learning/index.ts';

@@ -333,7 +333,7 @@ An adult who wants Student learning access uses a separate Student seat and sepa
 4. Each household has a separate household-keyed GHL opportunity/account record; household service preference, lifecycle, plan, billing, and access fields do not overwrite another household owned by the same adult.
 5. Adult consent, unsubscribe, complaint, and suppression are contact-scoped and override every household send; reminder/service preference is household-scoped and can further suppress only that household.
 6. An ambiguous GHL link enters `identity_review` without rolling back the submitted local email/password login, household, pre-expiry free product access, or Resend security delivery. Fresh public Family signup sets its password directly and requires no setup email. Until Admin resolution, all GHL create/update/workflow and GHL-hosted billing effects are blocked.
-7. Service email and optional marketing/newsletter consent are separate.
+7. Service/account/class messages remain separate from marketing withdrawal. The single Family-signup agreement records adult marketing/newsletter email consent as opted in, while unsubscribe, DND, complaint, bounce, and suppression precedence remain enforceable.
 8. WhatsApp remains non-executing until provider, templates, sender, consent, webhook, STOP/DND, and canary are approved.
 9. Disabled WhatsApp steps may store adult preference intent but send nothing and do not delay email.
 10. A School inquiry receives one acknowledgment and no automated nurture.
@@ -628,7 +628,7 @@ Telegram and GHL are not used to broadcast sensitive incident details.
 Release requires:
 
 1. all six exact `legal/` artifacts exist, every policy digest matches `legal-policy-manifest.json`, and the manifest contains the named product-owner and qualified-legal-reviewer approval evidence required by PCR-001;
-2. required checkbox defaults and separation from optional marketing are proven;
+2. one required initially unchecked unified agreement control and its precise adult consent facts are proven; no separate marketing checkbox exists;
 3. `service_account`, `recording_participation`, and optional `member_recognition` persist as separate exact-Student records with relationship-authorized actor, linked adult/Student, policy/copy version, exact choices, timestamp, and withdrawal evidence; dependent Student sessions cannot manage consent, while a verified `self` adult Student can manage their own eligible recording/recognition scopes; `playback_authorization` is proven derived rather than stored as consent;
 4. missing/withdrawn `service_account` blocks Student activation/session use, missing/withdrawn `recording_participation` blocks live-class launch only, and missing/withdrawn `member_recognition` swaps identifying attribution for the stable class alias without changing rank or learning facts;
 5. a real consented Student joins the embedded class through a one-use 60-second launch grant, and no unconsented Student can do so;

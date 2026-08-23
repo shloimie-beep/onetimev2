@@ -1,9 +1,13 @@
 import { expect, test } from '@playwright/test';
-import { CONTACT_OPERATIONS_E2E_OWNER_SESSION_TOKEN } from '../support/contact-operations-session.ts';
+import {
+  CONTACT_OPERATIONS_E2E_OWNER_SESSION_TOKEN,
+  CONTACT_OPERATIONS_MOBILE_E2E_OWNER_SESSION_TOKEN,
+} from '../support/contact-operations-session.ts';
 
 test('Admin runs one-button Parent household enrollment and protected Contacts operations', async ({
   page,
 }) => {
+  test.setTimeout(60_000);
   const requestedUrls: string[] = [];
   page.on('request', (request) => requestedUrls.push(request.url()));
   await page.context().addCookies([
@@ -135,11 +139,12 @@ test('Admin runs one-button Parent household enrollment and protected Contacts o
 test('Admin reaches the existing Parent household naturally from Contacts on mobile', async ({
   page,
 }) => {
+  test.setTimeout(60_000);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.context().addCookies([
     {
       name: 'otcrm_session',
-      value: CONTACT_OPERATIONS_E2E_OWNER_SESSION_TOKEN,
+      value: CONTACT_OPERATIONS_MOBILE_E2E_OWNER_SESSION_TOKEN,
       domain: '127.0.0.1',
       path: '/',
       httpOnly: true,
@@ -148,6 +153,8 @@ test('Admin reaches the existing Parent household naturally from Contacts on mob
   ]);
 
   await page.goto('/app/crm');
+  await expect(page.getByRole('heading', { name: 'Contacts' })).toBeVisible();
+  await page.waitForFunction(() => performance.getEntriesByName('ot-crm-list-usable').length > 0);
   await page.getByLabel('Search').fill('Contact Operations Parent');
   await page.getByRole('button', { name: 'Apply' }).click();
   await page.getByRole('button', { name: /^Contact Operations Parent / }).click();

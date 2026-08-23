@@ -7,6 +7,7 @@ import type {
 } from '../../../../../../../packages/contracts/src/admin/operations/index.ts';
 import {
   AdminGlobalSearch,
+  AdminPrivateAuthorizationError,
   buildAdminSearchRequest,
   clearAdminPrivateSearchState,
   postPrivateAdminNavigationResolution,
@@ -94,6 +95,39 @@ describe('P11 private Admin global search', () => {
       credentials: 'same-origin',
     });
     expect(String(init?.body)).toContain('private student name');
+  });
+
+  it('surfaces stale authorization distinctly and advertises governed search actions', async () => {
+    const unauthorized = vi
+      .fn<typeof fetch>()
+      .mockResolvedValue(new Response(null, { status: 401 }));
+    await expect(
+      postPrivateAdminSearch(unauthorized, buildAdminSearchRequest('private record')),
+    ).rejects.toBeInstanceOf(AdminPrivateAuthorizationError);
+    await expect(
+      postPrivateAdminNavigationResolution(unauthorized, {
+        kind: 'student',
+        targetId: 'student-one',
+        selectedCredentialVersion: 7,
+      }),
+    ).rejects.toBeInstanceOf(AdminPrivateAuthorizationError);
+
+    const html = renderToStaticMarkup(
+      <AdminGlobalSearch
+        initialPage={retained(page)}
+        recentQueries={retained(['Student One'])}
+        authorization={{ state: 'admin', credentialVersion: 7 }}
+        onSearch={() => Promise.resolve(page)}
+        onResolveOpen={() =>
+          Promise.resolve({ state: 'open', href: '/app/students/student-one', cache: 'no-store' })
+        }
+        onClearRecentQueries={() => undefined}
+        onNavigate={() => undefined}
+      />,
+    );
+    expect(html).toContain('data-action-id="admin.search.query.form"');
+    expect(html).toContain('data-action-id="admin.search.result.open.button"');
+    expect(html).toContain('data-action-id="admin.search.recent.clear.button"');
   });
 
   it('resolves selected targets through a fresh private no-store POST and invalidates stale state', async () => {

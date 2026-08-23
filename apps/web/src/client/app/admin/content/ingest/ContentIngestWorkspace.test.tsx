@@ -5,7 +5,11 @@ import {
   CONTENT_INGEST_PART_BYTES,
   type UploadSessionRecord,
 } from '../../../../../../../../packages/contracts/src/content/ingest/index.ts';
-import { ContentIngestWorkspace, uploadFileInBoundedParts } from './ContentIngestWorkspace.tsx';
+import {
+  allowsOccurrenceMatching,
+  ContentIngestWorkspace,
+  uploadFileInBoundedParts,
+} from './ContentIngestWorkspace.tsx';
 
 const session: UploadSessionRecord = {
   accountKey: 'account-1',
@@ -42,7 +46,13 @@ describe('P19 Admin recording intake workspace', () => {
           throw new Error('not called during render');
         }}
         uploadPart={async () => undefined}
-        confirmUpload={async () => undefined}
+        confirmUpload={async () => {
+          throw new Error('not called during render');
+        }}
+        listOccurrences={async () => []}
+        matchSource={async () => {
+          throw new Error('not called during render');
+        }}
       />,
     );
     expect(html).toContain('Recording intake');
@@ -74,5 +84,10 @@ describe('P19 Admin recording intake workspace', () => {
     expect(maxActive).toBe(4);
     expect(progress).toHaveLength(5);
     expect(progress.at(-1)).toBe(5);
+  });
+
+  it('keeps an existing reviewed recording out of the historical class-date matcher', () => {
+    expect(allowsOccurrenceMatching('existing_reviewed_recording')).toBe(false);
+    expect(allowsOccurrenceMatching('obs')).toBe(true);
   });
 });

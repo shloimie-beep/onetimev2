@@ -104,7 +104,10 @@ describe('P18 embedded-classroom composition', () => {
     const bootstrap = await fetch(`${baseUrl}${EMBEDDED_CLASSROOM_MOUNT_PATH}/bootstrap`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ exchange_secret: 'x'.repeat(48) }),
+      body: JSON.stringify({
+        exchange_secret: 'x'.repeat(48),
+        occurrence_id: 'occurrence-canonical',
+      }),
     });
     expect(bootstrap.status).toBe(200);
     expect(repository.insertLaunchGrant).toHaveBeenCalledOnce();
@@ -274,7 +277,7 @@ function sdkBootstrap() {
     customer_key: 'zoom_ck_1234567890abcdef12345678',
     participant_display_name: 'Student One',
     recording_capture_active: true,
-    leave_path: '/app/classroom' as const,
+    leave_path: '/app/student' as const,
     issued_at: NOW.toISOString(),
     expires_at: '2026-07-28T17:00:45.000Z',
     role: 0 as const,

@@ -67,7 +67,7 @@ test('OT83R parent portal enforces the learner cap across add, archive, and rest
   await page.getByRole('button', { name: 'Setup' }).click();
   dialog = page.getByRole('dialog', { name: 'Setup student access' });
   await dialog.getByLabel('Student username').fill(`beta.student.${Date.now()}`);
-  await dialog.getByLabel('Student password').fill('BetaStudent123');
+  await dialog.getByLabel('Six-digit Student PIN').fill('654321');
   await dialog.getByRole('button', { name: 'Setup' }).click();
   await expect(page.getByText('Status: Active')).toBeVisible();
   await expect(page.getByText('Credentials: Parent managed')).toBeVisible();
@@ -95,7 +95,7 @@ test('OT83R parent portal enforces the learner cap across add, archive, and rest
     '/forgot-password',
   );
 
-  await page.getByRole('link', { name: 'Classes & materials' }).click();
+  await page.getByLabel('Primary navigation').getByRole('link', { name: 'Learning' }).click();
   const materialsWorkspace = page.getByRole('region', { name: 'Classes & materials' });
   await expect(materialsWorkspace.getByText('E2E Recording')).toBeVisible();
   const contentResponse = page.waitForResponse(
@@ -130,7 +130,14 @@ test('OT83R student portal routes content open, questions, session expiry, sibli
   await expect(
     studentPage.locator('#app-main').getByRole('heading', { name: 'Student Portal' }),
   ).toBeVisible();
-  await studentPage.getByRole('link', { name: 'Library' }).click();
+  await studentPage
+    .getByLabel('Primary navigation')
+    .getByRole('link', { name: 'Learning' })
+    .click();
+  await studentPage
+    .getByLabel('Learning navigation')
+    .getByRole('link', { name: 'Library' })
+    .click();
   const libraryWorkspace = studentPage.getByRole('region', { name: 'Library' });
   await expect(libraryWorkspace.getByText('E2E Recording')).toBeVisible();
   await expect(studentPage.getByText(/Sibling Private Recording/i)).toHaveCount(0);

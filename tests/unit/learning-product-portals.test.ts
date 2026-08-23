@@ -52,7 +52,7 @@ describe('Window B learning product portals', () => {
       {
         idempotency_key: 'student-credential-setup',
         username: 'Chaim_7',
-        password: 'Torah12345',
+        password: '000123',
       },
     );
 
@@ -60,7 +60,7 @@ describe('Window B learning product portals', () => {
     expect(setup.username_display).toBe('chaim_7');
     expect(setup.credential_status).toBe('parent_managed');
     expect(setup.student_user_ref).toMatch(/^student_user_/);
-    expect(JSON.stringify(setup)).not.toContain('Torah12345');
+    expect(JSON.stringify(setup)).not.toContain('000123');
 
     const stored = await pool.query(
       `SELECT normalized_username, password_hash_ref, password_version
@@ -75,7 +75,7 @@ describe('Window B learning product portals', () => {
       password_version: 1,
     });
     expect(String(stored.rows[0]?.password_hash_ref)).toMatch(/^scrypt:v1:/);
-    expect(String(stored.rows[0]?.password_hash_ref)).not.toContain('Torah12345');
+    expect(String(stored.rows[0]?.password_hash_ref)).not.toContain('000123');
 
     const reset = await service.studentAccessOperation(
       parentActor(),
@@ -133,7 +133,7 @@ describe('Window B learning product portals', () => {
       service.studentAccessOperation(parentActor(), householdKey, learner.learner_key, 'setup', {
         idempotency_key: 'student-reserved-setup',
         username: 'Admin',
-        password: 'Torah12345',
+        password: '000123',
       }),
     ).rejects.toMatchObject({ code: 'USERNAME_UNAVAILABLE' });
   });
@@ -331,11 +331,11 @@ async function seedHousehold() {
   await pool.query(
     `INSERT INTO onetime.adult_household_contact_links
      (link_key, account_key, product_key, contact_key, household_key,
-      highlevel_location_id, sync_state)
+      guardian_user_ref, highlevel_location_id, sync_state)
      VALUES
-     ('adult_link_learning_product',$1,$2,'contact_learning_parent',$3,
+     ('adult_link_learning_product',$1,$2,'contact_learning_parent',$3,$4,
       'location_learning_product','sync_pending')`,
-    [accountKey, productKey, householdKey],
+    [accountKey, productKey, householdKey, parentUserKey],
   );
 }
 

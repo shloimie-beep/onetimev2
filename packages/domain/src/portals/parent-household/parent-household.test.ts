@@ -73,18 +73,18 @@ describe('P12 Parent household aggregate', () => {
       display_name: 'Shlomo',
       username: 'shlomo.student',
       relationship: 'dependent',
-      new_password: 'a-secure-password',
-      password_confirmation: 'a-secure-password',
+      new_password: '123456',
+      password_confirmation: '123456',
     });
     expect(created.result.snapshot.active_student_count).toBe(3);
     expect(created.result.canonical_enrollment).toBe('enroll');
     expect(created.result.credential_handoff).toMatchObject({
       username: 'shlomo.student',
-      new_password: 'a-secure-password',
+      new_password: '123456',
       display_once: true,
       emailed: false,
     });
-    expect(JSON.stringify(created.next)).not.toContain('a-secure-password');
+    expect(JSON.stringify(created.next)).not.toContain('123456');
     expect(() =>
       createParentStudent({
         principal,
@@ -94,10 +94,84 @@ describe('P12 Parent household aggregate', () => {
         actual_name: 'Fourth Student',
         username: 'student.4',
         relationship: 'dependent',
-        new_password: 'another-password',
-        password_confirmation: 'another-password',
+        new_password: '654321',
+        password_confirmation: '654321',
       }),
     ).toThrowError(/all 3 active Student seats/);
+  });
+
+  it('keeps a legacy self Student outside the three child seats and rejects creating another self', () => {
+    const legacySelf = {
+      student_id: 'student-self-legacy',
+      household_id: 'household-1',
+      actual_name: 'Parent Learner',
+      display_name: null,
+      username: 'parent.learner',
+      relationship: 'self' as const,
+      state: 'active' as const,
+      credential_version: 2,
+      version: 3,
+    };
+    const withLegacySelf = {
+      ...household(2),
+      students: [...household(2).students, legacySelf],
+    };
+
+    expect(buildParentHouseholdSnapshot({ principal, household: withLegacySelf })).toMatchObject({
+      active_student_count: 2,
+      available_student_seats: 1,
+    });
+
+    const thirdChild = createParentStudent({
+      principal,
+      household: withLegacySelf,
+      expected_revision: 7,
+      student_id: 'student-3',
+      actual_name: 'Third Child',
+      username: 'student.3',
+      relationship: 'dependent',
+      new_password: '123456',
+      password_confirmation: '123456',
+    });
+    expect(thirdChild.result.snapshot).toMatchObject({
+      active_student_count: 3,
+      available_student_seats: 0,
+    });
+    expect(thirdChild.next.students).toHaveLength(4);
+
+    const archivedSelf = archiveParentStudent({
+      principal,
+      household: thirdChild.next,
+      expected_revision: 8,
+      student_id: legacySelf.student_id,
+    });
+    const restoredSelf = restoreParentStudent({
+      principal,
+      household: archivedSelf.next,
+      expected_revision: 9,
+      student_id: legacySelf.student_id,
+    });
+    expect(restoredSelf.result.snapshot).toMatchObject({
+      active_student_count: 3,
+      available_student_seats: 0,
+    });
+    expect(restoredSelf.next.students.filter((student) => student.state === 'active')).toHaveLength(
+      4,
+    );
+
+    expect(() =>
+      createParentStudent({
+        principal,
+        household: household(3),
+        expected_revision: 7,
+        student_id: 'student-self',
+        actual_name: 'Parent Learner',
+        username: 'parent.learner',
+        relationship: 'self',
+        new_password: '123456',
+        password_confirmation: '123456',
+      }),
+    ).toThrowError(/dependent/i);
   });
 
   it('hard-caps an inflated repository allowance at three active Student seats', () => {
@@ -116,8 +190,8 @@ describe('P12 Parent household aggregate', () => {
         actual_name: 'Fourth Student',
         username: 'student.4',
         relationship: 'dependent',
-        new_password: 'another-password',
-        password_confirmation: 'another-password',
+        new_password: '654321',
+        password_confirmation: '654321',
       }),
     ).toThrowError(/all 3 active Student seats/);
   });
@@ -141,9 +215,9 @@ describe('P12 Parent household aggregate', () => {
         student_id: 'student-1',
         actual_name: 'Student',
         username: 'student.new',
-        relationship: 'self',
-        new_password: 'secure-password',
-        password_confirmation: 'secure-password',
+        relationship: 'dependent',
+        new_password: '123456',
+        password_confirmation: '123456',
       }),
     ).toThrowError(/inactive/);
   });
@@ -230,12 +304,12 @@ describe('P12 Parent household aggregate', () => {
       household: household(1),
       expected_revision: 7,
       student_id: 'student-1',
-      new_password: 'replacement-password',
-      password_confirmation: 'replacement-password',
+      new_password: '654321',
+      password_confirmation: '654321',
     });
     expect(reset.next.students[0]!.credential_version).toBe(3);
     expect(reset.result.revoke_student_sessions).toBe(true);
-    expect(reset.result.credential_handoff?.new_password).toBe('replacement-password');
+    expect(reset.result.credential_handoff?.new_password).toBe('654321');
     expect(reset.result.credential_handoff).not.toHaveProperty('old_password');
     expect(JSON.stringify(reset.next)).not.toMatch(/password/i);
   });

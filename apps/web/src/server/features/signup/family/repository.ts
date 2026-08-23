@@ -8,6 +8,7 @@ import type {
   FamilySignupRequestBinding,
   FamilySignupResult,
   FamilySignupScope,
+  FamilySignupUnifiedAgreement,
 } from '../../../../../../../packages/contracts/src/signup/family/index.ts';
 import type { DbPool, Queryable } from '../../../../../../../packages/db/src/index.ts';
 import type {
@@ -17,9 +18,26 @@ import type {
   FamilySignupGhlEvidence,
   FamilySignupRecoveryRecord,
 } from '../../../../../../../packages/domain/src/signup/family/index.ts';
-import type { FamilySignupRepository, FamilySignupTransaction } from './service.ts';
+import type {
+  FamilySignupRepository,
+  FamilySignupSessionEstablishment,
+  FamilySignupSessionInput,
+  FamilySignupTransaction,
+} from './service.ts';
 
 type Row = Record<string, unknown>;
+
+export interface FamilySignupCrmBinding {
+  accountKey: string;
+  productKey: string;
+}
+
+export interface TransactionBoundFamilySignupSessionEstablisher {
+  establishInTransaction(
+    db: Queryable,
+    input: FamilySignupSessionInput,
+  ): Promise<FamilySignupSessionEstablishment>;
+}
 
 export class PostgresFamilySignupRepositoryError extends Error {
   constructor(
@@ -32,13 +50,19 @@ export class PostgresFamilySignupRepositoryError extends Error {
   }
 }
 
-export function createPostgresFamilySignupRepository(pool: DbPool): FamilySignupRepository {
+export function createPostgresFamilySignupRepository(
+  pool: DbPool,
+  crmBinding: FamilySignupCrmBinding,
+  sessionEstablisher?: TransactionBoundFamilySignupSessionEstablisher,
+): FamilySignupRepository {
   return {
     async transaction<T>(run: (tx: FamilySignupTransaction) => Promise<T>): Promise<T> {
       const client = await pool.connect();
       try {
         await client.query('BEGIN');
-        const result = await run(new PostgresFamilySignupTransaction(client));
+        const result = await run(
+          new PostgresFamilySignupTransaction(client, crmBinding, sessionEstablisher),
+        );
         await client.query('COMMIT');
         return result;
       } catch (error) {
@@ -60,7 +84,20 @@ class PostgresFamilySignupTransaction implements FamilySignupTransaction {
       }
     | undefined;
 
-  constructor(private readonly db: Queryable) {}
+  constructor(
+    private readonly db: Queryable,
+    private readonly crmBinding: FamilySignupCrmBinding,
+    private readonly sessionEstablisher?: TransactionBoundFamilySignupSessionEstablisher,
+  ) {}
+
+  async establishParentSession(
+    input: FamilySignupSessionInput,
+  ): Promise<FamilySignupSessionEstablishment> {
+    if (!this.sessionEstablisher) {
+      return { established: false, safe_reason: 'integration_unavailable' };
+    }
+    return this.sessionEstablisher.establishInTransaction(this.db, input);
+  }
 
   async findRequest(input: {
     scope: FamilySignupScope;
@@ -95,7 +132,7 @@ class PostgresFamilySignupTransaction implements FamilySignupTransaction {
          JOIN onetime.family_signup_receipts AS receipt
            ON receipt.idempotency_key = request.idempotency_key
         WHERE request.idempotency_key = $1
-        FOR SHARE OF request, receipt`,
+        FOR SHARE`,
       [input.idempotency_key],
     );
     if ((request.rowCount ?? 0) === 0) return null;
@@ -319,6 +356,9 @@ class PostgresFamilySignupTransaction implements FamilySignupTransaction {
       binding.scope.verification_environment_id,
     ] as const;
     const displayName = `${input.request.first_name} ${input.request.last_name}`.trim();
+    if (this.crmBinding.productKey !== binding.scope.product) {
+      throw invariant('The Family-signup CRM product binding does not match the request scope.');
+    }
 
     await insertExactlyOne(
       this.db,
@@ -373,6 +413,50 @@ class PostgresFamilySignupTransaction implements FamilySignupTransaction {
       ],
       'Family household',
     );
+    const parentParticipantId = `parent:${projection.household_id}`;
+    await insertExactlyOne(
+      this.db,
+      `INSERT INTO onetime.parent_learning_participants
+         (participant_id, household_id, adult_id, human_account_id,
+          participant_kind, learner_ordinal, state, version, product_key,
+          runtime_tier, verification_environment_id, created_at, updated_at)
+       VALUES ($1,$2,$3,$4,'parent',1,'active',1,$5,$6,$7,$8,$8)`,
+      [
+        parentParticipantId,
+        projection.household_id,
+        projection.adult_id,
+        projection.human_account_id,
+        ...scopeValues,
+        input.committed_at,
+      ],
+      'Parent learning participant',
+    );
+    await insertExactlyOne(
+      this.db,
+      `INSERT INTO onetime.parent_learning_class_entitlements
+         (entitlement_id, participant_id, household_id, account_key,
+          product_key, runtime_tier, verification_environment_id,
+          class_series_key, entitlement_state, source, effective_at, version)
+       SELECT $1,$2,$3,series.account_key,series.product_key,$4,$5,
+              series.class_series_key,'active','public_family_signup',$6::timestamptz,1
+         FROM onetime.class_series AS series
+        WHERE series.account_key = $7
+          AND series.product_key = $8
+          AND series.is_canonical = true
+          AND series.status = 'active'
+          AND series.series_state = 'active'`,
+      [
+        `parent-entitlement:${projection.household_id}`,
+        parentParticipantId,
+        projection.household_id,
+        binding.scope.runtime_tier,
+        binding.scope.verification_environment_id,
+        input.committed_at,
+        this.crmBinding.accountKey,
+        binding.scope.product,
+      ],
+      'Parent canonical-class entitlement',
+    );
     await insertExactlyOne(
       this.db,
       `INSERT INTO onetime.v21_adult_credentials
@@ -389,6 +473,16 @@ class PostgresFamilySignupTransaction implements FamilySignupTransaction {
       ],
       'adult credential',
     );
+    await upsertFamilySignupCrmContact(this.db, {
+      accountKey: this.crmBinding.accountKey,
+      productKey: this.crmBinding.productKey,
+      contactKey: `contact_${projection.adult_id}`,
+      displayName,
+      normalizedEmail: input.request.normalized_email,
+      timezone: input.request.timezone,
+      parentNewsletterConsent: true,
+      committedAt: input.committed_at,
+    });
 
     await insertCanonicalTransition(this.db, {
       transitionKey: `${binding.idempotency_key}:human-account-active`,
@@ -458,7 +552,15 @@ class PostgresFamilySignupTransaction implements FamilySignupTransaction {
       'Family-signup access projection',
     );
 
+    const unifiedAgreement = input.outbox_intents[0]?.unified_agreement;
+    if (!unifiedAgreement) {
+      throw invariant('Family-signup unified agreement is missing from the approved outbox.');
+    }
     const consentChoices = [
+      ['terms', unifiedAgreement.terms_accepted],
+      ['privacy', unifiedAgreement.privacy_accepted],
+      ['student_data_child_safety', unifiedAgreement.student_data_child_safety_accepted],
+      ['cancellation_refund', unifiedAgreement.cancellation_refund_accepted],
       ['general_marketing', input.request.general_marketing_consent],
       ['parent_newsletter', input.request.parent_newsletter_consent],
     ] as const;
@@ -468,8 +570,8 @@ class PostgresFamilySignupTransaction implements FamilySignupTransaction {
         `INSERT INTO onetime.family_signup_consents
            (idempotency_key, product, runtime_tier, verification_environment_id,
             operation, canonical_request_digest, adult_id, consent_scope,
-            choice, recorded_at)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
+            choice, policy_version, recorded_at)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
         [
           binding.idempotency_key,
           ...scopeValues,
@@ -478,7 +580,8 @@ class PostgresFamilySignupTransaction implements FamilySignupTransaction {
           projection.adult_id,
           consentScope,
           choice,
-          input.committed_at,
+          unifiedAgreement.policy_version,
+          unifiedAgreement.captured_at,
         ],
         `${consentScope} consent`,
       );
@@ -570,6 +673,72 @@ class PostgresFamilySignupTransaction implements FamilySignupTransaction {
   }
 }
 
+async function upsertFamilySignupCrmContact(
+  db: Queryable,
+  input: {
+    accountKey: string;
+    productKey: string;
+    contactKey: string;
+    displayName: string;
+    normalizedEmail: string;
+    timezone: string;
+    parentNewsletterConsent: boolean;
+    committedAt: string;
+  },
+): Promise<void> {
+  const result = await db.query(
+    `INSERT INTO onetime.contacts
+       (contact_key, public_contact_id, account_key, product_key, display_name,
+        family_school_classification, family_or_school, location_text, timezone,
+        email_normalized, phone_normalized, reminder_preference,
+        consent_policy_version, consent_recorded_at, suppression_state, source,
+        lead_status, last_activity_at, created_at, updated_at)
+     VALUES ($1, gen_random_uuid()::text, $2, $3, $4,
+             'family', $4, 'Not provided', $5,
+             $6, NULL, $7, $8, $9,
+             'active', 'one_time_family_signup', 'new', $10, $10, $10)
+     ON CONFLICT (account_key, product_key, email_normalized)
+     DO UPDATE SET
+       display_name = EXCLUDED.display_name,
+       family_school_classification = 'family',
+       family_or_school = EXCLUDED.family_or_school,
+       timezone = EXCLUDED.timezone,
+       reminder_preference = CASE
+         WHEN onetime.contacts.consent_recorded_at IS NULL
+           THEN EXCLUDED.reminder_preference
+         ELSE onetime.contacts.reminder_preference
+       END,
+       consent_policy_version = COALESCE(
+         onetime.contacts.consent_policy_version,
+         EXCLUDED.consent_policy_version
+       ),
+       consent_recorded_at = COALESCE(
+         onetime.contacts.consent_recorded_at,
+         EXCLUDED.consent_recorded_at
+       ),
+       last_activity_at = EXCLUDED.last_activity_at,
+       updated_at = EXCLUDED.updated_at,
+       version = onetime.contacts.version + 1,
+       identity_version = onetime.contacts.identity_version + 1
+     RETURNING contact_key`,
+    [
+      input.contactKey,
+      input.accountKey,
+      input.productKey,
+      input.displayName,
+      input.timezone,
+      input.normalizedEmail,
+      input.parentNewsletterConsent ? 'email' : 'none',
+      input.parentNewsletterConsent ? 'one_time_family_signup_unified_v1' : null,
+      input.parentNewsletterConsent ? input.committedAt : null,
+      input.committedAt,
+    ],
+  );
+  if (result.rowCount !== 1) {
+    throw invariant('Family signup did not resolve exactly one CRM adult contact.');
+  }
+}
+
 const LOWER_SHA256 = /^[a-f0-9]{64}$/u;
 const SAFE_OPAQUE = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/u;
 const ADULT_PASSWORD_HASH =
@@ -615,6 +784,7 @@ function assertCommitInput(input: {
     throw invariant('The Family-signup commit is not the exact domain-approved plan.');
   }
   const intent = input.outbox_intents[0];
+  const unifiedAgreement = intent?.unified_agreement;
   if (
     !intent ||
     !sameBinding(intent.request_binding, binding) ||
@@ -622,6 +792,16 @@ function assertCommitInput(input: {
     intent.household_id !== projection.household_id ||
     intent.adult_consent_choices.general_marketing !== input.request.general_marketing_consent ||
     intent.adult_consent_choices.parent_newsletter !== input.request.parent_newsletter_consent ||
+    !unifiedAgreement ||
+    unifiedAgreement.policy_version !== 'one_time_family_signup_unified_v1' ||
+    !Number.isFinite(Date.parse(unifiedAgreement.captured_at)) ||
+    unifiedAgreement.terms_accepted !== true ||
+    unifiedAgreement.privacy_accepted !== true ||
+    unifiedAgreement.student_data_child_safety_accepted !== true ||
+    unifiedAgreement.cancellation_refund_accepted !== true ||
+    unifiedAgreement.email_marketing_consent !== 'opted_in' ||
+    unifiedAgreement.newsletter_consent !== 'opted_in' ||
+    unifiedAgreement.sms_call_whatsapp_consent !== false ||
     !LOWER_SHA256.test(intent.normalized_email_hash) ||
     intent.preserve_adult_suppression !== true ||
     intent.local_commit_required !== true ||
@@ -690,6 +870,23 @@ function validGhlHandoff(
   }
   const subjectKeys = isRecord(handoff?.subject) ? Object.keys(handoff.subject).sort() : [];
   const household = handoff?.household;
+  const unifiedAgreement = intent.unified_agreement;
+  const adultSignupEvent = handoff.adult_signup_event;
+  const validAdultSignupEvent =
+    unifiedAgreement === undefined
+      ? adultSignupEvent === undefined
+      : isRecord(adultSignupEvent) &&
+        adultSignupEvent.household_reconciliation_key === intent.household_id &&
+        adultSignupEvent.audience_type === 'adult' &&
+        adultSignupEvent.email_consent === 'opted_in' &&
+        adultSignupEvent.policy_version === 'one_time_family_signup_unified_v1' &&
+        Number.isFinite(Date.parse(adultSignupEvent.captured_at)) &&
+        adultSignupEvent.lifecycle_stage === 'Active Member' &&
+        JSON.stringify(adultSignupEvent.tags) ===
+          JSON.stringify(['ot | lead', 'ot | email opt-in']) &&
+        adultSignupEvent.ot01_authority === 'direct_enrollment_after_local_commit' &&
+        adultSignupEvent.student_contacts === 0 &&
+        adultSignupEvent.password_or_security_data === false;
   return (
     handoff?.contract_version === '1.0.0' &&
     handoff.target === 'p27_ghl_identity_sync' &&
@@ -712,6 +909,7 @@ function validGhlHandoff(
     household.service_reminders_enabled === false &&
     household.source_evidence_digest === intent.request_binding.canonical_request_digest &&
     LOWER_SHA256.test(household.policy_consent_evidence_digest) &&
+    validAdultSignupEvent &&
     typeof handoff.provider_readback_required === 'boolean' &&
     handoff.provider_effect_authorized === false &&
     handoff.message_delivery_authorized === false &&
@@ -1033,6 +1231,22 @@ function storedOutboxIntent(
   }
   const durable = storedJsonObject(row.intent_json, 'intent_json');
   const handoff = durable.ghl_handoff as FamilySignupGhlHandoff;
+  const unifiedAgreement = durable.unified_agreement as FamilySignupUnifiedAgreement | undefined;
+  if (
+    unifiedAgreement !== undefined &&
+    (!isRecord(unifiedAgreement) ||
+      unifiedAgreement.policy_version !== 'one_time_family_signup_unified_v1' ||
+      !Number.isFinite(Date.parse(unifiedAgreement.captured_at)) ||
+      unifiedAgreement.terms_accepted !== true ||
+      unifiedAgreement.privacy_accepted !== true ||
+      unifiedAgreement.student_data_child_safety_accepted !== true ||
+      unifiedAgreement.cancellation_refund_accepted !== true ||
+      unifiedAgreement.email_marketing_consent !== 'opted_in' ||
+      unifiedAgreement.newsletter_consent !== 'opted_in' ||
+      unifiedAgreement.sms_call_whatsapp_consent !== false)
+  ) {
+    throw invariant('The persisted Family-signup unified agreement is malformed.');
+  }
   const intent: FamilySignupOutboxIntent = {
     intent_id: requiredText(row.intent_id, 'intent_id'),
     kind: 'ghl_adult_and_household_sync',
@@ -1044,6 +1258,7 @@ function storedOutboxIntent(
       general_marketing: row.general_marketing_consent,
       parent_newsletter: row.parent_newsletter_consent,
     },
+    ...(unifiedAgreement === undefined ? {} : { unified_agreement: unifiedAgreement }),
     dispatch_state: row.dispatch_state as 'ready' | 'identity_review',
     preserve_adult_suppression: true,
     local_commit_required: true,

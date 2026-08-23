@@ -2,11 +2,13 @@ import { describe, expect, it } from 'vitest';
 import {
   CONTENT_INGEST_MAX_BYTES,
   CONTENT_INGEST_PART_BYTES,
+  CONTENT_INGEST_SOURCE_POLICY,
   type ContentIngestAdminActor,
   type ContentSourceRecord,
   type DriveFileObservation,
   type ManagedObjectReadback,
   type RecoveryJournalReceipt,
+  type ExistingReviewedRecordingIntent,
   type UploadPartRecord,
 } from '../../../../contracts/src/content/ingest/index.ts';
 import type { ClassOccurrenceRecord } from '../../../../contracts/src/classes/core/index.ts';
@@ -36,7 +38,10 @@ const actor: ContentIngestAdminActor = {
 };
 const sha = (digit: string) => digit.repeat(64);
 
-function begin(byteCount = CONTENT_INGEST_PART_BYTES + 17) {
+function begin(
+  byteCount = CONTENT_INGEST_PART_BYTES + 17,
+  existingRecordingIntent?: ExistingReviewedRecordingIntent,
+) {
   return beginDirectUpload({
     actor,
     runtimeTier: 'isolated_staging',
@@ -44,6 +49,7 @@ function begin(byteCount = CONTENT_INGEST_PART_BYTES + 17) {
     displayFilename: '2026-07-28_1900_occurrence-1_Class.mp4',
     mimeType: 'video/mp4',
     declaredByteCount: byteCount,
+    ...(existingRecordingIntent ? { existingRecordingIntent } : {}),
     idempotencyKey: 'upload-1',
     requestHash: sha('a'),
     occurredAt: now,
@@ -89,8 +95,11 @@ function readback(
     objectKeyDigest: sha('e'),
     objectVersionId: 'version-1',
     byteCount: session.declaredByteCount,
+    durabilityEvidenceVersion: 'OT-MANAGED-ORIGINAL-1',
+    checksumAlgorithm: 'sha256',
     sha256: fullSha256,
     kmsKeyVersionRef: 'kms-version-1',
+    storageClass: 'STANDARD',
     blockPublicAccess: true,
     bucketOwnerEnforced: true,
   };
@@ -99,17 +108,23 @@ function readback(
     uploadSessionId: session.id,
     runtimeTier: session.runtimeTier,
     verificationEnvironmentId: session.verificationEnvironmentId,
+    durabilityEvidenceVersion: 'OT-MANAGED-ORIGINAL-1',
+    bucketRef: managed.bucketRef,
+    objectKeyDigest: managed.objectKeyDigest,
     objectVersionId: managed.objectVersionId,
     byteCount: managed.byteCount,
+    checksumAlgorithm: 'sha256',
     sha256: managed.sha256,
+    kmsKeyVersionRef: managed.kmsKeyVersionRef,
+    storageClass: 'STANDARD',
     writtenAt: now,
     readBackAt: '2026-07-28T22:00:01.000Z',
   };
   return { managed, journal };
 }
 
-function source(): ContentSourceRecord {
-  const started = begin();
+function source(existingRecordingIntent?: ExistingReviewedRecordingIntent): ContentSourceRecord {
+  const started = begin(CONTENT_INGEST_PART_BYTES + 17, existingRecordingIntent);
   const session = started.session!;
   const { managed, journal } = readback(session);
   return confirmDirectUpload(
@@ -131,6 +146,14 @@ function source(): ContentSourceRecord {
 }
 
 describe('P19 direct upload contract', () => {
+  it('keeps direct app upload primary while Drive remains optional and nonblocking', () => {
+    expect(CONTENT_INGEST_SOURCE_POLICY).toEqual({
+      primary: 'app_upload',
+      optional: ['drive'],
+      optionalSourceFailureBlocksPrimary: false,
+    });
+  });
+
   it('OTV2-CONTENT-190 accepts supported originals through 5 GiB and rejects unsafe metadata', () => {
     expect(
       validateRecordingMetadata({
@@ -244,6 +267,12 @@ describe('P19 direct upload contract', () => {
         journalReceipt: { ...journal, sha256: sha('0') },
       }),
     ).toThrowError(/do not agree/);
+    expect(() =>
+      confirmDirectUpload({ ...session, state: 'uploading', version: 3 }, records, {
+        ...command,
+        journalReceipt: { ...journal, storageClass: 'GLACIER' },
+      }),
+    ).toThrowError(/do not agree/);
     const confirmed = confirmDirectUpload(
       { ...session, state: 'uploading', version: 3 },
       records,
@@ -346,9 +375,15 @@ describe('P19 Drive intake', () => {
       uploadSessionId: transferId,
       runtimeTier: managed.runtimeTier,
       verificationEnvironmentId: managed.verificationEnvironmentId,
+      durabilityEvidenceVersion: 'OT-MANAGED-ORIGINAL-1',
+      bucketRef: managed.bucketRef,
+      objectKeyDigest: managed.objectKeyDigest,
       objectVersionId: managed.objectVersionId,
       byteCount: 100,
+      checksumAlgorithm: 'sha256',
       sha256: canonical.sha256,
+      kmsKeyVersionRef: managed.kmsKeyVersionRef,
+      storageClass: 'STANDARD',
       writtenAt: now,
       readBackAt: '2026-07-28T22:02:01.000Z',
     };
@@ -405,6 +440,28 @@ describe('P19 source matching and lifecycle', () => {
       matchConfidence: 'exact',
       matchedByAdminId: actor.principalId,
     });
+  });
+
+  it('OTV2-CONTENT-082 never attaches an existing reviewed recording to a historical occurrence', () => {
+    const current = source({
+      origin: 'recordings_collection',
+      rightsToProcessAndPrivatelyPublish: true,
+      humanReviewCompleted: true,
+      childDataDisposition: 'none_present',
+      noUnreviewedChildData: true,
+    });
+    expect(current.captureMethod).toBe('existing_reviewed_recording');
+    expect(() =>
+      matchSourceToOccurrence(current, occurrence, {
+        actor,
+        sourceId: current.id,
+        occurrenceId: occurrence.id,
+        expectedVersion: current.version,
+        idempotencyKey: 'match-existing-reviewed-1',
+        requestHash: sha('d'),
+        occurredAt: now,
+      }),
+    ).toThrowError(/cannot be attached to a class occurrence/);
   });
 
   it('OTV2-CONTENT-080 follows exact ingest lifecycle and recorded failed_from retry', () => {

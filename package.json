@@ -22,7 +22,7 @@
     "start:rabbi-telegram": "node --import tsx apps/telegram-bot/src/main.ts",
     "typecheck": "tsc --noEmit -p tsconfig.typecheck.json",
     "lint": "eslint .",
-    "format": "prettier --check .",
+    "format": "npm run openspec:generated:check && prettier --check .",
     "format:write": "prettier --write .",
     "brand:check": "tsx scripts/brand-system/check.ts",
     "brand:fixtures": "tsx scripts/brand-system/write-visual-fixture.ts",
@@ -33,7 +33,7 @@
     "test": "npm run unit && npm run integration",
     "e2e": "npm run build && playwright test tests/e2e",
     "accessibility": "npm run build && playwright test tests/accessibility",
-    "performance": "npm run build && playwright test tests/performance && tsx scripts/check-bundles.ts",
+    "performance": "npm run build && playwright test tests/performance --workers=1 && tsx scripts/check-bundles.ts",
     "verify": "npm run secret:scan && npm run format && npm run brand:check && npm run lint && npm run typecheck && npm run test && npm run e2e && npm run accessibility && npm run performance",
     "db:migrate": "tsx scripts/migrate.ts",
     "db:verify": "tsx scripts/verify-migrations.ts",
@@ -62,24 +62,38 @@
     "director:truth": "node scripts/check-director-truth.mjs",
     "director:truth:live": "node scripts/check-director-truth.mjs --live",
     "learning-delivery:real-canary": "tsx scripts/media/learning-delivery-real-media-canary.ts",
+    "media:local-runner:start": "tsx scripts/media/local-media-runner.ts start",
+    "media:local-runner:status": "tsx scripts/media/local-media-runner.ts status",
+    "media:local-runner:retry": "tsx scripts/media/local-media-runner.ts retry",
+    "media:local-runner:install-windows": "tsx scripts/media/local-media-runner.ts install-windows",
+    "media:local-runner:uninstall-windows": "tsx scripts/media/local-media-runner.ts uninstall-windows",
     "highlevel:registry:check": "tsx scripts/highlevel/validate-registry.ts",
     "highlevel:workflow-control:check": "tsx scripts/highlevel/workflow-control-report.ts",
     "highlevel:workflow-control:report": "tsx scripts/highlevel/workflow-control-report.ts --write",
     "highlevel:workflow-control:projection-check": "tsx scripts/highlevel/sync-workflow-control-projections.ts",
     "highlevel:workflow-control:sync": "tsx scripts/highlevel/sync-workflow-control-projections.ts --write",
+    "highlevel:family-projection:recover": "tsx scripts/recover-family-signup-ghl-projections.ts",
     "goal:validate": "tsx scripts/ops/validate-ot-launch-governance.ts",
     "goal:pointer:sync": "tsx scripts/ops/validate-ot-launch-governance.ts --write-pointer",
     "goal:launch-status:check": "tsx scripts/ops/generate-operator-launch-status.ts --check",
     "goal:launch-status:sync": "tsx scripts/ops/generate-operator-launch-status.ts --write",
+    "source-truth:check": "node scripts/ops/check-repository-authority.mjs",
+    "openspec:generated:check": "node scripts/ops/check-openspec-generated.mjs",
+    "openspec:validate": "node scripts/ops/run-openspec.mjs validate --all --strict --no-interactive",
+    "design:lint": "node node_modules/@google/design.md/dist/index.js lint DESIGN.md",
     "highlevel:assets:reconcile": "tsx scripts/highlevel/reconcile-api-schema.ts",
     "highlevel:replit:apply-tags": "tsx scripts/highlevel/apply-replit-tags.ts",
     "highlevel:replit:reconcile": "tsx scripts/highlevel/reconcile-replit-subscribers.ts",
     "highlevel:agent-mode:queue": "tsx scripts/highlevel/generate-agent-mode-queue.ts",
     "content-factory:import": "tsx scripts/media/content-factory-import.ts",
     "content-factory:seed-demo": "tsx scripts/media/content-factory-demo-seed.ts",
-    "vimeo:mishnayos:catalog": "tsx scripts/media/vimeo-mishnayos-catalog.ts"
+    "vimeo:mishnayos:catalog": "tsx scripts/media/vimeo-mishnayos-catalog.ts",
+    "identity:dual-role:provision": "tsx scripts/operations/provision-dual-role-adult.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "3.1102.0",
+    "@aws-sdk/client-sts": "3.1102.0",
+    "@aws-sdk/s3-request-presigner": "3.1102.0",
     "@vitejs/plugin-react": "^5.0.0",
     "dotenv": "^17.2.0",
     "express": "^5.1.0",
@@ -96,6 +110,8 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.10.2",
     "@eslint/js": "^9.31.0",
+    "@fission-ai/openspec": "1.10.0",
+    "@google/design.md": "0.4.0",
     "@playwright/test": "^1.54.1",
     "@types/express": "^5.0.3",
     "@types/node": "^24.0.14",
@@ -112,5 +128,10 @@
     "typescript-eslint": "^8.37.0",
     "vite": "^7.0.4",
     "vitest": "^3.2.4"
+  },
+  "overrides": {
+    "@fission-ai/openspec": {
+      "zod": "4.4.2"
+    }
   }
 }

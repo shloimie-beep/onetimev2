@@ -70,6 +70,9 @@ export function beginDirectUpload(
     retryState: 'ready',
     idempotencyKey: command.idempotencyKey,
     requestHash: command.requestHash,
+    ...(command.existingRecordingIntent
+      ? { existingRecordingIntent: command.existingRecordingIntent }
+      : {}),
     expiresAt,
     version: 1,
     createdAt: command.occurredAt,
@@ -195,36 +198,80 @@ export function confirmDirectUpload(
   const sourceId =
     existingSource?.id ??
     stableIngestKey('content_source', [session.accountKey, session.productKey, command.fullSha256]);
-  const source: ContentSourceRecord = existingSource ?? {
-    accountKey: session.accountKey,
-    productKey: session.productKey,
-    id: sourceId,
-    sourceKind: 'app_upload',
-    captureMethod: 'obs',
-    runtimeTier: session.runtimeTier,
-    verificationEnvironmentId: session.verificationEnvironmentId,
-    bucketRef: command.readback.bucketRef,
-    objectKeyDigest: command.readback.objectKeyDigest,
-    objectVersionId: command.readback.objectVersionId,
-    kmsKeyVersionRef: command.readback.kmsKeyVersionRef,
-    checksumReadbackReceiptId: command.journalReceipt.receiptId,
-    displayFilename: session.displayFilename,
-    mimeType: session.mimeType,
-    container: session.container,
-    byteCount: session.declaredByteCount,
-    sha256: command.fullSha256,
-    receivedAt: command.occurredAt,
-    stableAt: command.occurredAt,
-    matchConfidence: 'none',
-    retentionDueAt: command.retentionDueAt,
-    lifecycleState: 'received',
-    retryState: 'ready',
-    attemptCount: 0,
-    originalPreserved: true,
-    version: 1,
-    createdAt: command.occurredAt,
-    updatedAt: command.occurredAt,
-  };
+  const source: ContentSourceRecord =
+    existingSource ??
+    (session.existingRecordingIntent
+      ? {
+          accountKey: session.accountKey,
+          productKey: session.productKey,
+          id: sourceId,
+          sourceKind: 'app_upload',
+          captureMethod: 'existing_reviewed_recording',
+          runtimeTier: session.runtimeTier,
+          verificationEnvironmentId: session.verificationEnvironmentId,
+          bucketRef: command.readback.bucketRef,
+          objectKeyDigest: command.readback.objectKeyDigest,
+          objectVersionId: command.readback.objectVersionId,
+          kmsKeyVersionRef: command.readback.kmsKeyVersionRef,
+          checksumReadbackReceiptId: command.journalReceipt.receiptId,
+          displayFilename: session.displayFilename,
+          mimeType: session.mimeType,
+          container: session.container,
+          byteCount: session.declaredByteCount,
+          sha256: command.fullSha256,
+          receivedAt: command.occurredAt,
+          stableAt: command.occurredAt,
+          matchConfidence: 'none',
+          retentionDueAt: command.retentionDueAt,
+          lifecycleState: 'received',
+          retryState: 'ready',
+          attemptCount: 0,
+          originalPreserved: true,
+          version: 1,
+          createdAt: command.occurredAt,
+          updatedAt: command.occurredAt,
+          existingRecordingAttestation: {
+            evidenceVersion: 'OT-EXISTING-REVIEWED-RECORDING-1',
+            origin: session.existingRecordingIntent.origin,
+            rightsAttestedByAdminId: command.actor.principalId,
+            rightsAttestedAt: command.occurredAt,
+            rightsToProcessAndPrivatelyPublish: true,
+            humanReviewedByAdminId: command.actor.principalId,
+            humanReviewedAt: command.occurredAt,
+            childDataDisposition: session.existingRecordingIntent.childDataDisposition,
+            noUnreviewedChildData: true,
+          },
+        }
+      : {
+          accountKey: session.accountKey,
+          productKey: session.productKey,
+          id: sourceId,
+          sourceKind: 'app_upload',
+          captureMethod: 'obs',
+          runtimeTier: session.runtimeTier,
+          verificationEnvironmentId: session.verificationEnvironmentId,
+          bucketRef: command.readback.bucketRef,
+          objectKeyDigest: command.readback.objectKeyDigest,
+          objectVersionId: command.readback.objectVersionId,
+          kmsKeyVersionRef: command.readback.kmsKeyVersionRef,
+          checksumReadbackReceiptId: command.journalReceipt.receiptId,
+          displayFilename: session.displayFilename,
+          mimeType: session.mimeType,
+          container: session.container,
+          byteCount: session.declaredByteCount,
+          sha256: command.fullSha256,
+          receivedAt: command.occurredAt,
+          stableAt: command.occurredAt,
+          matchConfidence: 'none',
+          retentionDueAt: command.retentionDueAt,
+          lifecycleState: 'received',
+          retryState: 'ready',
+          attemptCount: 0,
+          originalPreserved: true,
+          version: 1,
+          createdAt: command.occurredAt,
+          updatedAt: command.occurredAt,
+        });
   const link: ContentSourceLinkRecord = {
     accountKey: session.accountKey,
     productKey: session.productKey,
@@ -274,6 +321,23 @@ function assertCompleteParts(session: UploadSessionRecord, parts: readonly Uploa
 
 function assertReadback(session: UploadSessionRecord, command: ConfirmDirectUploadCommand) {
   const { readback, journalReceipt } = command;
+  const journalWrittenAt = Date.parse(journalReceipt.writtenAt);
+  const journalReadBackAt = Date.parse(journalReceipt.readBackAt);
+  const versionedDurabilityEvidence =
+    readback.durabilityEvidenceVersion !== undefined ||
+    journalReceipt.durabilityEvidenceVersion !== undefined;
+  const versionedDurabilityMismatch =
+    versionedDurabilityEvidence &&
+    (readback.durabilityEvidenceVersion !== 'OT-MANAGED-ORIGINAL-1' ||
+      journalReceipt.durabilityEvidenceVersion !== readback.durabilityEvidenceVersion ||
+      readback.checksumAlgorithm !== 'sha256' ||
+      typeof readback.storageClass !== 'string' ||
+      !readback.storageClass.trim() ||
+      journalReceipt.bucketRef !== readback.bucketRef ||
+      journalReceipt.objectKeyDigest !== readback.objectKeyDigest ||
+      journalReceipt.checksumAlgorithm !== readback.checksumAlgorithm ||
+      journalReceipt.kmsKeyVersionRef !== readback.kmsKeyVersionRef ||
+      journalReceipt.storageClass !== readback.storageClass);
   if (
     readback.region !== CONTENT_INGEST_REGION ||
     readback.runtimeTier !== session.runtimeTier ||
@@ -286,13 +350,17 @@ function assertReadback(session: UploadSessionRecord, command: ConfirmDirectUplo
     !readback.bucketRef ||
     !readback.blockPublicAccess ||
     !readback.bucketOwnerEnforced ||
+    !journalReceipt.receiptId.trim() ||
     journalReceipt.uploadSessionId !== session.id ||
     journalReceipt.runtimeTier !== session.runtimeTier ||
     journalReceipt.verificationEnvironmentId !== session.verificationEnvironmentId ||
     journalReceipt.objectVersionId !== readback.objectVersionId ||
     journalReceipt.byteCount !== readback.byteCount ||
     journalReceipt.sha256 !== readback.sha256 ||
-    Date.parse(journalReceipt.readBackAt) < Date.parse(journalReceipt.writtenAt)
+    versionedDurabilityMismatch ||
+    !Number.isFinite(journalWrittenAt) ||
+    !Number.isFinite(journalReadBackAt) ||
+    journalReadBackAt < journalWrittenAt
   ) {
     throw new ContentIngestError(
       CONTENT_INGEST_ERROR_CODES.invalidReadback,

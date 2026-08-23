@@ -464,13 +464,11 @@ The form collects exactly:
 - normalized email;
 - password and confirmation;
 - IANA household timezone, prefilled from the browser only as an editable suggestion;
-- required current Terms/privacy acceptance;
-- separate optional general-marketing consent;
-- separate optional Parent-newsletter consent.
+- exactly one required initially unchecked agreement control covering current Terms, Privacy, Student Data/Child Safety, Cancellation/Refund, and adult marketing email; no separate marketing or newsletter checkbox.
 
 It does not collect phone, country, Student information, learner relationship, guardian/recording/recognition consent, reminder preference, or a card.
 
-Before `2026-09-13T19:24:00+03:00`, the primary CTA is **Create my free family account** and helper copy is exactly: **No credit card. Free access ends September 13, 2026 at 7:24 p.m. Jerusalem time.** A successful submission establishes the signed-in Parent session from the submitted email/password, creates one free Family household, and continues directly to the Parent overview where Student creation is immediately available. It does not send or require a setup link.
+Before `2026-09-11T18:00:00+03:00`, the primary CTA is **Create your Family account** and helper copy is exactly: **No credit card required. Free access ends September 11, 2026 at 6:00 PM Asia/Jerusalem.** A successful submission establishes the signed-in Parent session from the submitted email/password, creates one free Family household, and continues directly to the Parent overview where Student creation is immediately available. It does not send or require a setup link.
 
 At or after the boundary instant, the primary CTA is **Create account and continue to checkout**. A successful submission creates the adult and household with inactive product access, then continues to GHL-hosted standard checkout. The signup form itself never charges. Student creation and learning remain unavailable until verified paid access is projected. No submission receives a new or rolling trial.
 
@@ -802,7 +800,7 @@ Notification category, dedupe, expiry, stale-action, and sound behavior is defin
 ## UI-015. Time, date, and locale presentation
 
 - Persisted instant behavior is governed by `06-DOMAIN-MODEL-AND-STATE-MACHINES-v2.1.md`.
-- Recurring launch class is anchored to 7:00 p.m. `Asia/Jerusalem`.
+- Recurring launch class begins at `2026-08-16T19:00:00+03:00` and remains anchored to 7:00 p.m. `Asia/Jerusalem`.
 - Parent and Student screens display the household timezone and its unambiguous abbreviation/offset.
 - Admin calendar may switch display timezone but defaults to class timezone.
 - Browser timezone is an editable signup suggestion only.

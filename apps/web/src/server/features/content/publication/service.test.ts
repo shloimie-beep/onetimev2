@@ -22,6 +22,10 @@ import type {
   VimeoContentPublicationObservation,
   VimeoContentPublicationReadbackAdapter,
 } from '../../../../../../../packages/contracts/src/content/publication/index.ts';
+import type {
+  ContentPublicationSeed,
+  ObsApprovedForPublicationProjection,
+} from '../../../../../../../packages/contracts/src/content/processing/index.ts';
 import type { JobScope } from '../../../../../../../packages/contracts/src/jobs/index.ts';
 import { ContentPublicationError } from '../../../../../../../packages/domain/src/content/publication/index.ts';
 import type {
@@ -1123,8 +1127,8 @@ function draft(): ContentPublicationRecord {
 }
 
 function approvalEvidence(
-  overrides: Partial<ContentApprovalEvidence> = {},
-): ContentApprovalEvidence {
+  overrides: Partial<ObsApprovedForPublicationProjection & ContentPublicationSeed> = {},
+): ObsApprovedForPublicationProjection & ContentPublicationSeed {
   const { projectionDigest: overriddenDigest, ...coreOverrides } = overrides;
   const core = {
     ...scope,

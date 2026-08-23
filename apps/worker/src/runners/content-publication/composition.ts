@@ -50,12 +50,15 @@ export async function runContentPublicationWorker(
   context: WorkerRunnerContext,
   dependencies?: ContentPublicationWorkerDependencies,
 ): Promise<WorkerRunnerResult> {
-  if (!dependencies) return disabled();
+  if (!context.config.contentMediaEnabled || !dependencies) {
+    return disabled(context, dependencies ? 'content_media_default_off' : undefined);
+  }
 
   const authority = dependencies.authority ?? nullContentPublicationAuthorityPort;
   let providerCalls = 0;
   const dispatchAdapter: ContentPublicationProviderDispatchAdapter = {
     async dispatch(dispatchContext, evidence, signal) {
+      assertModeBinding(context, dispatchContext.operation.aggregate_ref);
       providerCalls += 1;
       return dependencies.dispatchAdapter.dispatch(dispatchContext, evidence, signal);
     },
@@ -63,6 +66,7 @@ export async function runContentPublicationWorker(
   const reconciliationAdapter: ProviderReadbackAdapter = {
     provider: dependencies.reconciliationAdapter.provider,
     async readCanonical(operation, binding, signal) {
+      assertModeBinding(context, operation.aggregate_ref);
       providerCalls += 1;
       return dependencies.reconciliationAdapter.readCanonical(operation, binding, signal);
     },
@@ -72,6 +76,7 @@ export async function runContentPublicationWorker(
     registry: dependencies.registry,
     adapter: {
       async readCanonical(publicationContext, signal) {
+        assertModeBinding(context, publicationContext.providerOperation.contentId);
         providerCalls += 1;
         return dependencies.finalizationReadbackAdapter.readCanonical(publicationContext, signal);
       },
@@ -85,34 +90,83 @@ export async function runContentPublicationWorker(
     createId: dependencies.createId,
   });
   const scope = dependencies.options?.scope ?? runtimeScope(context);
-  const summary = await runContentPublicationBatch({
-    jobRepository: dependencies.jobRepository,
-    publicationRepository: dependencies.publicationRepository,
-    providerRepository: dependencies.providerRepository,
-    authority,
-    registry: dependencies.registry,
-    dispatchAdapter,
-    reconciliationAdapter,
-    finalizationService,
-    logger: {
-      info: (fields, message) => context.logger.info(message, fields),
-      warn: (fields, message) => context.logger.warn(message, fields),
-    },
-    options: {
-      owner: context.workerInstanceKey,
-      scope,
-      batchSize: dependencies.options?.batchSize ?? 10,
-      dispatchTimeoutMs: dependencies.options?.dispatchTimeoutMs ?? 10_000,
-      reconciliationTimeoutMs: dependencies.options?.reconciliationTimeoutMs ?? 10_000,
-      clock: dependencies.options?.clock ?? (() => new Date()),
-      random: dependencies.options?.random ?? Math.random,
-    },
-  });
+  const canary = context.config.contentMediaMode !== 'production_broad';
+  const batchLimit = canary ? 1 : context.config.contentMediaBatchSize;
+  let summary;
+  try {
+    summary = await runContentPublicationBatch({
+      jobRepository: dependencies.jobRepository,
+      publicationRepository: dependencies.publicationRepository,
+      providerRepository: dependencies.providerRepository,
+      authority,
+      registry: dependencies.registry,
+      dispatchAdapter,
+      reconciliationAdapter,
+      finalizationService,
+      logger: {
+        info: (fields, message) => context.logger.info(message, fields),
+        warn: (fields, message) => context.logger.warn(message, fields),
+      },
+      options: {
+        owner: context.workerInstanceKey,
+        scope,
+        batchSize: Math.min(dependencies.options?.batchSize ?? batchLimit, batchLimit),
+        dispatchTimeoutMs: dependencies.options?.dispatchTimeoutMs ?? 10_000,
+        reconciliationTimeoutMs: dependencies.options?.reconciliationTimeoutMs ?? 10_000,
+        clock: dependencies.options?.clock ?? (() => new Date()),
+        random: dependencies.options?.random ?? Math.random,
+      },
+    });
+  } catch (error) {
+    if (!canary) {
+      context.logger.warn('content media publication failed closed', {
+        media_mode: 'production_broad',
+        stage: 'publication',
+      });
+      const stopped = disabled(context, 'content_publication_broad_failed_closed');
+      return {
+        ...stopped,
+        enabled: true,
+        providerCallsPerformed: providerCalls > 0,
+        summary: {
+          ...stopped.summary,
+          canaryBudget: undefined,
+          batchLimit,
+          providerCalls,
+          stopped: true,
+        },
+      };
+    }
+    throw error;
+  }
   return {
     enabled: true,
     providerCallsPerformed: providerCalls > 0,
-    summary: { ...summary, providerCalls },
+    summary: {
+      ...summary,
+      canaryBudget: canary ? 1 : undefined,
+      batchLimit,
+      concurrency: canary ? 1 : context.config.contentMediaConcurrency,
+      providerCalls,
+    },
   };
+}
+
+function assertModeBinding(context: WorkerRunnerContext, contentId: string) {
+  if (
+    context.config.contentMediaMode === 'provider_canary' &&
+    (!context.config.contentMediaCanaryId || contentId !== context.config.contentMediaCanaryId)
+  ) {
+    throw new Error('content_publication_canary_binding_mismatch');
+  }
+  if (
+    context.config.contentMediaMode === 'production_broad' &&
+    (context.config.oneTimeRuntimeTier !== 'production' ||
+      context.config.oneTimeVerificationEnvironmentId !== 'production_broad' ||
+      contentId.trim() === '')
+  ) {
+    throw new Error('content_publication_broad_binding_mismatch');
+  }
 }
 
 function runtimeScope(context: WorkerRunnerContext): JobScope {
@@ -123,12 +177,14 @@ function runtimeScope(context: WorkerRunnerContext): JobScope {
   };
 }
 
-function disabled(): WorkerRunnerResult {
+function disabled(context: WorkerRunnerContext, disabledReason?: string): WorkerRunnerResult {
   return {
     enabled: false,
     providerCallsPerformed: false,
     summary: {
-      disabledReason: 'content_publication_authority_unavailable',
+      disabledReason: disabledReason ?? 'content_publication_authority_unavailable',
+      canaryBudget: context.config.contentMediaMode === 'production_broad' ? undefined : 1,
+      mediaMode: context.config.contentMediaMode,
       providerCalls: 0,
       dispatch: {
         claimed: 0,

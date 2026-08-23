@@ -8,6 +8,7 @@ import {
   createOwnerAdminInvitation,
   createParentActivation,
   createSession,
+  createStudentSetup,
   decryptLifecycleDeliveryPayloadForTests,
   getSessionByToken,
   grantFreePilotAccess,
@@ -76,6 +77,13 @@ describe('OPS-03B email step-up account lifecycle web flow', () => {
     expect(clientSource).not.toMatch(/auth\/mfa|account-lifecycle\/mfa|totp_code/);
     expect(clientSource).toContain("fetch('/health'");
     expect(clientSource).not.toContain('fetch(window.location.pathname');
+    expect(clientSource).toContain("response.json.token_type === 'student_reset'");
+    expect(clientSource).toContain("studentReset ? 'Reset PIN' : 'Set PIN'");
+    expect(clientSource).toContain("studentReset ? 'Student PIN reset' : 'Student account setup'");
+    const activation = await fetch(`${baseUrl}/activate`);
+    const activationHtml = await activation.text();
+    expect(activationHtml).toContain('data-activation-context');
+    expect(activationHtml).toContain('data-activation-submit');
   });
 
   it('activates an owner/admin invite directly after password setup', async () => {
@@ -106,11 +114,18 @@ describe('OPS-03B email step-up account lifecycle web flow', () => {
     });
     expect(JSON.stringify(status.json)).not.toContain(token);
 
+    const tooShortPasswordRejectedForAdult = await postJson(
+      '/api/v1/account-lifecycle/activate',
+      { token, password: '12345', csrf_token: activationPage.token },
+      activationPage.cookies,
+    );
+    expect(tooShortPasswordRejectedForAdult.response.status).toBe(400);
+
     const activated = await postJson(
       '/api/v1/account-lifecycle/activate',
       {
         token,
-        password: 'AdminWebPass!234',
+        password: 'Ab1234',
         csrf_token: activationPage.token,
       },
       activationPage.cookies,
@@ -119,7 +134,7 @@ describe('OPS-03B email step-up account lifecycle web flow', () => {
     expect(activated.json).toMatchObject({
       success: true,
       mfa_required: false,
-      return_to: '/app/dashboard',
+      return_to: '/app/today',
     });
     const cookies = mergeCookies(activationPage.cookies, cookieHeader(activated.response.headers));
     expect(cookies).toContain('otcrm_session=');
@@ -134,6 +149,88 @@ describe('OPS-03B email step-up account lifecycle web flow', () => {
     });
     expect(replay.response.status).toBe(410);
     expect(replay.json).toMatchObject({ code: 'TOKEN_CONSUMED' });
+  });
+
+  it('activates a Student with an exact six-digit PIN at the mounted HTTP boundary', async () => {
+    await pool.query(
+      `INSERT INTO onetime.portal_households
+         (household_key, account_key, product_key, display_name)
+       VALUES ('web_student_household',$1,$2,'Web Student Household')`,
+      [appConfig.accountKey, appConfig.productKey],
+    );
+    await pool.query(
+      `INSERT INTO onetime.portal_learners
+         (learner_key, account_key, product_key, household_key, display_name)
+       VALUES ('web_student_learner',$1,$2,'web_student_household','Web Student')`,
+      [appConfig.accountKey, appConfig.productKey],
+    );
+    await pool.query(
+      `INSERT INTO onetime.portal_student_access_state
+         (access_state_key, account_key, product_key, household_key, learner_key, status)
+       VALUES ('web_student_access',$1,$2,'web_student_household',
+               'web_student_learner','not_configured')`,
+      [appConfig.accountKey, appConfig.productKey],
+    );
+    const now = new Date();
+    await grantFreePilotAccess({
+      pool,
+      accountKey: appConfig.accountKey,
+      productKey: appConfig.productKey,
+      actorKind: 'admin',
+      now,
+      command: {
+        household_key: 'web_student_household',
+        idempotency_key: 'web-student-activation-free-pilot',
+        effective_at: now.toISOString(),
+        expires_at: new Date(now.getTime() + 24 * 60 * 60 * 1_000).toISOString(),
+        policy_version: 'account-lifecycle-web-student-free-pilot-v1',
+        opaque_source_reference: 'account_lifecycle_web_student_activation',
+      },
+    });
+
+    const issued = await createStudentSetup({
+      pool,
+      config: appConfig,
+      actor: { userKey: ownerUserKey, role: 'owner' },
+      includeLocalProofToken: true,
+      payload: {
+        idempotency_key: 'web-student-activation-001',
+        email: 'web.student@example.test',
+        display_name: 'Web Student',
+        household_key: 'web_student_household',
+        learner_key: 'web_student_learner',
+      },
+    });
+    const token = requiredToken(issued);
+    const activationPage = await getCsrf('/activate');
+    const status = await postJson('/api/v1/account-lifecycle/token-status', {
+      token,
+      flow: 'activation',
+    });
+    expect(status.response.status).toBe(200);
+    expect(status.json).toMatchObject({ token_type: 'student_setup' });
+
+    for (const password of ['12345', '1234567', '12a456', '１２３４５６']) {
+      const invalid = await postJson(
+        '/api/v1/account-lifecycle/activate',
+        { token, password, csrf_token: activationPage.token },
+        activationPage.cookies,
+      );
+      expect(invalid.response.status).toBe(400);
+    }
+
+    const activated = await postJson(
+      '/api/v1/account-lifecycle/activate',
+      { token, password: '000123', csrf_token: activationPage.token },
+      activationPage.cookies,
+    );
+    expect(activated.response.status).toBe(200);
+    expect(activated.json).toMatchObject({
+      success: true,
+      return_to: '/app/student',
+    });
+    const login = await loginViaApi('web.student@example.test', '000123');
+    expect(login.response.status).toBe(200);
   });
 
   it('completes Parent activation into a safe paused session when access is absent', async () => {
@@ -184,6 +281,159 @@ describe('OPS-03B email step-up account lifecycle web flow', () => {
       status: 'active',
     });
     expect(String(relationship.rows[0]?.guardian_user_ref)).toBeTruthy();
+  });
+
+  it('keeps generic password recovery adult-only for every Student identity', async () => {
+    const studentUserKey = await createAccountUser({
+      pool,
+      config: appConfig,
+      email: 'student-recovery@example.test',
+      password: 'StudentLegacy!234',
+      displayName: 'Student Recovery',
+      role: 'student',
+      mfaCapable: false,
+    });
+    const studentSession = await createSession({
+      pool,
+      config: appConfig,
+      user: {
+        user_key: studentUserKey,
+        email: 'student-recovery@example.test',
+        display_name: 'Student Recovery',
+        role: 'student',
+        role_label: 'Student',
+        mfa_capable: false,
+      },
+    });
+    const passwordBefore = await pool.query(
+      `SELECT password_hash
+         FROM onetime.account_users
+        WHERE user_key = $1`,
+      [studentUserKey],
+    );
+    const beforeStudentRequest = await pool.query(
+      `SELECT
+         (SELECT count(*) FROM onetime.account_lifecycle_tokens) AS token_count,
+         (SELECT count(*) FROM onetime.account_lifecycle_delivery_outbox) AS outbox_count`,
+    );
+    const forgotPage = await getCsrf('/forgot-password');
+    const studentRequest = await postJson(
+      '/api/v1/account-lifecycle/forgot-password',
+      {
+        email: 'student-recovery@example.test',
+        csrf_token: forgotPage.token,
+        idempotency_key: 'forgot-student-managed-001',
+      },
+      forgotPage.cookies,
+    );
+    const missingRequest = await postJson(
+      '/api/v1/account-lifecycle/forgot-password',
+      {
+        email: 'missing-student-recovery@example.test',
+        csrf_token: forgotPage.token,
+        idempotency_key: 'forgot-student-missing-001',
+      },
+      forgotPage.cookies,
+    );
+    expect(studentRequest.response.status).toBe(200);
+    expect(missingRequest.response.status).toBe(200);
+    expect(studentRequest.json.message).toBe(missingRequest.json.message);
+    const afterStudentRequest = await pool.query(
+      `SELECT
+         (SELECT count(*) FROM onetime.account_lifecycle_tokens) AS token_count,
+         (SELECT count(*) FROM onetime.account_lifecycle_delivery_outbox) AS outbox_count`,
+    );
+    expect(afterStudentRequest.rows[0]).toEqual(beforeStudentRequest.rows[0]);
+    const suppressionAudit = await pool.query(
+      `SELECT action_type, subject_user_key, metadata
+         FROM onetime.account_lifecycle_audit_events
+        WHERE action_type = 'password_reset_requested_student_suppressed'
+          AND subject_user_key = $1`,
+      [studentUserKey],
+    );
+    expect(suppressionAudit.rows).toEqual([
+      expect.objectContaining({
+        action_type: 'password_reset_requested_student_suppressed',
+        subject_user_key: studentUserKey,
+        metadata: {
+          target_role: 'student',
+          token_issued: false,
+          delivery_queued: false,
+        },
+      }),
+    ]);
+    expect(JSON.stringify(suppressionAudit.rows)).not.toContain('student-recovery@example.test');
+    expect(JSON.stringify(suppressionAudit.rows)).not.toContain('StudentLegacy!234');
+
+    const ownerRequest = await postJson(
+      '/api/v1/account-lifecycle/forgot-password',
+      {
+        email: 'owner-web@example.test',
+        csrf_token: forgotPage.token,
+        idempotency_key: 'forgot-owner-forged-student-001',
+      },
+      forgotPage.cookies,
+    );
+    expect(ownerRequest.response.status).toBe(200);
+    const legacyResetToken = await latestPasswordResetToken();
+    const tokenRow = await pool.query(
+      `SELECT token_key
+         FROM onetime.account_lifecycle_tokens
+        WHERE token_type = 'password_reset'
+        ORDER BY created_at DESC
+        LIMIT 1`,
+    );
+    const tokenKey = String(tokenRow.rows[0]?.token_key);
+    await pool.query(
+      `UPDATE onetime.account_lifecycle_tokens
+          SET target_role = 'student',
+              subject_user_key = $1,
+              subject_human_account_id = NULL,
+              email_normalized = 'student-recovery@example.test'
+        WHERE token_key = $2`,
+      [studentUserKey, tokenKey],
+    );
+
+    const resetPage = await getCsrf('/reset-password');
+    const rejected = await postJson(
+      '/api/v1/account-lifecycle/reset-password',
+      {
+        token: legacyResetToken,
+        password: 'StudentAdultBypass!999',
+        csrf_token: resetPage.token,
+      },
+      resetPage.cookies,
+    );
+    expect(rejected.response.status).toBe(400);
+    expect(rejected.json).toMatchObject({ code: 'TOKEN_INVALID' });
+    const readback = await pool.query(
+      `SELECT consumed_at
+         FROM onetime.account_lifecycle_tokens
+        WHERE token_key = $1`,
+      [tokenKey],
+    );
+    expect(readback.rows[0]?.consumed_at).toBeNull();
+    const passwordAfter = await pool.query(
+      `SELECT password_hash
+         FROM onetime.account_users
+        WHERE user_key = $1`,
+      [studentUserKey],
+    );
+    expect(passwordAfter.rows).toEqual(passwordBefore.rows);
+    const sessionReadback = await pool.query(
+      `SELECT revoked_at
+         FROM onetime.user_sessions
+        WHERE session_key = $1`,
+      [studentSession.session_key],
+    );
+    expect(sessionReadback.rows).toEqual([expect.objectContaining({ revoked_at: null })]);
+    const invalidationReadback = await pool.query(
+      `SELECT count(*)::int AS count
+         FROM onetime.account_lifecycle_session_invalidations
+        WHERE user_key = $1`,
+      [studentUserKey],
+    );
+    expect(invalidationReadback.rows[0]?.count).toBe(0);
   });
 
   it('uses generic forgot-password responses and reset links revoke prior sessions', async () => {
@@ -268,6 +518,8 @@ describe('OPS-03B email step-up account lifecycle web flow', () => {
     expect(existing.response.status).toBe(200);
     expect(missing.response.status).toBe(200);
     expect(existing.json.message).toBe(missing.json.message);
+    expect(JSON.stringify(existing.json)).not.toMatch(/token|reset-password#|cookie|password/i);
+    expect(JSON.stringify(missing.json)).not.toMatch(/token|reset-password#|cookie|password/i);
 
     const resetToken = await latestPasswordResetToken();
     const resetPage = await getCsrf('/reset-password');

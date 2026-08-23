@@ -7,10 +7,3 @@ export const communicationsRouteDescriptor = {
   allowedRoles: ['owner', 'admin'],
   load: loadCommunicationsFeature,
 } as const;
-
-export const contactCommunicationsTabDescriptor = {
-  id: 'communications',
-  label: 'Communications',
-  allowedRoles: ['owner', 'admin'],
-  load: loadCommunicationsFeature,
-} as const;

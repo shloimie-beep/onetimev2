@@ -120,6 +120,31 @@ export function parentExportCategories(): {
   };
 }
 
+export function studentExportCategories(): {
+  included: readonly string[];
+  excluded: readonly string[];
+} {
+  return {
+    included: [
+      'own_student_profile',
+      'own_scoped_consent_versions_timestamps',
+      'own_enrollment_calendar',
+      'own_attendance_progress_badges',
+      'own_library_playback_resume',
+      'own_notifications',
+      'own_private_questions_rabbi_answers',
+      'own_student_support',
+    ],
+    excluded: [
+      'sibling_data',
+      'other_participant_data',
+      'shared_raw_recordings',
+      'provider_secrets',
+      'other_participant_leaderboard_details',
+    ],
+  };
+}
+
 export function redactPrivacyDiagnostic(value: Record<string, unknown>): Record<string, unknown> {
   const forbidden =
     /(?:password|token|secret|bearer|cookie|join.?url|playback.?url|question.?body|support.?body|student.?name|email|phone)/i;

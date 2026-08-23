@@ -10,6 +10,7 @@ import {
   type ContentProcessingSource,
   type ContentProcessingVersion,
   type ControlledCaptureEvidence,
+  type ExistingReviewedRecordingEvidence,
   type DerivativeReadback,
   type LearningDraft,
   type MediaProbeReadback,
@@ -32,6 +33,7 @@ import {
   registeredLearningSchemaDigest,
   selectTrim,
   validateControlledCapture,
+  validateExistingReviewedRecording,
   validateLearningDraft,
   validateProcessingInput,
   validateTranscriptDraft,
@@ -86,8 +88,11 @@ const readback: ManagedObjectReadback = {
   objectKeyDigest: source.objectKeyDigest,
   objectVersionId: source.objectVersionId,
   byteCount: source.byteCount,
+  durabilityEvidenceVersion: 'OT-MANAGED-ORIGINAL-1',
+  checksumAlgorithm: 'sha256',
   sha256: source.sha256,
   kmsKeyVersionRef: source.kmsKeyVersionRef,
+  storageClass: 'STANDARD',
   blockPublicAccess: true,
   bucketOwnerEnforced: true,
 };
@@ -277,6 +282,143 @@ function prepared(mishnahReferences: readonly string[] = ['Berachos 1:1']) {
 }
 
 describe('P20 acceptance contract', () => {
+  it('permits only an explicitly attested and human-reviewed existing recording without fabricating OBS evidence', () => {
+    const {
+      occurrenceId: _occurrenceId,
+      matchedByAdminId: _matchedByAdminId,
+      obsProfileVersion: _obsProfileVersion,
+      obsRecordingStartedAt: _obsRecordingStartedAt,
+      obsRecordingStoppedAt: _obsRecordingStoppedAt,
+      recordingAdminId: _recordingAdminId,
+      ...sourceBase
+    } = source;
+    void [
+      _occurrenceId,
+      _matchedByAdminId,
+      _obsProfileVersion,
+      _obsRecordingStartedAt,
+      _obsRecordingStoppedAt,
+      _recordingAdminId,
+    ];
+    const existingSource: ContentProcessingSource = {
+      ...sourceBase,
+      captureMethod: 'existing_reviewed_recording',
+      matchConfidence: 'none',
+      existingRecordingAttestation: {
+        evidenceVersion: 'OT-EXISTING-REVIEWED-RECORDING-1',
+        origin: 'recordings_collection',
+        rightsAttestedByAdminId: actor.principalId,
+        rightsAttestedAt: '2026-07-28T19:00:00.000Z',
+        rightsToProcessAndPrivatelyPublish: true,
+        humanReviewedByAdminId: actor.principalId,
+        humanReviewedAt: '2026-07-28T20:00:00.000Z',
+        childDataDisposition: 'redactions_complete',
+        noUnreviewedChildData: true,
+      },
+    };
+    const evidence: ExistingReviewedRecordingEvidence = {
+      evidenceVersion: 'OT-EXISTING-REVIEWED-RECORDING-1',
+      sourceId: existingSource.id,
+      captureMethod: 'existing_reviewed_recording',
+      attestation: existingSource.existingRecordingAttestation!,
+      reviewedSourceDigest: sha('reviewed-existing-source'),
+      uploadConfirmedAt: existingSource.stableAt,
+      durableChecksumReadbackReceiptId: existingSource.checksumReadbackReceiptId,
+      linkedIngestSourceId: existingSource.id,
+    };
+    expect(
+      validateProcessingInput({ source: existingSource, readback, probe, storage }).source,
+    ).toBe(existingSource);
+    expect(validateExistingReviewedRecording(evidence, existingSource)).toBe(evidence);
+    expect(() =>
+      validateExistingReviewedRecording(
+        {
+          ...evidence,
+          attestation: { ...evidence.attestation, noUnreviewedChildData: false as never },
+        },
+        existingSource,
+      ),
+    ).toThrow('Existing recording requires explicit Admin rights attestation');
+  });
+
+  it('projects an approved existing recording without an OBS snapshot or occurrence claim', () => {
+    const {
+      occurrenceId: _occurrenceId,
+      matchedByAdminId: _matchedByAdminId,
+      obsProfileVersion: _obsProfileVersion,
+      obsRecordingStartedAt: _obsRecordingStartedAt,
+      obsRecordingStoppedAt: _obsRecordingStoppedAt,
+      recordingAdminId: _recordingAdminId,
+      ...sourceBase
+    } = source;
+    void [
+      _occurrenceId,
+      _matchedByAdminId,
+      _obsProfileVersion,
+      _obsRecordingStartedAt,
+      _obsRecordingStoppedAt,
+      _recordingAdminId,
+    ];
+    const existingSource: ContentProcessingSource = {
+      ...sourceBase,
+      captureMethod: 'existing_reviewed_recording',
+      matchConfidence: 'none',
+      existingRecordingAttestation: {
+        evidenceVersion: 'OT-EXISTING-REVIEWED-RECORDING-1',
+        origin: 'drive',
+        rightsAttestedByAdminId: actor.principalId,
+        rightsAttestedAt: '2026-07-28T19:00:00.000Z',
+        rightsToProcessAndPrivatelyPublish: true,
+        humanReviewedByAdminId: actor.principalId,
+        humanReviewedAt: '2026-07-28T20:00:00.000Z',
+        childDataDisposition: 'none_present',
+        noUnreviewedChildData: true,
+      },
+    };
+    const evidence: ExistingReviewedRecordingEvidence = {
+      evidenceVersion: 'OT-EXISTING-REVIEWED-RECORDING-1',
+      sourceId: existingSource.id,
+      captureMethod: 'existing_reviewed_recording',
+      attestation: existingSource.existingRecordingAttestation!,
+      reviewedSourceDigest: sha('approved-existing-source'),
+      uploadConfirmedAt: existingSource.stableAt,
+      durableChecksumReadbackReceiptId: existingSource.checksumReadbackReceiptId,
+      linkedIngestSourceId: existingSource.id,
+    };
+    const data = prepared();
+    const draft = {
+      ...data.version,
+      state: 'needs_review' as const,
+      artifacts: createDraftArtifacts({ ...data, occurredAt: now }),
+    };
+    const approved = approveProcessingVersion({
+      actor,
+      version: draft,
+      expectedVersion: draft.version,
+      privacyReviewConfirmed: true,
+      captureEvidence: evidence,
+      recordingParticipantSnapshots: [],
+      occurredAt: '2026-07-28T22:10:00.000Z',
+    });
+    const projection = buildApprovedForPublicationProjection({
+      params: {
+        accountKey: approved.accountKey,
+        productKey: approved.productKey,
+        contentVersionId: approved.id,
+      },
+      version: approved,
+      source: existingSource,
+      captureEvidence: evidence,
+      recordingParticipantSnapshots: [],
+    });
+    expect(projection).toMatchObject({
+      reviewKind: 'existing_reviewed_recording',
+      reviewedSourceDigest: evidence.reviewedSourceDigest,
+      reviewedByAdminId: actor.principalId,
+    });
+    expect('participantSnapshotDigest' in projection).toBe(false);
+    expect('occurrenceId' in existingSource).toBe(false);
+  });
   it('OTV2-CONTENT-084-AC01 lets Admin trim only the beginning and end', () => {
     const { trim, transcodePlan } = prepared();
     expect(trim).toMatchObject({
@@ -490,7 +632,9 @@ describe('P20 acceptance contract', () => {
 
   it('fails closed on legacy seed JSON and incomplete participant, redaction, or library metadata', () => {
     const fixture = approvedPublicationFixture();
-    const review = fixture.version.publicationApproval!.participantReview;
+    const approval = fixture.version.publicationApproval!;
+    if (approval.reviewKind !== 'participant_snapshot') throw new Error('Expected OBS approval');
+    const review = approval.participantReview;
     const reviewArtifact = fixture.version.artifacts.find(
       ({ kind }) => kind === 'review_material',
     )!;

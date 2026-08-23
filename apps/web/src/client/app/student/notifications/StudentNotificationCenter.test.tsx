@@ -78,6 +78,8 @@ describe('StudentNotificationCenter', () => {
       ],
     });
     expect(markup).toContain('aria-labelledby="student-notifications-heading"');
+    expect(markup).toContain('student-notification-center__filters');
+    expect(markup).toContain('student-notification-center__panel');
     expect(markup).toContain('role="status"');
     expect(markup).toContain('aria-live="polite"');
     expect(markup).toContain('role="tablist"');

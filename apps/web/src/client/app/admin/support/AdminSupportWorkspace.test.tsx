@@ -51,4 +51,38 @@ describe('P24 Admin support workspace', () => {
     expect(html).toContain('Audit history (1)');
     expect(html).toContain('One Time remains the source of truth');
   });
+
+  it('renders the canonical ticket queue without exposing mutation controls', () => {
+    const html = renderToStaticMarkup(
+      <AdminSupportWorkspace
+        tickets={[ticket]}
+        mode="queue"
+        onNavigate={() => undefined}
+        onAssign={() => undefined}
+        onStatus={() => undefined}
+        onReply={() => undefined}
+      />,
+    );
+    expect(html).toContain('Support ticket queue');
+    expect(html).toContain('href="/app/tickets/ots_ticket_one"');
+    expect(html).toContain('Open ticket');
+    expect(html).not.toContain('Send in-app reply');
+  });
+
+  it('renders one canonical ticket detail with a safe queue return', () => {
+    const html = renderToStaticMarkup(
+      <AdminSupportWorkspace
+        tickets={[ticket]}
+        mode="detail"
+        onNavigate={() => undefined}
+        onAssign={() => undefined}
+        onStatus={() => undefined}
+        onReply={() => undefined}
+      />,
+    );
+    expect(html).toContain('Ticket operations');
+    expect(html).toContain('href="/app/tickets"');
+    expect(html).toContain('Back to ticket queue');
+    expect(html).toContain('Send in-app reply');
+  });
 });

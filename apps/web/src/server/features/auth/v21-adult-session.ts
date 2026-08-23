@@ -1,6 +1,9 @@
 import { createHash, createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 import { z } from 'zod';
-import type { AdultRole } from '../../../../../../packages/contracts/src/accounts/v21-household-identity.ts';
+import type {
+  AdultRole,
+  SafeHouseholdContext,
+} from '../../../../../../packages/contracts/src/accounts/v21-household-identity.ts';
 import { AUTH_SESSION_COOKIE } from '../../../../../../packages/contracts/src/identity/auth/index.ts';
 import {
   ONE_TIME_PRODUCT_SCOPE,
@@ -9,10 +12,20 @@ import {
   type VerificationEnvironmentId,
 } from '../../../../../../packages/contracts/src/state/index.ts';
 import {
+  changeV21AdultPassword,
   createPostgresV21AdultSessionRepository,
+  type ChangeV21AdultPasswordInput,
+  type ChangedV21AdultPassword,
   type V21AdultSessionRepository,
 } from '../../../../../../packages/db/src/accounts/v21-household-identity-repository.ts';
-import { verifyAuthPasswordWithUpgrade } from '../../../../../../packages/domain/src/auth/policy.ts';
+import type { DbPool, Queryable } from '../../../../../../packages/db/src/index.ts';
+import {
+  COMMON_AUTH_PASSWORDS,
+  evaluatePassword,
+  hashAuthPassword,
+  verifyAuthPassword,
+  verifyAuthPasswordWithUpgrade,
+} from '../../../../../../packages/domain/src/auth/policy.ts';
 import { normalizeAdultEmail } from '../../../../../../packages/domain/src/accounts/v21-household-identity.ts';
 
 const BROWSER_TOKEN_VERSION = 'v1';
@@ -68,10 +81,7 @@ const browserEnvelopeSchema = z
         message: 'Access and refresh material must be independent.',
       });
     }
-    if (
-      (value.active_role === 'admin' && value.household_id !== null) ||
-      (value.active_role === 'parent' && value.household_id === null)
-    ) {
+    if (value.active_role === 'admin' && value.household_id !== null) {
       context.addIssue({
         code: z.ZodIssueCode.custom,
         message: 'The active adult role and household context do not match.',
@@ -151,6 +161,7 @@ export type V21AdultLoginOutcome =
       memberships: readonly AdultRole[];
       active_role: AdultRole;
       role_selection_required: boolean;
+      household_selection_required: boolean;
     };
 
 export type V21SessionRevocationOutcome =
@@ -175,8 +186,57 @@ export type V21SessionBootstrapOutcome =
   | { status: 'invalid' }
   | { status: 'unavailable' };
 
+export type V21AdultPasswordChangeOutcome =
+  | {
+      changed: true;
+      browser_session_token: string;
+      csrf_token: string;
+      expires_at: string;
+      password_updated_at: string;
+      sessions_invalidated: number;
+      current_session_preserved: true;
+    }
+  | {
+      changed: false;
+      reason:
+        | 'invalid_session'
+        | 'invalid_current_password'
+        | 'password_policy_failed'
+        | 'password_reuse'
+        | 'unavailable';
+    };
+
+export type V21HouseholdContextOutcome =
+  | {
+      status: 'resolved';
+      households: readonly SafeHouseholdContext[];
+      active_household_id: string | null;
+      csrf_token: string;
+      expires_at: string;
+    }
+  | { status: 'invalid'; reason: 'invalid_session' | 'invalid_role' }
+  | { status: 'unavailable' };
+
+export type V21HouseholdSwitchOutcome =
+  | {
+      switched: true;
+      browser_session_token: string;
+      csrf_token: string;
+      expires_at: string;
+      active_household: SafeHouseholdContext;
+    }
+  | {
+      switched: false;
+      reason:
+        'invalid_session' | 'invalid_csrf' | 'invalid_role' | 'invalid_household' | 'unavailable';
+    };
+
 export interface V21AdultSessionRuntime {
   establish(input: V21ParentSessionEstablishmentInput): Promise<V21ParentSessionEstablishment>;
+  establishInTransaction(
+    db: Queryable,
+    input: V21ParentSessionEstablishmentInput,
+  ): Promise<V21ParentSessionEstablishment>;
   recognizedLoginEmail(input: {
     scope: V21ParentSessionEstablishmentInput['scope'];
     email: string;
@@ -205,12 +265,23 @@ export interface V21AdultSessionRuntime {
         expires_at: string;
         active_role: AdultRole;
         memberships: readonly AdultRole[];
+        household_selection_required: boolean;
       }
     | {
         switched: false;
         reason: 'invalid_session' | 'invalid_csrf' | 'invalid_role' | 'unavailable';
       }
   >;
+  householdContextCookieHeader(input: {
+    cookie_header?: string | null | undefined;
+    now?: Date | undefined;
+  }): Promise<V21HouseholdContextOutcome>;
+  switchHouseholdCookieHeader(input: {
+    cookie_header?: string | null | undefined;
+    csrf_token?: string | null | undefined;
+    selected_household_id: string;
+    now?: Date | undefined;
+  }): Promise<V21HouseholdSwitchOutcome>;
   bootstrapCookieHeader(input: {
     cookie_header?: string | null | undefined;
     now?: Date | undefined;
@@ -233,10 +304,19 @@ export interface V21AdultSessionRuntime {
     csrf_token?: string | null | undefined;
     now?: Date | undefined;
   }): Promise<V21ParentSessionContext | null>;
+  changePasswordCookieHeader(input: {
+    cookie_header?: string | null | undefined;
+    current_password: string;
+    new_password: string;
+    now?: Date | undefined;
+  }): Promise<V21AdultPasswordChangeOutcome>;
 }
 
 export type V21AdultSessionRuntimeInput = {
   repository: V21AdultSessionRepository;
+  repositoryFactory?: ((db: Queryable) => V21AdultSessionRepository) | undefined;
+  passwordChanger?:
+    ((input: ChangeV21AdultPasswordInput) => Promise<ChangedV21AdultPassword>) | undefined;
   hmacSecret: string;
   randomBytes?: ((size: number) => Uint8Array) | undefined;
   clock?: (() => Date) | undefined;
@@ -257,10 +337,11 @@ export function createV21AdultSessionRuntime(
   const resolveEnvelope = async (
     parsed: ParsedBrowserEnvelope,
     now: Date,
+    repository: V21AdultSessionRepository = input.repository,
   ): Promise<V21SessionResolutionOutcome> => {
     if (!validInstant(now)) return { status: 'invalid' };
     try {
-      const resolved = await input.repository.resolve({
+      const resolved = await repository.resolve({
         ...repositoryBinding(parsed.claims),
         tokenKind: 'access',
         tokenDigest: domainDigest(ACCESS_TOKEN_DOMAIN, parsed.claims.access_material),
@@ -274,7 +355,8 @@ export function createV21AdultSessionRuntime(
     }
   };
 
-  const establish = async (
+  const establishWithRepository = async (
+    repository: V21AdultSessionRepository,
     establishmentInput: V21ParentSessionEstablishmentInput,
   ): Promise<V21ParentSessionEstablishment> => {
     let createAttempted = false;
@@ -303,7 +385,7 @@ export function createV21AdultSessionRuntime(
         refresh_material: material[2],
       });
       createAttempted = true;
-      const createdSession = await input.repository.create({
+      const createdSession = await repository.create({
         ...repositoryBinding(claims),
         accessTokenDigest: domainDigest(ACCESS_TOKEN_DOMAIN, claims.access_material),
         refreshTokenDigest: domainDigest(REFRESH_TOKEN_DOMAIN, claims.refresh_material),
@@ -320,7 +402,11 @@ export function createV21AdultSessionRuntime(
       if (!parsedReadback) {
         throw new Error('Issued adult session was not readable through the host-cookie parser.');
       }
-      const middlewareReadback = await resolveEnvelope(parsedReadback, establishmentInput.now);
+      const middlewareReadback = await resolveEnvelope(
+        parsedReadback,
+        establishmentInput.now,
+        repository,
+      );
       if (middlewareReadback.status !== 'resolved') {
         throw new Error('Issued adult session failed middleware repository readback.');
       }
@@ -337,7 +423,7 @@ export function createV21AdultSessionRuntime(
       };
     } catch {
       if (createAttempted && claims) {
-        await bestEffortRevoke(input.repository, claims, establishmentInput.now);
+        await bestEffortRevoke(repository, claims, establishmentInput.now);
       }
       return {
         established: false,
@@ -346,10 +432,18 @@ export function createV21AdultSessionRuntime(
     }
   };
 
+  const establish = (establishmentInput: V21ParentSessionEstablishmentInput) =>
+    establishWithRepository(input.repository, establishmentInput);
+
   const exactRevoke = async (
     parsed: ParsedBrowserEnvelope,
     now: Date,
-    reason: 'adult_logout' | 'session_rotation' | 'explicit_revocation' | 'role_context_switch',
+    reason:
+      | 'adult_logout'
+      | 'session_rotation'
+      | 'explicit_revocation'
+      | 'role_context_switch'
+      | 'household_context_switch',
   ): Promise<'revoked' | 'invalid' | 'unavailable' | 'revocation_unverified'> => {
     const resolution = await resolveEnvelope(parsed, now);
     if (resolution.status !== 'resolved') return resolution.status;
@@ -374,8 +468,22 @@ export function createV21AdultSessionRuntime(
     }
   };
 
+  const revokeEstablishedSession = async (browserSessionToken: string, now: Date) => {
+    const parsed = parseCookie(
+      `${AUTH_SESSION_COOKIE.name}=${encodeURIComponent(browserSessionToken)}`,
+    );
+    if (!parsed) return;
+    await exactRevoke(parsed, now, 'explicit_revocation');
+  };
+
   return {
     establish,
+    establishInTransaction: async (db, establishmentInput) => {
+      if (!input.repositoryFactory) {
+        return { established: false, safe_reason: 'integration_unavailable' };
+      }
+      return establishWithRepository(input.repositoryFactory(db), establishmentInput);
+    },
 
     recognizedLoginEmail: async ({ scope, email }) => {
       const normalizedEmail = canonicalAdultEmail(email);
@@ -422,10 +530,10 @@ export function createV21AdultSessionRuntime(
                 : [],
           ),
         ].sort() as AdultRole[];
-        const parentContextAvailable =
-          identity.parentMembershipActive &&
-          identity.activeOwnedHouseholdCount === 1 &&
-          identity.ownedHouseholds.length === 1;
+        const ownedHouseholdsComplete =
+          identity.activeOwnedHouseholdCount > 0 &&
+          identity.ownedHouseholds.length === identity.activeOwnedHouseholdCount;
+        const parentContextAvailable = identity.parentMembershipActive && ownedHouseholdsComplete;
         if (
           identity.adultState !== 'active' ||
           identity.humanAccountId === null ||
@@ -475,8 +583,11 @@ export function createV21AdultSessionRuntime(
           }
           sessionMutated = true;
         }
-        const activeRole: AdultRole = parentContextAvailable ? 'parent' : 'admin';
-        const household = activeRole === 'parent' ? identity.ownedHouseholds[0]! : null;
+        const activeRole: AdultRole = memberships.includes('admin') ? 'admin' : 'parent';
+        const household =
+          activeRole === 'parent' && identity.ownedHouseholds.length === 1
+            ? identity.ownedHouseholds[0]!
+            : null;
         const established = await establish({
           scope,
           adult_id: identity.adultId,
@@ -532,9 +643,12 @@ export function createV21AdultSessionRuntime(
               currentIdentity.passwordHash !== passwordHash &&
               (activeRole === 'admin' ||
                 (currentIdentity.parentMembershipActive &&
-                  currentIdentity.activeOwnedHouseholdCount === 1 &&
-                  currentIdentity.ownedHouseholds.length === 1 &&
-                  currentIdentity.ownedHouseholds[0]?.householdId === household?.householdId)) &&
+                  currentIdentity.activeOwnedHouseholdCount > 0 &&
+                  currentIdentity.ownedHouseholds.length ===
+                    currentIdentity.activeOwnedHouseholdCount &&
+                  currentIdentity.ownedHouseholds.some(
+                    (candidate) => candidate.householdId === household?.householdId,
+                  ))) &&
               currentProof.valid &&
               currentProof.replacement_hash === null,
             );
@@ -569,7 +683,9 @@ export function createV21AdultSessionRuntime(
           household,
           memberships,
           active_role: activeRole,
-          role_selection_required: memberships.length > 1,
+          role_selection_required: false,
+          household_selection_required:
+            activeRole === 'parent' && household === null && identity.ownedHouseholds.length > 1,
         };
       } catch {
         let cleanup: 'revoked' | 'invalid' | 'unavailable' | 'revocation_unverified' | null = null;
@@ -621,18 +737,19 @@ export function createV21AdultSessionRuntime(
         if (!identity || !identity.memberships.includes(requestedRole)) {
           return { switched: false, reason: 'invalid_role' };
         }
+        const parentContextAvailable =
+          identity.parentMembershipActive &&
+          identity.activeOwnedHouseholdCount > 0 &&
+          identity.ownedHouseholds.length === identity.activeOwnedHouseholdCount;
         const household =
           requestedRole === 'parent' &&
-          identity.parentMembershipActive &&
-          identity.activeOwnedHouseholdCount === 1 &&
+          parentContextAvailable &&
           identity.ownedHouseholds.length === 1
             ? identity.ownedHouseholds[0]!
             : null;
-        if (requestedRole === 'parent' && !household) {
+        if (requestedRole === 'parent' && !parentContextAvailable) {
           return { switched: false, reason: 'invalid_role' };
         }
-        const revoked = await exactRevoke(parsed, now, 'role_context_switch');
-        if (revoked !== 'revoked') return { switched: false, reason: 'unavailable' };
         const established = await establish({
           scope: {
             product: ONE_TIME_PRODUCT_SCOPE,
@@ -647,6 +764,11 @@ export function createV21AdultSessionRuntime(
           now,
         });
         if (!established.established) return { switched: false, reason: 'unavailable' };
+        const revoked = await exactRevoke(parsed, now, 'role_context_switch');
+        if (revoked !== 'revoked') {
+          await revokeEstablishedSession(established.browser_session_token, now);
+          return { switched: false, reason: 'unavailable' };
+        }
         return {
           switched: true,
           browser_session_token: established.browser_session_token,
@@ -654,6 +776,137 @@ export function createV21AdultSessionRuntime(
           expires_at: established.expires_at,
           active_role: requestedRole,
           memberships: identity.memberships,
+          household_selection_required: requestedRole === 'parent' && household === null,
+        };
+      } catch {
+        return { switched: false, reason: 'unavailable' };
+      }
+    },
+
+    householdContextCookieHeader: async ({ cookie_header: cookieHeader, now = clock() }) => {
+      const parsed = parseCookie(cookieHeader);
+      if (!parsed) return { status: 'invalid', reason: 'invalid_session' };
+      const resolution = await resolveEnvelope(parsed, now);
+      if (resolution.status !== 'resolved') {
+        return resolution.status === 'unavailable'
+          ? { status: 'unavailable' }
+          : { status: 'invalid', reason: 'invalid_session' };
+      }
+      const current = resolution.context;
+      if (current.session.activeRole !== 'parent') {
+        return { status: 'invalid', reason: 'invalid_role' };
+      }
+      try {
+        const identity = await input.repository.findLoginIdentity({
+          normalizedEmail: current.normalizedEmail,
+          runtimeTier: current.session.runtimeTier,
+          verificationEnvironmentId: current.session.verificationEnvironmentId,
+        });
+        const households = identity?.ownedHouseholds ?? [];
+        const activeHouseholdId = current.session.activeHouseholdId;
+        if (
+          !identity ||
+          identity.adultState !== 'active' ||
+          identity.humanAccountId !== current.session.humanAccountId ||
+          identity.accountState !== 'active' ||
+          identity.securityVersion !== current.session.securityVersion ||
+          !identity.parentMembershipActive ||
+          identity.activeOwnedHouseholdCount < 1 ||
+          households.length !== identity.activeOwnedHouseholdCount ||
+          (activeHouseholdId === null
+            ? households.length < 2
+            : !households.some((household) => household.householdId === activeHouseholdId))
+        ) {
+          return { status: 'invalid', reason: 'invalid_session' };
+        }
+        return {
+          status: 'resolved',
+          households,
+          active_household_id: activeHouseholdId,
+          csrf_token: signCsrf(
+            parsed.payloadSegment,
+            randomMaterial(randomSource),
+            input.hmacSecret,
+          ),
+          expires_at: currentExpiry(current),
+        };
+      } catch {
+        return { status: 'unavailable' };
+      }
+    },
+
+    switchHouseholdCookieHeader: async ({
+      cookie_header: cookieHeader,
+      csrf_token: csrfToken,
+      selected_household_id: selectedHouseholdId,
+      now = clock(),
+    }) => {
+      if (!exactIdentifierSchema.safeParse(selectedHouseholdId).success) {
+        return { switched: false, reason: 'invalid_household' };
+      }
+      const parsed = parseCookie(cookieHeader);
+      if (!parsed) return { switched: false, reason: 'invalid_session' };
+      if (!verifyCsrfProof(parsed.payloadSegment, csrfToken, input.hmacSecret)) {
+        return { switched: false, reason: 'invalid_csrf' };
+      }
+      const resolution = await resolveEnvelope(parsed, now);
+      if (resolution.status !== 'resolved') {
+        return {
+          switched: false,
+          reason: resolution.status === 'invalid' ? 'invalid_session' : 'unavailable',
+        };
+      }
+      const current = resolution.context;
+      if (current.session.activeRole !== 'parent') {
+        return { switched: false, reason: 'invalid_role' };
+      }
+      try {
+        const identity = await input.repository.findLoginIdentity({
+          normalizedEmail: current.normalizedEmail,
+          runtimeTier: current.session.runtimeTier,
+          verificationEnvironmentId: current.session.verificationEnvironmentId,
+        });
+        if (
+          !identity ||
+          identity.adultState !== 'active' ||
+          identity.humanAccountId !== current.session.humanAccountId ||
+          identity.accountState !== 'active' ||
+          identity.securityVersion !== current.session.securityVersion ||
+          !identity.parentMembershipActive ||
+          identity.activeOwnedHouseholdCount < 1 ||
+          identity.ownedHouseholds.length !== identity.activeOwnedHouseholdCount
+        ) {
+          return { switched: false, reason: 'invalid_session' };
+        }
+        const selectedHousehold = identity.ownedHouseholds.find(
+          (household) => household.householdId === selectedHouseholdId,
+        );
+        if (!selectedHousehold) return { switched: false, reason: 'invalid_household' };
+        const established = await establish({
+          scope: {
+            product: ONE_TIME_PRODUCT_SCOPE,
+            runtime_tier: current.session.runtimeTier,
+            verification_environment_id: current.session.verificationEnvironmentId,
+          },
+          adult_id: current.adultId,
+          human_account_id: current.session.humanAccountId,
+          active_role: 'parent',
+          household_id: selectedHousehold.householdId,
+          security_version: current.session.securityVersion,
+          now,
+        });
+        if (!established.established) return { switched: false, reason: 'unavailable' };
+        const revoked = await exactRevoke(parsed, now, 'household_context_switch');
+        if (revoked !== 'revoked') {
+          await revokeEstablishedSession(established.browser_session_token, now);
+          return { switched: false, reason: 'unavailable' };
+        }
+        return {
+          switched: true,
+          browser_session_token: established.browser_session_token,
+          csrf_token: established.csrf_token,
+          expires_at: established.expires_at,
+          active_household: selectedHousehold,
         };
       } catch {
         return { switched: false, reason: 'unavailable' };
@@ -716,16 +969,123 @@ export function createV21AdultSessionRuntime(
       const resolution = await resolveEnvelope(parsed, now);
       return resolution.status === 'resolved' ? resolution.context : null;
     },
+
+    changePasswordCookieHeader: async ({
+      cookie_header: cookieHeader,
+      current_password: currentPassword,
+      new_password: newPassword,
+      now = clock(),
+    }): Promise<V21AdultPasswordChangeOutcome> => {
+      const parsed = parseCookie(cookieHeader);
+      if (!parsed || !validInstant(now)) return { changed: false, reason: 'invalid_session' };
+      const resolution = await resolveEnvelope(parsed, now);
+      if (resolution.status === 'invalid') return { changed: false, reason: 'invalid_session' };
+      if (resolution.status === 'unavailable' || !input.passwordChanger) {
+        return { changed: false, reason: 'unavailable' };
+      }
+
+      try {
+        const context = resolution.context;
+        const identity = await input.repository.findLoginIdentity({
+          normalizedEmail: context.normalizedEmail,
+          runtimeTier: context.session.runtimeTier,
+          verificationEnvironmentId: context.session.verificationEnvironmentId,
+        });
+        if (
+          !identity ||
+          identity.adultId !== context.adultId ||
+          identity.humanAccountId !== context.session.humanAccountId ||
+          identity.accountState !== 'active' ||
+          identity.securityVersion !== context.session.securityVersion ||
+          !identity.memberships.includes(context.session.activeRole) ||
+          identity.credentialState !== 'active' ||
+          typeof identity.passwordHash !== 'string' ||
+          !Number.isSafeInteger(identity.credentialVersion) ||
+          Number(identity.credentialVersion) < 1
+        ) {
+          return { changed: false, reason: 'invalid_session' };
+        }
+
+        const currentVerification = verifyAuthPasswordWithUpgrade(
+          currentPassword,
+          identity.passwordHash,
+        );
+        if (!currentVerification.valid) {
+          return { changed: false, reason: 'invalid_current_password' };
+        }
+        const passwordEvaluation = evaluatePassword({
+          role: 'parent',
+          password: newPassword,
+          email: identity.normalizedEmail,
+          names: [identity.ownerDisplayName],
+          common_passwords: COMMON_AUTH_PASSWORDS,
+        });
+        if (!passwordEvaluation.accepted) {
+          return { changed: false, reason: 'password_policy_failed' };
+        }
+        if (verifyAuthPassword(newPassword, identity.passwordHash)) {
+          return { changed: false, reason: 'password_reuse' };
+        }
+
+        const nextSecurityVersion = context.session.securityVersion + 1;
+        const nextClaims = browserEnvelopeSchema.parse({
+          ...parsed.claims,
+          security_version: nextSecurityVersion,
+        });
+        const nextBrowserToken = signBrowserEnvelope(nextClaims, input.hmacSecret);
+        const nextParsed = parseCookie(
+          `${AUTH_SESSION_COOKIE.name}=${encodeURIComponent(nextBrowserToken)}`,
+        );
+        if (!nextParsed) return { changed: false, reason: 'unavailable' };
+        // Complete every fallible token/clock operation before the database commit. Once the
+        // credential transaction succeeds, the response can be assembled without stranding the
+        // Parent behind a rotated security version and no usable cookie/CSRF pair.
+        const nextCsrfToken = signCsrf(
+          nextParsed.payloadSegment,
+          randomMaterial(randomSource),
+          input.hmacSecret,
+        );
+        const expiresAt = currentExpiry(context);
+        const passwordUpdatedAt = now.toISOString();
+
+        const changed = await input.passwordChanger({
+          ...repositoryBinding(parsed.claims),
+          activeRole: parsed.claims.active_role,
+          sessionId: parsed.claims.session_id,
+          accessTokenDigest: domainDigest(ACCESS_TOKEN_DOMAIN, parsed.claims.access_material),
+          expectedCredentialVersion: Number(identity.credentialVersion),
+          expectedPasswordHash: identity.passwordHash,
+          replacementPasswordHash: hashAuthPassword(newPassword),
+          now,
+        });
+        return {
+          changed: true,
+          browser_session_token: nextBrowserToken,
+          csrf_token: nextCsrfToken,
+          expires_at: expiresAt,
+          password_updated_at: passwordUpdatedAt,
+          sessions_invalidated: changed.sessionsInvalidated,
+          current_session_preserved: true,
+        };
+      } catch {
+        return { changed: false, reason: 'unavailable' };
+      }
+    },
   };
 }
 
 export function createPostgresV21AdultSessionRuntime(
-  input: Omit<V21AdultSessionRuntimeInput, 'repository'> & {
-    db: Parameters<typeof createPostgresV21AdultSessionRepository>[0];
+  input: Omit<
+    V21AdultSessionRuntimeInput,
+    'repository' | 'repositoryFactory' | 'passwordChanger'
+  > & {
+    db: DbPool;
   },
 ): V21AdultSessionRuntime {
   return createV21AdultSessionRuntime({
     repository: createPostgresV21AdultSessionRepository(input.db),
+    repositoryFactory: createPostgresV21AdultSessionRepository,
+    passwordChanger: (changeInput) => changeV21AdultPassword(input.db, changeInput),
     hmacSecret: input.hmacSecret,
     ...(input.randomBytes ? { randomBytes: input.randomBytes } : {}),
     ...(input.clock ? { clock: input.clock } : {}),
@@ -767,7 +1127,6 @@ function assertEstablishmentInput(input: V21ParentSessionEstablishmentInput): vo
       input.scope.runtime_tier ||
     !['admin', 'parent'].includes(input.active_role) ||
     (input.active_role === 'admin' && input.household_id !== null) ||
-    (input.active_role === 'parent' && input.household_id === null) ||
     !Number.isSafeInteger(input.security_version) ||
     input.security_version < 1 ||
     !validInstant(input.now)
@@ -814,8 +1173,10 @@ function exactReadback(
     resolved.session.revokedAt === null &&
     (claims.active_role === 'admin'
       ? resolved.household === null
-      : resolved.ownedHouseholdCount === 1 &&
-        resolved.household?.householdId === claims.household_id) &&
+      : claims.household_id === null
+        ? resolved.ownedHouseholdCount > 1 && resolved.household === null
+        : resolved.ownedHouseholdCount >= 1 &&
+          resolved.household?.householdId === claims.household_id) &&
     Number.isFinite(idleExpiry) &&
     Number.isFinite(absoluteExpiry) &&
     idleExpiry > now.getTime() &&

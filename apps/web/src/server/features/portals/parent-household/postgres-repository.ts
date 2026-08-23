@@ -9,6 +9,19 @@ import {
   type ParentManagedStudent,
 } from '../../../../../../../packages/contracts/src/portals/parent-household/index.ts';
 import type { DbPool, Queryable } from '../../../../../../../packages/db/src/index.ts';
+import { accountAccessRequestHash } from '../../../../../../../packages/domain/src/access/service.ts';
+import {
+  CONTROLLER_DUAL_ROLE_ACCESS_EXPIRES_AT,
+  CONTROLLER_DUAL_ROLE_PROVISIONING_ACTOR,
+  CONTROLLER_DUAL_ROLE_PROVISIONING_POLICY,
+  controllerDualRoleAccessIdempotencyKey,
+  controllerDualRoleAccessSourceReference,
+  controllerDualRoleProvisionAuditKey,
+  controllerDualRoleProvisionAuditMetadata,
+  controllerDualRoleProvisioningIdentityKeys,
+  isControllerDualRoleProvisioningSyntheticTestFixture,
+  isControllerDualRoleProvisioningTarget,
+} from '../../../../../../../packages/domain/src/accounts/controller-dual-role-provisioning-policy.ts';
 import { ParentHouseholdError } from '../../../../../../../packages/domain/src/portals/parent-household/index.ts';
 
 type Row = Record<string, unknown>;
@@ -25,6 +38,7 @@ type Scope = {
   ownerHumanAccountId: string;
   seatLimit: number;
 };
+type PortalAccessSourceKind = 'free_pilot' | 'admin_override' | 'legacy_preview';
 
 export type ParentHouseholdPostgresOptions = {
   acceptedServiceAccountVersion: string;
@@ -136,6 +150,12 @@ export function createPostgresParentHouseholdRepository(
         }
 
         validateMutation(input, loaded.record, loaded.scope);
+        await resolvePortalHouseholdAccessSource(
+          client,
+          loaded,
+          input.context.occurred_at,
+          options,
+        );
         const target = requiredTarget(input.next, input.audit.student_id);
         const current = loaded.record.students.find(
           (student) => student.student_id === input.audit.student_id,
@@ -176,6 +196,7 @@ export function createPostgresParentHouseholdRepository(
             enrollmentId,
             acceptanceId,
             occurredAt: input.context.occurred_at,
+            options,
           });
         } else {
           await updateStudent(client, loaded, current!, target, input, passwordHash);
@@ -186,6 +207,7 @@ export function createPostgresParentHouseholdRepository(
               enrollmentId,
               state: input.canonical_enrollment === 'enroll' ? 'active' : 'revoked',
               occurredAt: input.context.occurred_at,
+              options,
             });
           }
         }
@@ -215,9 +237,7 @@ export function createPostgresParentHouseholdRepository(
           });
         }
 
-        const activeSeatCount = input.next.students.filter(
-          (student) => student.state === 'active',
-        ).length;
+        const activeSeatCount = activeDependentSeatCount(input.next.students);
         const householdUpdate = await client.query(
           `UPDATE onetime.v21_households
               SET active_seat_count = $1,
@@ -449,7 +469,7 @@ function validateMutation(
   }
   const target = requiredTarget(input.next, input.audit.student_id);
   const previous = current.students.find((student) => student.student_id === target.student_id);
-  const activeSeats = input.next.students.filter((student) => student.state === 'active').length;
+  const activeSeats = activeDependentSeatCount(input.next.students);
   if (
     activeSeats > STANDARD_FAMILY_STUDENT_ALLOWANCE ||
     activeSeats > scope.seatLimit ||
@@ -467,10 +487,10 @@ function validateMutation(
     case 'student_created':
       if (
         previous ||
+        target.relationship !== 'dependent' ||
         target.state !== 'active' ||
         input.next.students.length !== current.students.length + 1 ||
-        activeSeats !==
-          current.students.filter((student) => student.state === 'active').length + 1 ||
+        activeSeats !== activeDependentSeatCount(current.students) + 1 ||
         !input.password_hash_factory ||
         input.revoke_student_sessions ||
         input.canonical_enrollment !== 'enroll'
@@ -527,6 +547,12 @@ function validateMutation(
       }
       break;
   }
+}
+
+function activeDependentSeatCount(students: readonly ParentManagedStudent[]) {
+  return students.filter(
+    (student) => student.state === 'active' && student.relationship === 'dependent',
+  ).length;
 }
 
 function validatePasswordHash(passwordHash: string | null) {
@@ -1020,9 +1046,63 @@ async function ensurePortalHouseholdAccessProjection(
     throw invariant('The portal household access projection is ambiguous.');
   }
 
-  let effectiveAt = input.context.occurred_at;
+  const { effectiveAt, expiresAt, sourceKind } = await resolvePortalHouseholdAccessSource(
+    db,
+    loaded,
+    input.context.occurred_at,
+    options,
+  );
+
+  await exactlyOne(
+    db,
+    `INSERT INTO onetime.account_access_projections
+       (access_key, account_key, product_key, household_key, state, source_kind,
+        effective_at, expires_at, opaque_source_reference, source_revision,
+        source_updated_at, source_request_hash, policy_version, revocation_reason,
+        access_version, last_event_key, created_at, updated_at)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,
+             'v21-parent-student-compatibility-v1',NULL,1,$13,$11,$11)`,
+    [
+      stableId(
+        'account_access',
+        options.portalAccountKey,
+        options.portalProductKey,
+        loaded.record.household_id,
+      ),
+      options.portalAccountKey,
+      options.portalProductKey,
+      loaded.record.household_id,
+      loaded.record.access_state === 'free' ? 'active' : loaded.record.access_state,
+      sourceKind,
+      effectiveAt,
+      expiresAt,
+      stableId('v21_access_source', loaded.record.household_id),
+      input.expected_revision,
+      input.context.occurred_at,
+      input.context.canonical_request_hash,
+      stableId('v21_access_event', input.context.idempotency_key),
+    ],
+    'portal household access projection',
+  );
+}
+
+async function resolvePortalHouseholdAccessSource(
+  db: Queryable,
+  loaded: { record: ParentHouseholdRecord; scope: Scope },
+  occurredAt: string,
+  options: Pick<ParentHouseholdPostgresOptions, 'portalAccountKey' | 'portalProductKey'>,
+) {
+  let effectiveAt = occurredAt;
   let expiresAt: string | null = null;
+  let sourceKind: PortalAccessSourceKind = 'admin_override';
   if (loaded.record.access_state === 'free' || loaded.record.access_state === 'grace') {
+    const provisionedOverride = await resolveActiveControllerDualRoleAccessOverride(
+      db,
+      loaded,
+      occurredAt,
+      options,
+    );
+    if (provisionedOverride) return provisionedOverride;
     const signup = await db.query(
       `SELECT free_access_expires_at, signup_committed_at
          FROM onetime.family_signup_access_projections
@@ -1039,46 +1119,391 @@ async function ensurePortalHouseholdAccessProjection(
         loaded.scope.verificationEnvironmentId,
       ],
     );
-    if (signup.rowCount !== 1) {
+    if (signup.rowCount === 1) {
+      expiresAt = timestamp(
+        (signup.rows[0] as Row).free_access_expires_at,
+        'free-access expiration',
+      );
+      effectiveAt = timestamp((signup.rows[0] as Row).signup_committed_at, 'signup commit time');
+      sourceKind = 'free_pilot';
+      if (Date.parse(expiresAt) <= Date.parse(occurredAt)) {
+        throw invariant('The time-bounded household access source has expired.');
+      }
+    } else if ((signup.rowCount ?? 0) > 1 || loaded.record.access_state === 'grace') {
       throw invariant('The time-bounded household access source is unavailable.');
-    }
-    expiresAt = timestamp((signup.rows[0] as Row).free_access_expires_at, 'free-access expiration');
-    effectiveAt = timestamp((signup.rows[0] as Row).signup_committed_at, 'signup commit time');
-    if (Date.parse(expiresAt) <= Date.parse(input.context.occurred_at)) {
-      throw invariant('The time-bounded household access source has expired.');
+    } else if (await hasPreFamilySignupLegacyFreeAccess(db, loaded)) {
+      sourceKind = 'legacy_preview';
+    } else {
+      const correction = await resolveActiveFamilySignupAccessCorrection(db, loaded, occurredAt);
+      if (!correction) throw invariant('The household access source is unavailable.');
+      effectiveAt = correction.effectiveAt;
+      expiresAt = correction.expiresAt;
+      sourceKind = 'admin_override';
     }
   }
+  return { effectiveAt, expiresAt, sourceKind };
+}
 
-  await exactlyOne(
-    db,
-    `INSERT INTO onetime.account_access_projections
-       (access_key, account_key, product_key, household_key, state, source_kind,
-        effective_at, expires_at, opaque_source_reference, source_revision,
-        source_updated_at, source_request_hash, policy_version, revocation_reason,
-        access_version, last_event_key, created_at, updated_at)
-     VALUES ($1,$2,$3,$4,$5,'legacy_preview',$6,$7,$8,$9,$10,$11,
-             'v21-parent-student-compatibility-v1',NULL,1,$12,$10,$10)`,
+/**
+ * Accepts the controller's bounded dual-role grant only when every durable
+ * projection and its applied event still agree. This is not a general Admin
+ * override escape hatch: arbitrary, partial, stale, expired, paid, signup, or
+ * consent-shaped records remain ineligible.
+ */
+async function resolveActiveControllerDualRoleAccessOverride(
+  db: Queryable,
+  loaded: { record: ParentHouseholdRecord; scope: Scope },
+  occurredAt: string,
+  options: Pick<ParentHouseholdPostgresOptions, 'portalAccountKey' | 'portalProductKey'>,
+) {
+  if (loaded.record.access_state !== 'free') return null;
+  const expectedSourceReference = controllerDualRoleAccessSourceReference(
+    loaded.record.household_id,
+  );
+  const expectedSourceDigest = createHash('sha256')
+    .update(expectedSourceReference, 'utf8')
+    .digest('hex');
+  const result = await db.query(
+    `SELECT adult.adult_id, adult.normalized_email, adult.display_name,
+            account.human_account_id,
+            projection.effective_at, projection.expires_at,
+            projection.source_request_hash
+       FROM onetime.v21_households AS household
+       JOIN onetime.v21_adult_identities AS adult
+         ON adult.adult_id = household.owner_adult_id
+        AND adult.product_key = household.product_key
+        AND adult.runtime_tier = household.runtime_tier
+        AND adult.verification_environment_id = household.verification_environment_id
+        AND adult.state = 'active'
+       JOIN onetime.v21_human_accounts AS account
+         ON account.human_account_id = household.owner_human_account_id
+        AND account.adult_id = household.owner_adult_id
+        AND account.product_key = household.product_key
+        AND account.runtime_tier = household.runtime_tier
+        AND account.verification_environment_id = household.verification_environment_id
+        AND account.state = 'active'
+       JOIN onetime.v21_human_account_role_memberships AS admin_membership
+         ON admin_membership.human_account_id = account.human_account_id
+        AND admin_membership.product_key = account.product_key
+        AND admin_membership.runtime_tier = account.runtime_tier
+        AND admin_membership.verification_environment_id = account.verification_environment_id
+        AND admin_membership.role = 'admin'
+        AND admin_membership.revoked_at IS NULL
+        AND admin_membership.granted_at <= $8::timestamptz
+       JOIN onetime.v21_human_account_role_memberships AS parent_membership
+         ON parent_membership.human_account_id = account.human_account_id
+        AND parent_membership.product_key = account.product_key
+        AND parent_membership.runtime_tier = account.runtime_tier
+        AND parent_membership.verification_environment_id = account.verification_environment_id
+        AND parent_membership.role = 'parent'
+        AND parent_membership.revoked_at IS NULL
+        AND parent_membership.granted_at <= $8::timestamptz
+       JOIN onetime.canonical_aggregate_states AS canonical_access
+         ON canonical_access.aggregate_kind = 'access'
+        AND canonical_access.aggregate_key = household.household_id
+        AND canonical_access.product_key = household.product_key
+        AND canonical_access.runtime_tier = household.runtime_tier
+        AND canonical_access.verification_environment_id = household.verification_environment_id
+        AND canonical_access.current_state = 'free'
+        AND canonical_access.version = 1
+        AND canonical_access.archived_at IS NULL
+       JOIN onetime.canonical_state_transition_events AS canonical_transition
+         ON canonical_transition.transition_key = canonical_access.last_transition_key
+        AND canonical_transition.aggregate_kind = 'access'
+        AND canonical_transition.aggregate_key = household.household_id
+        AND canonical_transition.product_key = household.product_key
+        AND canonical_transition.runtime_tier = household.runtime_tier
+        AND canonical_transition.verification_environment_id = household.verification_environment_id
+        AND canonical_transition.previous_state IS NULL
+        AND canonical_transition.next_state = 'free'
+        AND canonical_transition.expected_version = 0
+        AND canonical_transition.resulting_version = 1
+        AND canonical_transition.access_cause = 'free_period'
+        AND canonical_transition.actor_kind = 'system'
+        AND canonical_transition.actor_key = $5
+        AND canonical_transition.created_at <= $8::timestamptz
+       JOIN onetime.portal_households AS portal
+         ON portal.household_key = household.household_id
+        AND portal.account_key = $6
+        AND portal.product_key = $7
+        AND portal.status = 'active'
+       JOIN onetime.account_access_projections AS projection
+         ON projection.account_key = portal.account_key
+        AND projection.product_key = portal.product_key
+        AND projection.household_key = portal.household_key
+        AND projection.state = 'active'
+        AND projection.source_kind = 'admin_override'
+        AND projection.effective_at <= $8::timestamptz
+        AND projection.effective_at = canonical_transition.created_at
+        AND projection.source_updated_at <= $8::timestamptz
+        AND projection.expires_at = $9::timestamptz
+        AND projection.expires_at > $8::timestamptz
+        AND projection.opaque_source_reference = $10
+        AND projection.source_revision = 1
+        AND projection.policy_version = $11
+        AND projection.revocation_reason IS NULL
+       JOIN onetime.account_access_source_states AS source
+         ON source.account_key = projection.account_key
+        AND source.product_key = projection.product_key
+        AND source.household_key = projection.household_key
+        AND source.source_slot = 'complimentary'
+        AND source.source_kind = projection.source_kind
+        AND source.state = projection.state
+        AND source.effective_at = projection.effective_at
+        AND source.expires_at = projection.expires_at
+        AND source.opaque_source_reference = projection.opaque_source_reference
+        AND source.source_revision = projection.source_revision
+        AND source.source_updated_at = projection.source_updated_at
+        AND source.source_request_hash = projection.source_request_hash
+        AND source.policy_version = projection.policy_version
+        AND source.revocation_reason IS NULL
+        AND source.last_event_key = projection.last_event_key
+       JOIN onetime.account_access_events AS event
+         ON event.event_key = projection.last_event_key
+        AND event.account_key = projection.account_key
+        AND event.product_key = projection.product_key
+        AND event.household_key = projection.household_key
+        AND event.idempotency_key = $12
+        AND event.request_hash = projection.source_request_hash
+        AND event.source_kind = projection.source_kind
+        AND event.source_reference_digest = $13
+        AND event.source_revision = projection.source_revision
+        AND event.source_updated_at = projection.source_updated_at
+        AND event.previous_state IS NULL
+        AND event.next_state = 'active'
+        AND event.decision = 'applied'
+        AND event.actor_kind = 'provisioner'
+        AND event.created_at <= $8::timestamptz
+      WHERE household.household_id = $1
+        AND household.product_key = $2
+        AND household.runtime_tier = $3
+        AND household.verification_environment_id = $4
+        AND household.classification = 'family'
+        AND household.state = 'active'
+        AND NOT EXISTS (
+          SELECT 1 FROM onetime.family_signup_requests AS signup_request
+           WHERE signup_request.household_id = $1
+             AND signup_request.product = $2
+             AND signup_request.runtime_tier = $3
+             AND signup_request.verification_environment_id = $4
+        )
+        AND NOT EXISTS (
+          SELECT 1 FROM onetime.family_signup_access_projections AS signup_access
+           WHERE signup_access.household_id = $1
+             AND signup_access.product = $2
+             AND signup_access.runtime_tier = $3
+             AND signup_access.verification_environment_id = $4
+        )
+        AND NOT EXISTS (
+          SELECT 1 FROM onetime.family_signup_receipts AS signup_receipt
+           WHERE signup_receipt.household_id = $1
+             AND signup_receipt.product = $2
+             AND signup_receipt.runtime_tier = $3
+             AND signup_receipt.verification_environment_id = $4
+        )
+        AND NOT EXISTS (
+          SELECT 1 FROM onetime.family_signup_outbox AS signup_outbox
+           WHERE signup_outbox.household_id = $1
+             AND signup_outbox.product = $2
+             AND signup_outbox.runtime_tier = $3
+             AND signup_outbox.verification_environment_id = $4
+        )
+      LIMIT 2
+      FOR UPDATE`,
     [
-      stableId(
-        'account_access',
-        options.portalAccountKey,
-        options.portalProductKey,
-        loaded.record.household_id,
-      ),
+      loaded.record.household_id,
+      loaded.scope.product,
+      loaded.scope.runtimeTier,
+      loaded.scope.verificationEnvironmentId,
+      CONTROLLER_DUAL_ROLE_PROVISIONING_ACTOR,
       options.portalAccountKey,
       options.portalProductKey,
-      loaded.record.household_id,
-      loaded.record.access_state === 'free' ? 'active' : loaded.record.access_state,
-      effectiveAt,
-      expiresAt,
-      stableId('v21_access_source', loaded.record.household_id),
-      input.expected_revision,
-      input.context.occurred_at,
-      input.context.canonical_request_hash,
-      stableId('v21_access_event', input.context.idempotency_key),
+      occurredAt,
+      CONTROLLER_DUAL_ROLE_ACCESS_EXPIRES_AT,
+      expectedSourceReference,
+      CONTROLLER_DUAL_ROLE_PROVISIONING_POLICY,
+      controllerDualRoleAccessIdempotencyKey(loaded.record.household_id),
+      expectedSourceDigest,
     ],
-    'portal household access projection',
   );
+  if (result.rowCount !== 1) return null;
+  const row = result.rows[0] as Row;
+  const target = {
+    normalizedEmail: String(row.normalized_email ?? ''),
+    displayName: String(row.display_name ?? ''),
+  };
+  const isolatedSyntheticFixture =
+    loaded.scope.runtimeTier === 'isolated_staging' &&
+    loaded.scope.verificationEnvironmentId === 'ci' &&
+    isControllerDualRoleProvisioningSyntheticTestFixture(target);
+  if (!isControllerDualRoleProvisioningTarget(target) && !isolatedSyntheticFixture) return null;
+  const policyScope = {
+    accountKey: options.portalAccountKey,
+    productKey: options.portalProductKey,
+    runtimeTier: loaded.scope.runtimeTier,
+    verificationEnvironmentId: loaded.scope.verificationEnvironmentId,
+    normalizedEmail: target.normalizedEmail,
+  };
+  const identityKeys = controllerDualRoleProvisioningIdentityKeys(policyScope);
+  if (
+    row.adult_id !== identityKeys.adultId ||
+    row.human_account_id !== identityKeys.humanAccountId ||
+    loaded.record.household_id !== identityKeys.householdId
+  ) {
+    return null;
+  }
+  const effectiveAt = timestamp(row.effective_at, 'provisioned access effective time');
+  const expectedRequestHash = accountAccessRequestHash({
+    accountKey: options.portalAccountKey,
+    productKey: options.portalProductKey,
+    sourceKind: 'admin_override',
+    command: {
+      household_key: loaded.record.household_id,
+      state: 'active',
+      effective_at: effectiveAt,
+      expires_at: new Date(CONTROLLER_DUAL_ROLE_ACCESS_EXPIRES_AT).toISOString(),
+      opaque_source_reference: expectedSourceReference,
+      source_revision: 1,
+      source_updated_at: effectiveAt,
+      policy_version: CONTROLLER_DUAL_ROLE_PROVISIONING_POLICY,
+      revocation_reason: null,
+    },
+  });
+  if (row.source_request_hash !== expectedRequestHash) return null;
+  const audit = await db.query(
+    `SELECT created_at
+       FROM onetime.account_lifecycle_audit_events
+      WHERE audit_key=$1 AND account_key=$2 AND product_key=$3
+        AND actor_user_key IS NULL AND subject_user_key IS NULL AND token_key IS NULL
+        AND action_type='controller_dual_role_adult_provisioned'
+        AND success=true AND reason IS NULL AND metadata=$4::jsonb
+        AND created_at=$5::timestamptz AND created_at<=$6::timestamptz
+      LIMIT 2`,
+    [
+      controllerDualRoleProvisionAuditKey(policyScope),
+      options.portalAccountKey,
+      options.portalProductKey,
+      JSON.stringify(controllerDualRoleProvisionAuditMetadata(identityKeys)),
+      effectiveAt,
+      occurredAt,
+    ],
+  );
+  if (audit.rows.length !== 1) return null;
+  return {
+    effectiveAt,
+    expiresAt: timestamp(row.expires_at, 'provisioned access expiration'),
+    sourceKind: 'admin_override' as const,
+  };
+}
+
+/**
+ * A legacy free household may be projected only when the immutable canonical
+ * transition proves it existed before the Family-signup access model. A
+ * missing Family-signup row by itself is corruption, not entitlement.
+ */
+async function hasPreFamilySignupLegacyFreeAccess(
+  db: Queryable,
+  loaded: { record: ParentHouseholdRecord; scope: Scope },
+) {
+  const result = await db.query(
+    `SELECT transition.transition_key
+       FROM onetime.canonical_state_transition_events AS transition
+       JOIN onetime.canonical_aggregate_states AS access
+         ON access.aggregate_kind = transition.aggregate_kind
+        AND access.aggregate_key = transition.aggregate_key
+        AND access.product_key = transition.product_key
+        AND access.runtime_tier = transition.runtime_tier
+        AND access.verification_environment_id = transition.verification_environment_id
+        AND access.last_transition_key = transition.transition_key
+        AND access.version = transition.resulting_version
+        AND access.version = 1
+        AND access.current_state = 'free'
+        AND access.archived_at IS NULL
+       JOIN onetime.schema_migrations AS family_signup_cutover
+         ON family_signup_cutover.id = '2248_v21_family_signup'
+      WHERE transition.aggregate_kind = 'access'
+        AND transition.aggregate_key = $1
+        AND transition.product_key = $2
+        AND transition.runtime_tier = $3
+        AND transition.verification_environment_id = $4
+        AND transition.previous_state IS NULL
+        AND transition.next_state = 'free'
+        AND transition.expected_version = 0
+        AND transition.resulting_version = 1
+        AND transition.access_cause IS NULL
+        AND transition.created_at < family_signup_cutover.applied_at
+      LIMIT 2`,
+    [
+      loaded.record.household_id,
+      loaded.scope.product,
+      loaded.scope.runtimeTier,
+      loaded.scope.verificationEnvironmentId,
+    ],
+  );
+  return result.rowCount === 1;
+}
+
+/**
+ * A correction is a separately governed, bounded source for one historical
+ * free-period record. It never creates or rewrites signup, consent, receipt,
+ * or provider evidence. The mutation is intentionally unavailable from the
+ * ordinary Parent portal; a later controller-authorized operation must create
+ * the immutable correction receipt first.
+ */
+async function resolveActiveFamilySignupAccessCorrection(
+  db: Queryable,
+  loaded: { record: ParentHouseholdRecord; scope: Scope },
+  occurredAt: string,
+) {
+  const result = await db.query(
+    `SELECT correction.source_effective_at, correction.expires_at
+       FROM onetime.family_signup_access_source_correction_receipts AS correction
+       JOIN onetime.canonical_aggregate_states AS access
+         ON access.aggregate_kind = 'access'
+        AND access.aggregate_key = correction.household_id
+        AND access.product_key = correction.product
+        AND access.runtime_tier = correction.runtime_tier
+        AND access.verification_environment_id = correction.verification_environment_id
+        AND access.current_state = 'free'
+        AND access.version = 1
+        AND access.last_transition_key = correction.source_transition_key
+        AND access.archived_at IS NULL
+       JOIN onetime.canonical_state_transition_events AS transition
+         ON transition.transition_key = correction.source_transition_key
+        AND transition.aggregate_kind = 'access'
+        AND transition.aggregate_key = correction.household_id
+        AND transition.product_key = correction.product
+        AND transition.runtime_tier = correction.runtime_tier
+        AND transition.verification_environment_id = correction.verification_environment_id
+        AND transition.previous_state IS NULL
+        AND transition.next_state = 'free'
+        AND transition.expected_version = 0
+        AND transition.resulting_version = 1
+        AND transition.access_cause = 'free_period'
+        AND transition.created_at = correction.source_effective_at
+        AND correction.source_effective_at = timestamptz '2026-08-04T12:05:49.000Z'
+        AND correction.expires_at = timestamptz '2026-09-11T18:00:00+03:00'
+      WHERE correction.household_id = $1
+        AND correction.product = $2
+        AND correction.runtime_tier = $3
+        AND correction.verification_environment_id = $4
+        AND correction.correction_state = 'active'
+        AND correction.expires_at > $5::timestamptz
+      LIMIT 2`,
+    [
+      loaded.record.household_id,
+      loaded.scope.product,
+      loaded.scope.runtimeTier,
+      loaded.scope.verificationEnvironmentId,
+      occurredAt,
+    ],
+  );
+  if (result.rowCount !== 1) return null;
+  const row = result.rows[0] as Row;
+  return {
+    effectiveAt: timestamp(row.source_effective_at, 'access correction effective time'),
+    expiresAt: timestamp(row.expires_at, 'access correction expiration'),
+  };
 }
 
 function portalCredentialOperation(operation: ParentHouseholdMutationOperation) {
@@ -1132,6 +1557,7 @@ async function insertEnrollment(
     enrollmentId: string;
     acceptanceId: string;
     occurredAt: string;
+    options: ParentHouseholdPostgresOptions;
   },
 ) {
   await exactlyOne(
@@ -1152,6 +1578,10 @@ async function insertEnrollment(
     ],
     'canonical Student enrollment',
   );
+  await synchronizeClassSeriesEnrollment(db, {
+    ...input,
+    state: 'active',
+  });
 }
 
 async function transitionEnrollment(
@@ -1162,6 +1592,7 @@ async function transitionEnrollment(
     enrollmentId: string;
     state: 'active' | 'revoked';
     occurredAt: string;
+    options: ParentHouseholdPostgresOptions;
   },
 ) {
   const result = await db.query(
@@ -1187,6 +1618,58 @@ async function transitionEnrollment(
     ],
   );
   if (result.rowCount !== 1) throw invariant('The canonical Student enrollment is missing.');
+  await synchronizeClassSeriesEnrollment(db, input);
+}
+
+async function synchronizeClassSeriesEnrollment(
+  db: Queryable,
+  input: {
+    loaded: { record: ParentHouseholdRecord; scope: Scope };
+    target: ParentManagedStudent;
+    enrollmentId: string;
+    state: 'active' | 'revoked';
+    occurredAt: string;
+    options: ParentHouseholdPostgresOptions;
+  },
+) {
+  const result = await db.query(
+    `INSERT INTO onetime.class_series_enrollments
+       (enrollment_key, account_key, product_key, class_series_key, learner_key,
+        household_key, enrollment_state, source, effective_at, revoked_at,
+        idempotency_key, audit_ref, version)
+     SELECT $1, series.account_key, series.product_key, series.class_series_key, $2,
+            $3, $4, 'parent_household_v21', $5::timestamptz,
+            CASE WHEN $4 = 'revoked' THEN $5::timestamptz ELSE NULL END,
+            $6, $7, 1
+       FROM onetime.class_series AS series
+      WHERE series.account_key = $8
+        AND series.product_key = $9
+        AND series.is_canonical = true
+        AND series.status = 'active'
+        AND series.series_state = 'active'
+     ON CONFLICT (account_key, product_key, class_series_key, learner_key)
+     DO UPDATE SET enrollment_state = EXCLUDED.enrollment_state,
+                   effective_at = EXCLUDED.effective_at,
+                   revoked_at = EXCLUDED.revoked_at,
+                   source = EXCLUDED.source,
+                   audit_ref = EXCLUDED.audit_ref,
+                   version = onetime.class_series_enrollments.version + 1
+     RETURNING enrollment_key`,
+    [
+      input.enrollmentId,
+      input.target.student_id,
+      input.loaded.record.household_id,
+      input.state,
+      input.occurredAt,
+      `parent-v21-class-enrollment:${input.target.student_id}`,
+      `parent-household:${input.enrollmentId}`,
+      input.options.portalAccountKey,
+      input.options.portalProductKey,
+    ],
+  );
+  if (result.rowCount !== 1) {
+    throw invariant('The canonical class series is unavailable for Student enrollment.');
+  }
 }
 
 async function insertAudit(

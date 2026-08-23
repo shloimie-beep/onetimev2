@@ -59,3 +59,22 @@ test('terms use current account and billing truth without placeholder claims', a
   expect(body).not.toContain('does not sell access, process payments, or grant member accounts');
   expect(body).not.toMatch(/paid checkout is live|live paid checkout is available/i);
 });
+
+test('cancellation and refund policy states period-end access and manual review boundaries', async ({
+  page,
+}) => {
+  await page.goto('/cancellation-refund');
+
+  await expect(page.getByRole('heading', { name: 'Cancellation and Refund Policy' })).toBeVisible();
+  await expect(
+    page.locator('[data-policy-version="cancellation-refund-v2.1-2026-08-05"]'),
+  ).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Canceling Future Renewal' })).toBeVisible();
+  await expect(page.getByText(/access continues through the verified end/i)).toBeVisible();
+  await expect(page.getByText(/does not automatically create a prorated refund/i)).toBeVisible();
+  await expect(page.getByText(/does not by itself delete a Parent account/i)).toBeVisible();
+  await expect(page.getByText(/does not collect payment card details/i)).toBeVisible();
+
+  const body = (await page.textContent('body')) ?? '';
+  expect(body).not.toMatch(/automatic refund|guaranteed refund|card number|sk_live_|whsec_/i);
+});

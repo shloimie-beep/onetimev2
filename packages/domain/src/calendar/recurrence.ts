@@ -17,7 +17,7 @@ export const CANONICAL_CLASS_SERIES: Readonly<CalendarSeries> = {
   localStartTime: '19:00',
   durationMinutes: 60,
   weekdays: [0, 1, 2, 3, 4],
-  startsOn: '2020-01-01',
+  startsOn: '2026-08-16',
   active: true,
   version: 1,
 };

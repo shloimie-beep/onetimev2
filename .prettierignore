@@ -2,6 +2,13 @@ dist
 node_modules
 playwright-report
 test-results
+# Pinned OpenSpec v1.10.0 generated skills; preserve upstream bytes so `openspec update` stays clean.
+.agents/skills/openspec-apply-change/SKILL.md
+.agents/skills/openspec-archive-change/SKILL.md
+.agents/skills/openspec-explore/SKILL.md
+.agents/skills/openspec-propose/SKILL.md
+.agents/skills/openspec-sync-specs/SKILL.md
+.agents/skills/openspec-update-change/SKILL.md
 bin/ot86-vimeo-canary
 ops/audit-inputs/**
 ops/evidence/**
@@ -16,3 +23,6 @@ artifacts/OT-99/preflight/**
 
 # OT-84 run markdown contains the verbatim packet prompt and audit text.
 ops/codex-runs/OT-84/*.md
+
+# Superseded control-tower records are preserved as historical evidence.
+ops/v2.1-execution/**

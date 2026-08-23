@@ -48,6 +48,7 @@ import {
 type Props = {
   csrfToken: string;
   section: ClassroomSectionId;
+  selectedSeriesKey: string | null;
   occurrences: ClassOccurrenceSummary[];
   selectedOccurrenceKey: string | null;
   occurrencesLoading: boolean;
@@ -55,6 +56,7 @@ type Props = {
   onSelectOccurrence: (occurrenceKey: string) => void;
   onRefreshOccurrences: (preferredOccurrenceKey?: string | null) => Promise<void> | void;
   onNavigate: (href: string) => void;
+  dailyFlow?: boolean;
 };
 
 type SeriesFormState = {
@@ -98,6 +100,7 @@ function initialOccurrenceForm(): OccurrenceFormState {
 export function ClassManagementWorkspace({
   csrfToken,
   section,
+  selectedSeriesKey,
   occurrences,
   selectedOccurrenceKey,
   occurrencesLoading,
@@ -105,6 +108,7 @@ export function ClassManagementWorkspace({
   onSelectOccurrence,
   onRefreshOccurrences,
   onNavigate,
+  dailyFlow = false,
 }: Props) {
   const [series, setSeries] = useState<ClassSeries[]>([]);
   const [managedOccurrence, setManagedOccurrence] = useState<ManagedClassOccurrence | null>(null);
@@ -494,7 +498,9 @@ export function ClassManagementWorkspace({
       {selector}
       {section === 'classes' && (
         <ClassesSection
+          dailyFlow={dailyFlow}
           series={series}
+          selectedSeriesKey={selectedSeriesKey}
           form={seriesForm}
           editingSeriesKey={editingSeriesKey}
           showForm={showSeriesForm}
@@ -523,6 +529,10 @@ export function ClassManagementWorkspace({
           }}
           onSubmit={saveSeries}
           onArchive={(item) => void archiveSeries(item)}
+          onOpen={(item) =>
+            onNavigate(`/app/classroom/classes/${encodeURIComponent(item.class_series_key)}`)
+          }
+          onBack={() => onNavigate('/app/classroom/classes')}
         />
       )}
       {section === 'occurrences' &&
@@ -530,6 +540,7 @@ export function ClassManagementWorkspace({
           <LoadingState label="Loading occurrence details" />
         ) : (
           <OccurrencesSection
+            dailyFlow={dailyFlow}
             series={activeSeries}
             occurrence={managedOccurrence}
             form={occurrenceForm}
@@ -613,7 +624,9 @@ export function ClassManagementWorkspace({
 }
 
 function ClassesSection({
+  dailyFlow,
   series,
+  selectedSeriesKey,
   form,
   editingSeriesKey,
   showForm,
@@ -624,8 +637,12 @@ function ClassesSection({
   onCancel,
   onSubmit,
   onArchive,
+  onOpen,
+  onBack,
 }: {
+  dailyFlow: boolean;
   series: ClassSeries[];
+  selectedSeriesKey: string | null;
   form: SeriesFormState;
   editingSeriesKey: string | null;
   showForm: boolean;
@@ -636,19 +653,32 @@ function ClassesSection({
   onCancel: () => void;
   onSubmit: (event: React.FormEvent) => void;
   onArchive: (item: ClassSeries) => void;
+  onOpen: (item: ClassSeries) => void;
+  onBack: () => void;
 }) {
+  const selectedSeries = selectedSeriesKey
+    ? (series.find((item) => item.class_series_key === selectedSeriesKey) ?? null)
+    : null;
   return (
     <section className="class-management__section">
       <header className="class-management__heading">
         <div>
-          <h2>Classes</h2>
-          <p>Create the reusable class before scheduling individual occurrences.</p>
+          <h2>{selectedSeriesKey ? 'Class series detail' : 'Classes'}</h2>
+          <p>
+            {selectedSeriesKey
+              ? 'Review and govern this reusable class series.'
+              : 'Create the reusable class before scheduling individual occurrences.'}
+          </p>
         </div>
-        {!showForm && (
+        {selectedSeriesKey ? (
+          <Button type="button" onClick={onBack}>
+            Back to Classes
+          </Button>
+        ) : !showForm && !dailyFlow ? (
           <Button type="button" variant="primary" onClick={onShowCreate}>
             Create class
           </Button>
-        )}
+        ) : null}
       </header>
       {showForm && (
         <form className="class-management__form" onSubmit={onSubmit}>
@@ -718,7 +748,63 @@ function ClassesSection({
           </div>
         </form>
       )}
-      {series.length === 0 && !showForm ? (
+      {selectedSeriesKey && !selectedSeries && series.length > 0 ? (
+        <ErrorState
+          title="Class series not found"
+          body="The requested class series is outside this One Time account or no longer exists."
+          action={
+            <Button type="button" onClick={onBack}>
+              Back to Classes
+            </Button>
+          }
+        />
+      ) : selectedSeries ? (
+        <Card className="class-management__card" data-usable="class-series-detail">
+          <header>
+            <div>
+              <h3>{selectedSeries.title}</h3>
+              <p>{selectedSeries.class_series_key}</p>
+            </div>
+            <StatusChip tone={selectedSeries.status === 'active' ? 'success' : 'neutral'}>
+              {readable(selectedSeries.status)}
+            </StatusChip>
+          </header>
+          {selectedSeries.description && <p>{selectedSeries.description}</p>}
+          <dl>
+            <div>
+              <dt>Teacher</dt>
+              <dd>{selectedSeries.teacher_name || 'No teacher set'}</dd>
+            </div>
+            <div>
+              <dt>Timezone</dt>
+              <dd>{selectedSeries.timezone}</dd>
+            </div>
+            <div>
+              <dt>Usual start</dt>
+              <dd>{selectedSeries.local_start_time}</dd>
+            </div>
+            <div>
+              <dt>Reminder</dt>
+              <dd>{selectedSeries.reminder_local_time}</dd>
+            </div>
+          </dl>
+          <div className="class-management__actions">
+            <Button type="button" onClick={() => onEdit(selectedSeries)} disabled={busy}>
+              Edit class
+            </Button>
+            {selectedSeries.status !== 'archived' && (
+              <Button
+                type="button"
+                variant="danger"
+                onClick={() => onArchive(selectedSeries)}
+                disabled={busy}
+              >
+                Archive class
+              </Button>
+            )}
+          </div>
+        </Card>
+      ) : series.length === 0 && !showForm ? (
         <EmptyState
           title="No classes yet"
           body="Create the first class, then add its scheduled occurrence."
@@ -746,6 +832,9 @@ function ClassesSection({
               </header>
               {item.description && <p>{item.description}</p>}
               <div className="class-management__actions">
+                <Button type="button" onClick={() => onOpen(item)} disabled={busy}>
+                  Open class details
+                </Button>
                 <Button type="button" onClick={() => onEdit(item)} disabled={busy}>
                   Edit
                 </Button>
@@ -769,6 +858,7 @@ function ClassesSection({
 }
 
 function OccurrencesSection({
+  dailyFlow,
   series,
   occurrence,
   form,
@@ -785,6 +875,7 @@ function OccurrencesSection({
   onRefreshZoom,
   onGoToClasses,
 }: {
+  dailyFlow: boolean;
   series: ClassSeries[];
   occurrence: ManagedClassOccurrence | null;
   form: OccurrenceFormState;
@@ -821,7 +912,7 @@ function OccurrencesSection({
           <h2>Occurrences</h2>
           <p>Schedule, reschedule, complete, or cancel one exact class meeting.</p>
         </div>
-        {!showCreate && (
+        {!showCreate && !dailyFlow && (
           <Button type="button" variant="primary" onClick={onShowCreate}>
             Create occurrence
           </Button>

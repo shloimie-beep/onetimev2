@@ -4,23 +4,91 @@
   "source_inputs": [
     {
       "path": "ops/v2.1-execution/source-spec/02-ACCEPTANCE-CONTRACT-v2.1.yaml",
-      "sha256": "d1dd39b0f91e94a4d8f179454a15fbeabb3d31d88afd490db1a5040ff6777444"
+      "sha256": "9daa50ca17b22ebf4591565901884b313e1267cf0d27cb1d9fa5f72128dbccc9"
     },
     {
       "path": "ops/v2.1-execution/source-spec/03-DECISION-REGISTER-v2.1.md",
-      "sha256": "dd65fa9b90ade725514b24276117880e105d4fff550227a85e34d0c3228eba0b"
+      "sha256": "830b76ad3a1dab17d33fab64a5aa53479adc1665ae00e189d06cddd91b072d1d"
     },
     {
       "path": "ops/v2.1-execution/source-spec/05-ACTOR-ROLE-CAPABILITY-ROUTE-MATRIX-v2.1.md",
-      "sha256": "07999409c831e4e497bf36ba289b555cf700fe939c6f210be783f6ed3d0b258a"
+      "sha256": "80c0cd2dd3d7b700971fed82ac31f84e19d2366dd3c4bb53ef5671b70db5fdd9"
     },
     {
       "path": "ops/v2.1-execution/source-spec/08-SCREEN-CATALOG-AND-DESIGN-SYSTEM-v2.1.md",
-      "sha256": "2925315872b8eb11fcb6d30a9044e416661c52041da2cf4d1028394da3d7d898"
+      "sha256": "b728e50d34f83adc64ebe4a159fa44e6cb40a218dc504ef25e0a998ac1272e95"
+    },
+    {
+      "path": "integrations/highlevel/registry/workflow-registry.yaml",
+      "sha256": "4f85cc05db8c83424b98e8bba3c9cabe07378e95f0224d34a7a7b88f4e584577"
     },
     {
       "path": "apps/web/src/server/app.ts",
-      "sha256": "0c7a26f60e1f835b895f26dbc75bbb741915b8d0214bd1568bb54f4167444371"
+      "sha256": "1e5b54172c9ea77f0fcb83e06c62694fe47f450d4496b6ce98dd876a50c44628"
+    },
+    {
+      "path": "apps/web/src/server/communications/register.ts",
+      "sha256": "0e293e916a9927cf201c0669d157c832cab58b55cf2fc264ad1b44778de95642"
+    },
+    {
+      "path": "apps/web/src/server/communications/workflow-readback.ts",
+      "sha256": "eae684303fbcf697c10637210410ca8cd07b2dcadcf5cd1e3326471c5c113c26"
+    },
+    {
+      "path": "apps/web/src/server/features/admin/operations/index.ts",
+      "sha256": "2968ac91213b2c9991520250a4e43b44c91fe5638c59da9d9b92f608c9f0f3d2"
+    },
+    {
+      "path": "apps/web/src/server/features/admin/operations/repository.ts",
+      "sha256": "4cd86fa77db04831784e6d8164a79740501659a370c022b1329c0745b3ba67f3"
+    },
+    {
+      "path": "apps/web/src/server/features/admin/operations/router.ts",
+      "sha256": "8b49ab5a8b8a10f779936827de201a7c562db2b1c794dcf23821257fafc1a48e"
+    },
+    {
+      "path": "apps/web/src/server/features/admin/operations/service.ts",
+      "sha256": "a244a4a8c3bb7e8a296c9b676f9f5081a818dc01ca05febd4596de737300993b"
+    },
+    {
+      "path": "apps/web/src/server/features/auth/v21-adult-session.ts",
+      "sha256": "99c3162abbe5dcb269b39c32893b97ef30f439a923b656a9335997adf597698b"
+    },
+    {
+      "path": "apps/web/src/server/features/classroom/embedded/adapters.ts",
+      "sha256": "b690ed896fc53b5127c3ddb827114db92d7e8ed12d6350c4786899d55891821a"
+    },
+    {
+      "path": "apps/web/src/server/features/classroom/embedded/composition.ts",
+      "sha256": "4bb69b57e93b69355c03bd5329cf9566330fa8855e498ed239076dfa7e919747"
+    },
+    {
+      "path": "apps/web/src/server/features/classroom/embedded/router.ts",
+      "sha256": "447927b769cb4b5e62208b34082a2a9139957d75bc41dd8b74bb951dd4243877"
+    },
+    {
+      "path": "apps/web/src/server/features/classroom/embedded/service.ts",
+      "sha256": "5333db6fa74cc0ace4229678447e80f66f3bf42b77923f89799a3363d1fba087"
+    },
+    {
+      "path": "apps/web/src/server/features/classroom/production-basic/router.ts",
+      "sha256": "f2c19d80d209a7cbcb26839d094ce969d2052590fc6706f7859af771485545e9"
+    },
+    {
+      "path": "apps/web/src/server/features/classroom/production-basic/service.ts",
+      "sha256": "d66bbce55380eec23096b17f62f8d3ae66ca2c85cb44d8a490b1cc740e1c905e"
+    },
+    {
+      "path": "apps/web/src/server/features/learning/router.ts",
+      "sha256": "fd873696cc7d36df2d44472213f11b8f5604bb951a9c800881b0157f480a4aa3"
+    },
+    {
+      "path": "apps/web/src/server/features/learning/service.ts",
+      "sha256": "acd6971afe74881bd8692c58bcbe47b5096b20438621d49668991f67c34000e9"
+    },
+    {
+      "path": "apps/web/src/server/features/privacy/student-router.ts",
+      "sha256": "539e2a3d55214b370cccbc4bc83d83224dafb77961dee5106eb18487934dfc66"
     },
     {
       "path": "apps/web/src/server/features/portals/routers.ts",
@@ -28,11 +96,15 @@
     },
     {
       "path": "apps/web/src/server/features/support/router.ts",
-      "sha256": "f3bbbbcf107615fc55130300442a32e0fa62f77662c630892fc1b0d89993311d"
+      "sha256": "ed629f4ac218b00ce46c362453ea54cf06adb756b63da99e05ef543493983cd2"
+    },
+    {
+      "path": "apps/web/src/server/features/support/v21-router.ts",
+      "sha256": "3918af6ac0c183f54266691a2ae9a713adc62a2d2f0dc785b575a7f65213858e"
     },
     {
       "path": "apps/web/src/server/features/signup/school/router.ts",
-      "sha256": "0d8fe5a05a6ee3dbd95ea3239b1a8b3458508fded330c23a85fa5069a4170c3a"
+      "sha256": "812dd79b3a0d62b15bf37a6c5ae1bebb0f3a4f4d444060270510837bed5bb30f"
     },
     {
       "path": "apps/web/src/server/features/v21-canonical-routes/router.ts",
@@ -40,62 +112,178 @@
     },
     {
       "path": "apps/web/src/client/app/admin-ia.ts",
-      "sha256": "e9e24326e1a23bfc7141215dc1c33037551b88eeff0f011eca5ecc61111c103b"
+      "sha256": "e2d25c35bd90bea530f76ee523e45361b76a7c5a9fd06415ced91cea8129516e"
+    },
+    {
+      "path": "apps/web/src/client/app/admin-directory/AdminDirectoryPanel.tsx",
+      "sha256": "b35049f676d742041729c1358f73d702eb4201c6421d679bfa771ae10593641d"
+    },
+    {
+      "path": "apps/web/src/client/app/admin/learning/AdminLearningWorkspace.tsx",
+      "sha256": "b09c1cd8c26d34305f1d61496d795b09577d374e9826a5a0b8fe717de4820358"
+    },
+    {
+      "path": "apps/web/src/client/app/admin/search/AdminGlobalSearch.tsx",
+      "sha256": "b587d879ace65e3c46afd300579ca8d79f6496d9d651a1b266db0b55f9f698b3"
+    },
+    {
+      "path": "apps/web/src/client/app/admin/support/AdminSupportWorkspace.tsx",
+      "sha256": "46e4fc562dd8575f2dda9c7852c205098e251eda755397625304d30483acb30f"
+    },
+    {
+      "path": "apps/web/src/client/app/communications/CommunicationsFeature.tsx",
+      "sha256": "2e27da6344a580e99da67ef8fce4cbe5973c4780a52ae2043c302b8570ab2784"
+    },
+    {
+      "path": "apps/web/src/client/app/communications/WorkflowReadbackFeature.tsx",
+      "sha256": "884d9cf9a9eae0f0acc2a1ad4e3d9cbce7f1445f9af4b130991b7715daf9a8f1"
+    },
+    {
+      "path": "apps/web/src/client/app/crm-api.ts",
+      "sha256": "85f238c61c912b2edd4134de5eb739c75519c68330c1652f173dd41cd39d7a39"
+    },
+    {
+      "path": "apps/web/src/client/app/classes/ClassManagementWorkspace.tsx",
+      "sha256": "003259a2e9f8948a424f39fd26f29d58caa5a73455bdd0797ea4a16663203c0a"
     },
     {
       "path": "apps/web/src/client/app/crm-entry.tsx",
-      "sha256": "41106e86353cd847e90a97644b25d791e07270cfacd5beae2c1849f855478e72"
+      "sha256": "b70dd61e70abac2ceceb36c7b99d7ccb64c845c850a6771b5519c459e8b95c00"
     },
     {
       "path": "apps/web/src/client/app/live-entry.tsx",
-      "sha256": "fbc2cc4ec34fb7113ad5712c05feba7aa19b3f65baa9a67208f90e44fd7169a0"
+      "sha256": "8f8e531a5c5c091c6277418bee750bda04eaef6178fab02f0a1e70a965648863"
+    },
+    {
+      "path": "apps/web/src/client/app/zoom-meeting-sdk-client.ts",
+      "sha256": "cf589e2b8700ca93403685b75ff00ef07fe5554a6eade48bda257825c533e052"
     },
     {
       "path": "apps/web/src/client/app/portal-entry.tsx",
-      "sha256": "3058d47121de9be3a1a116d387f961a825b221e74705105daa6f811d754d6246"
+      "sha256": "73d741675c87e540d569aafd6bb6232f5d287d8cad11a515584dffd8eb2ea449"
+    },
+    {
+      "path": "apps/web/src/client/app/student/classroom/StudentClassroomWorkspace.tsx",
+      "sha256": "8ae97007161c8949f5c99e002e951dd0dd13a24bf01bd3c9e313bfb68beddd22"
+    },
+    {
+      "path": "apps/web/src/client/app/student/classroom/api.ts",
+      "sha256": "33ee78132250b86853668d029d1148ba7333f87dc4c5dda444ab6a93d1ce8a2e"
+    },
+    {
+      "path": "apps/web/src/client/app/student/library/StudentLibraryWorkspace.tsx",
+      "sha256": "28ba52fccb106368d60dbfc5fe1f1277cda433f314352f4a957cf28129d83db2"
+    },
+    {
+      "path": "apps/web/src/client/app/student/privacy/StudentPrivacyWorkspace.tsx",
+      "sha256": "0d4f9e105f66c5bc82416ebc547f7f0e8445aa5454f7b0c3497429210c79451e"
+    },
+    {
+      "path": "apps/web/src/client/app/student/privacy/api.ts",
+      "sha256": "d2305149b23515ce113c8b3cd3b39deb183c21bbf10f1ae6e0ca407054664b3c"
+    },
+    {
+      "path": "apps/web/src/client/classroom/production-basic-launch-client.ts",
+      "sha256": "df19cba26052c6a13814323a00bc3965859e55915af08e58f79c7a496f76d1a3"
     },
     {
       "path": "apps/web/src/client/features/portals/PortalFeatures.tsx",
-      "sha256": "a2873b5e0900dfd057e143f1e3cd7992c12cca93a345551f5b8af10e1bb1a4c9"
+      "sha256": "53f2eacb6e138e0ff6a99243836a83fa9e08547f962756f1779cefb519c52056"
     },
     {
       "path": "apps/web/src/client/app/router/registry.ts",
-      "sha256": "e9556f9f499dd4076729dfe4703b6b74b72abc22ad93da8dd0ac2db1c96de68e"
+      "sha256": "016eca69db0b0787c4b05db9616f1917ea8f287208812a14ce203f6bcbccc8cc"
     },
     {
       "path": "apps/web/src/client/app/router/canonical-route-views.ts",
-      "sha256": "dca82339ff2ef6391e9acdf08a98f4f8988112bdf290b024b769bf3c8ba33872"
+      "sha256": "cb63bccd337f8c42db99e66af27c18c82108a3b2690181f8348cd74e65dba0f3"
+    },
+    {
+      "path": "apps/web/src/client/app/shell/AppShell.tsx",
+      "sha256": "36bc31b10eea2f0556ad0d585030418d50bb3b6cb867368aa7bbe299854daeb9"
     },
     {
       "path": "apps/web/src/client/app/support/SupportFeature.tsx",
-      "sha256": "45425c08ca22a6e26aaac0f5498636576fa9ef71372263f63302c5980862396a"
+      "sha256": "5734c7fcfa7a195126c2212bbe87f889c29e26ee0fe2fd97d69130c9007a761a"
     },
     {
       "path": "apps/web/src/client/public/public-entry.ts",
-      "sha256": "af4e15060b991bd37b250e03b8d6a24d757337264ee717feace3db9469375c7d"
+      "sha256": "e22329f8463b796e40f4efd2b0ea354a94fd12e7e4bc696ca79f1623d259ffe5"
     },
     {
       "path": "apps/web/src/client/public/school/model.ts",
       "sha256": "dd2ea7b0d43643aa3ca11be8f5e14de26530aa0e375bcc3f6e47ed2a9f0d3c0a"
     },
     {
+      "path": "packages/brand-system/src/styles/communications.css",
+      "sha256": "8cb6e232c0f120f349f2600c006f2276d997a0a8241e5d70135bee674aaf6fce"
+    },
+    {
+      "path": "packages/brand-system/src/styles/react.css",
+      "sha256": "21359812ad995bd5f68a98ebaf7205f0ac107f08d887dd92927d34d3d395cca0"
+    },
+    {
       "path": "packages/brand-system/src/route-branding.ts",
-      "sha256": "cdf8369f462d4a788c4ffc6cbe16c7fd5614e2387fada2e56377d5c10c258258"
+      "sha256": "e056a57b4be9b2bd32946ed7ff8e6d7bdc6d4cab761c2e0e0e23e11a091113cb"
     },
     {
       "path": "packages/brand-system/src/v21.ts",
       "sha256": "9f1fcd193ca604c5d30c6ee0f18c57bded225c5c09c8eb41d138a3be359ccc31"
     },
     {
+      "path": "packages/contracts/src/communications/index.ts",
+      "sha256": "3626b9005109644f73b2e01db4493c8e8b4e9f31c1b87563643770bde71747bf"
+    },
+    {
+      "path": "packages/contracts/src/classroom/embedded/index.ts",
+      "sha256": "f0586287c72564ac0cc3ae3ded030ffbb2b35d4caf04dbbde8114fb5a0870fca"
+    },
+    {
+      "path": "packages/contracts/src/learning/index.ts",
+      "sha256": "88b5c63df95e7919a832bdc8bf395732f1770a279f66ab45046939c3987f0fd1"
+    },
+    {
+      "path": "packages/db/src/index.ts",
+      "sha256": "0d92642f1d9c7692323834c05b1c3e03ebbf905d89b99e71c7a16eafd0ee6e14"
+    },
+    {
+      "path": "packages/db/src/learning/repository.ts",
+      "sha256": "cbd89dd01713f91889a73dec2adc22d04a036d6e5a37c5ed593f14419a83b7b8"
+    },
+    {
       "path": "scripts/build-public-pages.ts",
-      "sha256": "20a594454cdff6724f7d38349dd718f28c161f2ebe93f3302f9586fa2a16bf84"
+      "sha256": "812ed0c0548f73c53e4fc4074cb7b0c0de93c07de31af83d2ded43c6a7e815ff"
+    },
+    {
+      "path": "scripts/highlevel/workflow-registry-source.ts",
+      "sha256": "c7889f944aaa098c9279c322d555de71aa5a984089e2ef93d0bf5e0562bf15ab"
     },
     {
       "path": "packages/domain/src/dashboard/service.ts",
-      "sha256": "49034325951c95ab0371039301dfde7f14e06d887ec01cd4799c4b36c6fe9297"
+      "sha256": "e398974eeb1d24c8d4ce9f596d843e26823791324b26165271215e7825255df7"
+    },
+    {
+      "path": "packages/domain/src/learning/engagement.ts",
+      "sha256": "4aa23c448a08b990771f9272b847372a7f6e818da3d9421b89284e05162fba93"
+    },
+    {
+      "path": "packages/domain/src/landing/content.ts",
+      "sha256": "4d09243a5b90ef04bddc3488c8c166ad3a7032680055e4f65046e46404af2759"
+    },
+    {
+      "path": "packages/domain/src/legal/content.ts",
+      "sha256": "1ee5c969ca64ef268011bc1797e9a40482273a31badf0498e79a75ebce52deaf"
+    },
+    {
+      "path": "packages/domain/src/privacy/redaction.ts",
+      "sha256": "f069af1dfe8e3a113b7bc1c7927979ce50eec8bb87420bf33196dda898942c37"
+    },
+    {
+      "path": "packages/domain/src/privacy/rights.ts",
+      "sha256": "b306467d9293c28fab475a59d804f33c3777b853f089aaf1bdcd9572e7a34929"
     }
   ],
-  "production_roles": ["admin", "parent", "student"],
+  "production_roles": ["admin", "parent", "rabbi", "student"],
   "public_actor": "public",
   "readiness_states": ["ready", "isolated", "missing"],
   "canonical_routes": [
@@ -119,9 +307,9 @@
       "route_id": "RT-PUB-003",
       "path": "/signup/received",
       "roles": ["public"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "public.signup-received",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-PUB-004",
@@ -159,9 +347,9 @@
       "route_id": "RT-PUB-008",
       "path": "/cancellation-refund",
       "roles": ["public"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "public.cancellation-refund",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-PUB-009",
@@ -215,9 +403,9 @@
       "route_id": "RT-AUTH-005",
       "path": "/select-household",
       "roles": ["parent"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "auth.rt-auth-005",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-AUTH-006",
@@ -239,9 +427,9 @@
       "route_id": "RT-AUTH-008",
       "path": "/select-role",
       "roles": ["admin", "parent"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "auth.rt-auth-008",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-ADM-001",
@@ -255,9 +443,9 @@
       "route_id": "RT-ADM-002",
       "path": "/app/search",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-002",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-ADM-010",
@@ -279,9 +467,9 @@
       "route_id": "RT-ADM-012",
       "path": "/app/households",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-012",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-013",
@@ -295,49 +483,49 @@
       "route_id": "RT-ADM-014",
       "path": "/app/users",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-014",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-015",
       "path": "/app/users/:userId",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-015",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-016",
       "path": "/app/students",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-016",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-017",
       "path": "/app/students/:studentId",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-017",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-020",
       "path": "/app/content",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "admin.rt-adm-020",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-ADM-021",
       "path": "/app/content/upload",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "admin.rt-adm-021",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-ADM-022",
@@ -351,49 +539,49 @@
       "route_id": "RT-ADM-023",
       "path": "/app/content/:contentId/review",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-023",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-ADM-024",
       "path": "/app/library",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "admin.rt-adm-024",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-030",
       "path": "/app/classroom",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-030",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-031",
       "path": "/app/classroom/calendar",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-031",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-032",
       "path": "/app/classroom/classes",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "admin.rt-adm-032",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-033",
       "path": "/app/classroom/classes/:classId",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-033",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-034",
@@ -415,9 +603,9 @@
       "route_id": "RT-ADM-036",
       "path": "/app/classroom/enrollments",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "admin.rt-adm-036",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-037",
@@ -431,9 +619,9 @@
       "route_id": "RT-ADM-038",
       "path": "/app/classroom/attendance",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-038",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-039",
@@ -447,105 +635,105 @@
       "route_id": "RT-ADM-040",
       "path": "/app/classroom/questions",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "admin.rt-adm-040",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-ADM-041",
       "path": "/app/classroom/progress",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-041",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-042",
       "path": "/app/classroom/leaderboard",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-042",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-043",
       "path": "/app/classroom/access",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "admin.rt-adm-043",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-050",
       "path": "/app/live",
-      "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "roles": ["admin", "rabbi"],
+      "handler": "live.rt-adm-050",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-051",
       "path": "/app/live/:occurrenceId",
-      "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "roles": ["admin", "rabbi"],
+      "handler": "live.rt-adm-051",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-060",
       "path": "/app/communications",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-060",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-ADM-061",
       "path": "/app/communications/:workflowId",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-061",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-062",
       "path": "/app/tickets",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-062",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-063",
       "path": "/app/tickets/:ticketId",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-063",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-064",
       "path": "/app/billing-access",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-064",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-065",
       "path": "/app/integrations",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-065",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-066",
       "path": "/app/operations",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-066",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-ADM-067",
@@ -559,17 +747,137 @@
       "route_id": "RT-ADM-068",
       "path": "/app/support",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-068",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-ADM-069",
       "path": "/app/account",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-069",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
+    },
+    {
+      "route_id": "RT-ADM-070",
+      "path": "/app/today",
+      "roles": ["admin", "rabbi"],
+      "handler": "admin.rt-adm-070",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
+    },
+    {
+      "route_id": "RT-ADM-071",
+      "path": "/app/learning/classroom",
+      "roles": ["admin", "rabbi"],
+      "handler": "admin.rt-adm-071",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
+    },
+    {
+      "route_id": "RT-ADM-072",
+      "path": "/app/learning/library",
+      "roles": ["admin", "rabbi"],
+      "handler": "admin.rt-adm-072",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
+    },
+    {
+      "route_id": "RT-ADM-073",
+      "path": "/app/learning/questions",
+      "roles": ["admin", "rabbi"],
+      "handler": "admin.rt-adm-073",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
+    },
+    {
+      "route_id": "RT-ADM-074",
+      "path": "/app/learning/attendance",
+      "roles": ["admin", "rabbi"],
+      "handler": "admin.rt-adm-074",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
+    },
+    {
+      "route_id": "RT-ADM-075",
+      "path": "/app/learning/recordings",
+      "roles": ["admin", "rabbi"],
+      "handler": "admin.rt-adm-075",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
+    },
+    {
+      "route_id": "RT-ADM-076",
+      "path": "/app/people/families",
+      "roles": ["admin"],
+      "handler": "admin.rt-adm-076",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
+    },
+    {
+      "route_id": "RT-ADM-077",
+      "path": "/app/people/parents",
+      "roles": ["admin"],
+      "handler": "admin.rt-adm-077",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
+    },
+    {
+      "route_id": "RT-ADM-078",
+      "path": "/app/people/students",
+      "roles": ["admin"],
+      "handler": "admin.rt-adm-078",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
+    },
+    {
+      "route_id": "RT-ADM-079",
+      "path": "/app/people/access",
+      "roles": ["admin"],
+      "handler": "admin.rt-adm-079",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
+    },
+    {
+      "route_id": "RT-ADM-080",
+      "path": "/app/people/audit",
+      "roles": ["admin"],
+      "handler": "admin.rt-adm-080",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
+    },
+    {
+      "route_id": "RT-ADM-081",
+      "path": "/app/account/profile",
+      "roles": ["admin", "rabbi"],
+      "handler": "admin.rt-adm-081",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
+    },
+    {
+      "route_id": "RT-ADM-082",
+      "path": "/app/account/security",
+      "roles": ["admin", "rabbi"],
+      "handler": "admin.rt-adm-082",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
+    },
+    {
+      "route_id": "RT-ADM-083",
+      "path": "/app/account/privacy",
+      "roles": ["admin", "rabbi"],
+      "handler": "admin.rt-adm-083",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
+    },
+    {
+      "route_id": "RT-ADM-084",
+      "path": "/app/operations/workflow-readback/:workflowId",
+      "roles": ["admin"],
+      "handler": "admin.rt-adm-084",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-PAR-001",
@@ -604,84 +912,108 @@
       "handler_disposition": "mounted"
     },
     {
+      "route_id": "RT-PAR-005",
+      "path": "/app/parent/classroom",
+      "roles": ["parent"],
+      "handler": "parent.rt-par-005",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
+    },
+    {
+      "route_id": "RT-PAR-006",
+      "path": "/app/parent/library",
+      "roles": ["parent"],
+      "handler": "parent.rt-par-006",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
+    },
+    {
+      "route_id": "RT-PAR-007",
+      "path": "/app/parent/questions",
+      "roles": ["parent"],
+      "handler": "parent.rt-par-007",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
+    },
+    {
       "route_id": "RT-PAR-010",
       "path": "/app/parent/calendar",
       "roles": ["parent"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "parent.rt-par-010",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-PAR-011",
       "path": "/app/parent/classes/:occurrenceId",
       "roles": ["parent"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "parent.rt-par-011",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-PAR-020",
       "path": "/app/parent/progress",
       "roles": ["parent"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "parent.rt-par-020",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-PAR-021",
       "path": "/app/parent/progress/:studentId",
       "roles": ["parent"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "parent.rt-par-021",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-PAR-030",
       "path": "/app/parent/billing",
       "roles": ["parent"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "parent.rt-par-030",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-PAR-040",
       "path": "/app/parent/updates",
       "roles": ["parent"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "parent.rt-par-040",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-PAR-041",
       "path": "/app/parent/newsletter",
       "roles": ["parent"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "parent.rt-par-041",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-PAR-050",
       "path": "/app/parent/preferences",
       "roles": ["parent"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "parent.rt-par-050",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-PAR-060",
       "path": "/app/parent/support",
       "roles": ["parent"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "parent.rt-par-060",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-PAR-061",
       "path": "/app/parent/support/:ticketId",
       "roles": ["parent"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "parent.rt-par-061",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-PAR-070",
@@ -695,17 +1027,17 @@
       "route_id": "RT-PAR-071",
       "path": "/app/parent/privacy",
       "roles": ["parent"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "parent.rt-par-071",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-PAR-072",
       "path": "/app/parent/data-rights",
       "roles": ["parent"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "parent.rt-par-072",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-STU-001",
@@ -719,25 +1051,25 @@
       "route_id": "RT-STU-010",
       "path": "/app/student/calendar",
       "roles": ["student"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "student.rt-stu-010",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-STU-011",
       "path": "/app/student/classes/:occurrenceId",
       "roles": ["student"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "student.rt-stu-011",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-STU-012",
       "path": "/app/student/class/:occurrenceId",
       "roles": ["student"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "student.rt-stu-012",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-STU-020",
@@ -745,63 +1077,63 @@
       "roles": ["student"],
       "handler": "student.rt-stu-020",
       "readiness_state": "ready",
-      "handler_disposition": "bounded-alias"
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-STU-021",
       "path": "/app/student/library/:contentId",
       "roles": ["student"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "student.rt-stu-021",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-STU-030",
       "path": "/app/student/progress",
       "roles": ["student"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "student.rt-stu-030",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-STU-040",
       "path": "/app/student/questions",
       "roles": ["student"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "student.rt-stu-040",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-STU-041",
       "path": "/app/student/questions/new",
       "roles": ["student"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "student.rt-stu-041",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-STU-042",
       "path": "/app/student/questions/:questionId",
       "roles": ["student"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "student.rt-stu-042",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-STU-050",
       "path": "/app/student/updates",
       "roles": ["student"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "student.rt-stu-050",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-STU-051",
       "path": "/app/student/notifications",
       "roles": ["student"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "student.rt-stu-051",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-STU-060",
@@ -823,28 +1155,1012 @@
       "route_id": "RT-STU-070",
       "path": "/app/student/account",
       "roles": ["student"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "student.rt-stu-070",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-STU-071",
       "path": "/app/student/privacy",
       "roles": ["student"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "student.rt-stu-071",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-STU-072",
       "path": "/app/student/data-rights",
       "roles": ["student"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "student.rt-stu-072",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     }
   ],
   "actions": [
+    {
+      "action_id": "admin.class_series.archive.button",
+      "label": "Archive class series",
+      "surface": "button",
+      "route": "/app/classroom/classes/:classId",
+      "roles": ["admin"],
+      "capability": "admin:class-series:lifecycle",
+      "handler": {
+        "method": "PATCH",
+        "path": "/api/v1/admin/classes/series/:seriesKey"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "class_series_archived"
+      },
+      "states": {
+        "loading": "Archiving the selected local class series.",
+        "success": "The class series is archived and unavailable for new scheduling.",
+        "error": "The class series was stale, rejected, or could not be archived.",
+        "permission": "Only an authenticated Admin may archive class series.",
+        "offline": "Class series lifecycle changes are unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/classes/class-management.test.ts",
+        "tests/e2e/admin-information-architecture.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.class_series.edit.form",
+      "label": "Edit class series",
+      "surface": "form",
+      "route": "/app/classroom/classes/:classId",
+      "roles": ["admin"],
+      "capability": "admin:class-series:update",
+      "handler": {
+        "method": "PATCH",
+        "path": "/api/v1/admin/classes/series/:seriesKey"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "class_series_updated"
+      },
+      "states": {
+        "loading": "Saving the selected local class series.",
+        "success": "The class series schedule defaults and teacher details are current.",
+        "error": "The class series was stale, rejected, or could not be saved.",
+        "permission": "Only an authenticated Admin may edit class series.",
+        "offline": "Class series editing is unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/classes/class-management.test.ts",
+        "tests/e2e/admin-information-architecture.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.class_series.view.route",
+      "label": "Class series details",
+      "surface": "route",
+      "route": "/app/classroom/classes/:classId",
+      "roles": ["admin"],
+      "capability": "admin:class-series:read",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/admin/classes/series"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "class_series_detail_read"
+      },
+      "states": {
+        "loading": "Loading the scoped class series.",
+        "success": "The class series status, teacher, timezone, start, and reminder are visible.",
+        "error": "The class series was not found or could not be loaded.",
+        "permission": "Only an authenticated Admin may read class series details.",
+        "offline": "Class series details are unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/classes/class-management.test.ts",
+        "tests/e2e/admin-information-architecture.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.communications.workflow_readback.view.route",
+      "label": "Workflow readback",
+      "surface": "route",
+      "route": "/app/operations/workflow-readback/:workflowId",
+      "roles": ["admin"],
+      "capability": "admin:communications:workflow-read",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/operations/workflow-readback/:workflowId"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "workflow_readback_viewed"
+      },
+      "states": {
+        "loading": "Loading the canonical repository workflow contract and observed readback.",
+        "success": "The exact trigger, actions, status, evidence, and external-lane boundary are visible.",
+        "error": "The workflow is not registered or its readback could not be loaded.",
+        "permission": "Only an authenticated Admin may read workflow configuration status.",
+        "offline": "Workflow readback is unavailable offline and no provider action is attempted."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "read_only_status",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/unit/communications/workflow-readback.test.ts",
+        "tests/integration/communications/api.test.ts",
+        "tests/e2e/workflow-readback.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.content.review.artifact_approve.button",
+      "label": "Approve artifact",
+      "surface": "button",
+      "route": "/app/content/:contentId/review",
+      "roles": ["admin"],
+      "capability": "admin:content:artifact-edit",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/admin/content/sources/:sourceKey/artifacts/approve"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "artifact.approve"
+      },
+      "states": {
+        "loading": "Approving the current local artifact revision.",
+        "success": "The artifact approval and exact revision are recorded.",
+        "error": "The artifact was stale, rejected, or could not be approved.",
+        "permission": "Only an authenticated Admin with artifact-edit capability may approve.",
+        "offline": "Artifact approval is unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "provider_off",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/content-workspace/ContentWorkspace.test.tsx",
+        "tests/integration/content/ot110a-admin-content-workspace.test.ts",
+        "tests/e2e/content-factory.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.content.review.artifact_publish.button",
+      "label": "Publish artifact",
+      "surface": "button",
+      "route": "/app/content/:contentId/review",
+      "roles": ["admin"],
+      "capability": "admin:content:artifact-publish",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/admin/content/sources/:sourceKey/artifacts/publish"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "artifact.publish"
+      },
+      "states": {
+        "loading": "Publishing the approved local artifact revision.",
+        "success": "The approved artifact revision is published locally.",
+        "error": "The artifact was stale, rejected, or could not be published.",
+        "permission": "Only an authenticated Admin with artifact-publish capability may publish.",
+        "offline": "Artifact publication is unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "provider_off",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/content-workspace/ContentWorkspace.test.tsx",
+        "tests/integration/content/ot110a-admin-content-workspace.test.ts",
+        "tests/e2e/content-factory.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.content.review.social_approve.button",
+      "label": "Approve social draft",
+      "surface": "button",
+      "route": "/app/content/:contentId/review",
+      "roles": ["admin"],
+      "capability": "admin:content:social-approve",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/admin/content/sources/:sourceKey/social/approve"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "social.approve"
+      },
+      "states": {
+        "loading": "Recording approval for the local social draft.",
+        "success": "The social approval is recorded in the protected sink.",
+        "error": "The social draft was rejected or could not be approved.",
+        "permission": "Only an authenticated Admin with social-approve capability may approve.",
+        "offline": "Social approval is unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "sink",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/content-workspace/ContentWorkspace.test.tsx",
+        "tests/integration/content/ot110a-admin-content-workspace.test.ts",
+        "tests/e2e/content-factory.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.content.review.social_retract.button",
+      "label": "Retract social draft",
+      "surface": "button",
+      "route": "/app/content/:contentId/review",
+      "roles": ["admin"],
+      "capability": "admin:content:revoke",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/admin/content/sources/:sourceKey/social/retract"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "social.retract"
+      },
+      "states": {
+        "loading": "Recording the local social retraction.",
+        "success": "The social retraction is recorded without a provider claim.",
+        "error": "The social draft could not be retracted.",
+        "permission": "Only an authenticated Admin with revoke capability may retract.",
+        "offline": "Social retraction is unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "sink",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/content-workspace/ContentWorkspace.test.tsx",
+        "tests/integration/content/ot110a-admin-content-workspace.test.ts",
+        "tests/e2e/content-factory.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.content.review.social_schedule.button",
+      "label": "Schedule social draft",
+      "surface": "button",
+      "route": "/app/content/:contentId/review",
+      "roles": ["admin"],
+      "capability": "admin:content:social-schedule",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/admin/content/sources/:sourceKey/social/schedule"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "social.schedule"
+      },
+      "states": {
+        "loading": "Queuing the approved social draft in the protected sink.",
+        "success": "The social schedule request is recorded without a provider claim.",
+        "error": "The social draft could not be scheduled.",
+        "permission": "Only an authenticated Admin with social-schedule capability may schedule.",
+        "offline": "Social scheduling is unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "sink",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/content-workspace/ContentWorkspace.test.tsx",
+        "tests/integration/content/ot110a-admin-content-workspace.test.ts",
+        "tests/e2e/content-factory.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.content.review.transcript_approve.button",
+      "label": "Approve transcript",
+      "surface": "button",
+      "route": "/app/content/:contentId/review",
+      "roles": ["admin"],
+      "capability": "admin:content:transcript-review",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/admin/content/sources/:sourceKey/transcript/approve"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "transcript.approve"
+      },
+      "states": {
+        "loading": "Approving the current transcript revision.",
+        "success": "The transcript approval is recorded locally.",
+        "error": "The transcript was stale, rejected, or could not be approved.",
+        "permission": "Only an authenticated Admin with transcript-review capability may approve.",
+        "offline": "Transcript approval is unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "provider_off",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/content-workspace/ContentWorkspace.test.tsx",
+        "tests/integration/content/ot110a-admin-content-workspace.test.ts",
+        "tests/e2e/content-factory.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.content.review.view.route",
+      "label": "Content review",
+      "surface": "route",
+      "route": "/app/content/:contentId/review",
+      "roles": ["admin"],
+      "capability": "admin:content:view",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/admin/content/sources/:sourceKey"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "content.review"
+      },
+      "states": {
+        "loading": "Loading the exact content source and revision history.",
+        "success": "The source, transcript, artifacts, social drafts, and activity are visible.",
+        "error": "The content source was not found or could not be loaded.",
+        "permission": "Only an authenticated Admin with content-view capability may review.",
+        "offline": "Content review is unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "read_only_status",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/content-workspace/ContentWorkspace.test.tsx",
+        "tests/integration/content/ot110a-admin-content-workspace.test.ts",
+        "tests/e2e/content-factory.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.directory.student.archive_restore.button",
+      "label": "Archive or restore Student",
+      "surface": "button",
+      "route": "/app/students/:studentId",
+      "roles": ["admin"],
+      "capability": "admin:student:lifecycle",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/admin-directory/learners/:learnerKey/:action"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "admin_learner_archived/admin_learner_restored"
+      },
+      "states": {
+        "loading": "Applying the local Student lifecycle change.",
+        "success": "The Student lifecycle and access revocation state are current.",
+        "error": "The Student lifecycle change was rejected or could not be saved.",
+        "permission": "Only an authenticated Admin may govern Student lifecycle state.",
+        "offline": "Student lifecycle changes are unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/admin-directory/admin-directory.test.ts",
+        "tests/e2e/admin-information-architecture.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.directory.student.edit.form",
+      "label": "Edit Student",
+      "surface": "form",
+      "route": "/app/students/:studentId",
+      "roles": ["admin"],
+      "capability": "admin:student:update",
+      "handler": {
+        "method": "PATCH",
+        "path": "/api/v1/admin-directory/learners/:learnerKey"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "admin_learner_updated"
+      },
+      "states": {
+        "loading": "Saving the local Student record.",
+        "success": "The version-protected Student record is current.",
+        "error": "The Student record was stale, rejected, or could not be saved.",
+        "permission": "Only an authenticated Admin may edit Student records.",
+        "offline": "Student record changes are unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/admin-directory/admin-directory.test.ts",
+        "tests/e2e/admin-information-architecture.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.directory.student.view.route",
+      "label": "Student details",
+      "surface": "route",
+      "route": "/app/students/:studentId",
+      "roles": ["admin"],
+      "capability": "admin:student:read",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/admin-directory/learners"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "admin_learner_detail_read"
+      },
+      "states": {
+        "loading": "Loading the private Student record.",
+        "success": "The scoped Student identity, household, access, and class summary are visible.",
+        "error": "The Student record was not found or could not be loaded.",
+        "permission": "Only an authenticated Admin may read Student details.",
+        "offline": "Private Student records are unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/admin-directory/admin-directory.test.ts",
+        "tests/e2e/admin-information-architecture.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.directory.user.disable_reactivate.button",
+      "label": "Disable or reactivate user",
+      "surface": "button",
+      "route": "/app/users/:userId",
+      "roles": ["admin"],
+      "capability": "admin:user:lifecycle",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/admin-directory/users/:userKey/:action"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "admin_user_disabled/admin_user_reactivated"
+      },
+      "states": {
+        "loading": "Applying the account lifecycle change.",
+        "success": "The account status and session revocation state are current.",
+        "error": "The account lifecycle change was rejected or could not be saved.",
+        "permission": "Only an authenticated Admin may govern user lifecycle state.",
+        "offline": "User lifecycle changes are unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/admin-directory/admin-directory.test.ts",
+        "tests/e2e/admin-information-architecture.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.directory.user.edit.form",
+      "label": "Edit user role",
+      "surface": "form",
+      "route": "/app/users/:userId",
+      "roles": ["admin"],
+      "capability": "admin:user:update",
+      "handler": {
+        "method": "PATCH",
+        "path": "/api/v1/admin-directory/users/:userKey"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "security_control",
+        "event": "security_version_incremented_sessions_revoked"
+      },
+      "states": {
+        "loading": "Saving the private user and role record.",
+        "success": "The version-protected user record is current and prior sessions are revoked.",
+        "error": "The user record was stale, rejected, or could not be saved.",
+        "permission": "Only an authenticated Admin may edit eligible user roles.",
+        "offline": "User record changes are unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/admin-directory/admin-directory.test.ts",
+        "tests/e2e/admin-information-architecture.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.directory.user.password_reset.button",
+      "label": "Reset user password or Student PIN",
+      "surface": "button",
+      "route": "/app/users/:userId",
+      "roles": ["admin"],
+      "capability": "admin:user:credential-reset",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/admin-directory/users/:userKey/password-reset"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "client-generated idempotency_key"
+      },
+      "audit": {
+        "mode": "auth_audit",
+        "event": "role-dispatched password_reset_issued or student_reset_issued"
+      },
+      "states": {
+        "loading": "Creating a role-appropriate single-use password or Student PIN reset.",
+        "success": "Adult password resets use the protected adult delivery; Student PIN resets go to the linked adult Parent without exposing a credential.",
+        "error": "The reset request was rejected, the Student-to-household identity was unavailable, or the reset could not be queued.",
+        "permission": "Only an authenticated Admin may request an adult password or Student PIN reset.",
+        "offline": "Password and Student PIN reset are unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "sink",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/admin-directory/admin-directory.test.ts",
+        "tests/e2e/admin-information-architecture.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.directory.user.view.route",
+      "label": "User details",
+      "surface": "route",
+      "route": "/app/users/:userId",
+      "roles": ["admin"],
+      "capability": "admin:user:read",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/admin-directory/users"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "admin_user_detail_read"
+      },
+      "states": {
+        "loading": "Loading the private user record.",
+        "success": "The scoped identity, role, household, and account summary are visible.",
+        "error": "The user record was not found or could not be loaded.",
+        "permission": "Only an authenticated Admin may read user details.",
+        "offline": "Private user records are unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/admin-directory/admin-directory.test.ts",
+        "tests/e2e/admin-information-architecture.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.production_basic.start.button",
+      "label": "Start class",
+      "surface": "button",
+      "route": "/app/live-console",
+      "roles": ["admin", "rabbi"],
+      "canonical_binding": {
+        "route": "/app/live",
+        "roles": ["admin", "rabbi"]
+      },
+      "capability": "admin:class:start",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/admin/classroom/production-basic/launch"
+      },
+      "visibility": {
+        "mode": "server_derived",
+        "handler": {
+          "method": "GET",
+          "path": "/api/v1/admin/classroom/production-basic/status"
+        },
+        "required_response": {
+          "success": true,
+          "data": {
+            "mode": "production_basic",
+            "available": true
+          }
+        }
+      },
+      "request_body": {
+        "mode": "none",
+        "client_controlled_fields": []
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "none",
+        "event": "production_basic_host_launch_ephemeral_not_persisted"
+      },
+      "states": {
+        "loading": "Re-authorizing the Admin or Rabbi before issuing short-lived host SDK material.",
+        "success": "The explicit click starts the verified recurring Zoom classroom without exposing a reusable provider URL.",
+        "error": "The production-basic classroom remains unavailable without a legacy fallback or an unrequested SDK effect.",
+        "permission": "Only a server-authorized Admin or Rabbi may see and use Start class.",
+        "offline": "Host launch material is never cached or queued offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "verified_binding_explicit_sdk_click",
+      "external_mutation": true,
+      "test_evidence": [
+        "apps/web/src/server/features/classroom/production-basic/production-basic.test.ts",
+        "apps/web/src/client/classroom/production-basic-launch-client.test.ts",
+        "tests/integration/portals/portal-mount.test.ts"
+      ]
+    },
+    {
+      "action_id": "admin.question_moderation.transition.form",
+      "label": "Moderate class question",
+      "surface": "form",
+      "route": "/app/classroom/questions",
+      "roles": ["admin"],
+      "capability": "admin:question:transition",
+      "handler": {
+        "method": "POST",
+        "path": "/api/app/learning/questions/:questionId/transitions"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "body.idempotency_key"
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "learning_question_transitioned"
+      },
+      "states": {
+        "loading": "Applying the selected question-state transition.",
+        "success": "The question state and private answer are current.",
+        "error": "The transition was stale, invalid, or could not be saved.",
+        "permission": "Only an authenticated Admin may moderate class questions.",
+        "offline": "Question moderation is unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/admin/learning/AdminLearningWorkspace.test.tsx",
+        "apps/web/src/server/features/learning/router.test.ts",
+        "apps/web/src/server/features/learning/service.test.ts"
+      ]
+    },
+    {
+      "action_id": "admin.question_moderation.view.route",
+      "label": "Class question moderation",
+      "surface": "route",
+      "route": "/app/classroom/questions",
+      "roles": ["admin"],
+      "capability": "admin:question:read",
+      "handler": {
+        "method": "GET",
+        "path": "/api/app/learning/questions"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "learning_question_queue_read"
+      },
+      "states": {
+        "loading": "Loading the Admin-scoped class question queue.",
+        "success": "The current question states and private answers are visible.",
+        "error": "The question queue could not be loaded.",
+        "permission": "Only an authenticated Admin may view the moderation queue.",
+        "offline": "Private class questions are unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/admin/learning/AdminLearningWorkspace.test.tsx",
+        "apps/web/src/server/features/learning/service.test.ts"
+      ]
+    },
+    {
+      "action_id": "admin.search.next_page.button",
+      "label": "Load more results",
+      "surface": "button",
+      "route": "/app/search",
+      "roles": ["admin"],
+      "capability": "admin:search:read",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v2.1/admin/search"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "admin_search_next_page"
+      },
+      "states": {
+        "loading": "Loading the next private result page.",
+        "success": "The next result page is available.",
+        "error": "The next result page could not be loaded.",
+        "permission": "Only an authenticated Admin may search operational records.",
+        "offline": "Private search is unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/admin/search/AdminGlobalSearch.test.tsx",
+        "tests/integration/support/v21-support-lifecycle.test.ts"
+      ]
+    },
+    {
+      "action_id": "admin.search.open.button",
+      "label": "Search",
+      "surface": "button",
+      "route": "/app/search",
+      "roles": ["admin"],
+      "capability": "admin:search:open",
+      "handler": {
+        "method": "CLIENT",
+        "path": "apps/web/src/client/app/shell/AppShell.tsx"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_navigation",
+        "event": "admin_search_opened"
+      },
+      "states": {
+        "loading": "Opening private Admin search.",
+        "success": "Private Admin search is open.",
+        "error": "Private Admin search could not be opened.",
+        "permission": "Only an authenticated Admin may open operational search.",
+        "offline": "The mounted search shell remains available; new results require the network."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/admin/search/AdminGlobalSearch.test.tsx",
+        "tests/e2e/support.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.search.query.form",
+      "label": "Search operational records",
+      "surface": "form",
+      "route": "/app/search",
+      "roles": ["admin"],
+      "capability": "admin:search:read",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v2.1/admin/search"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "admin_search_executed"
+      },
+      "states": {
+        "loading": "Searching private operational records.",
+        "success": "Authorized search results are available.",
+        "error": "Operational records could not be searched.",
+        "permission": "Only an authenticated Admin may search operational records.",
+        "offline": "Private search is unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/admin/search/AdminGlobalSearch.test.tsx",
+        "tests/integration/support/v21-support-lifecycle.test.ts",
+        "tests/e2e/support.spec.ts",
+        "tests/accessibility/support-a11y.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.search.recent.clear.button",
+      "label": "Clear recent searches",
+      "surface": "button",
+      "route": "/app/search",
+      "roles": ["admin"],
+      "capability": "admin:search:local",
+      "handler": {
+        "method": "CLIENT",
+        "path": "apps/web/src/client/app/admin/search/AdminGlobalSearch.tsx"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_memory",
+        "event": "admin_search_recent_cleared"
+      },
+      "states": {
+        "loading": "Clearing this session's recent searches.",
+        "success": "Recent searches are cleared from memory.",
+        "error": "Recent searches could not be cleared.",
+        "permission": "Recent searches are available only within the authenticated Admin session.",
+        "offline": "Recent searches can still be cleared offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": ["apps/web/src/client/app/admin/search/AdminGlobalSearch.test.tsx"]
+    },
+    {
+      "action_id": "admin.search.result.open.button",
+      "label": "Open result",
+      "surface": "button",
+      "route": "/app/search",
+      "roles": ["admin"],
+      "capability": "admin:search:navigate",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v2.1/admin/operations/resolve"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "admin_search_result_resolved"
+      },
+      "states": {
+        "loading": "Rechecking authorization for the selected record.",
+        "success": "The selected record remains authorized and can be opened.",
+        "error": "The selected record could not be resolved.",
+        "permission": "The selected record is no longer authorized for this Admin session.",
+        "offline": "Record authorization cannot be rechecked offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/admin/search/AdminGlobalSearch.test.tsx",
+        "tests/integration/support/v21-support-lifecycle.test.ts",
+        "tests/e2e/support.spec.ts"
+      ]
+    },
+    {
+      "action_id": "auth.household_selector.switch.button",
+      "label": "Continue with selected household",
+      "surface": "button",
+      "route": "/select-household",
+      "roles": ["parent"],
+      "capability": "auth:household-context:switch",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v2.1/account-context/household"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "session_rotation",
+        "event": "household_context_switched"
+      },
+      "states": {
+        "loading": "Rechecking ownership and rotating the Parent household context.",
+        "success": "The selected owned household opens with a newly rotated Parent session.",
+        "error": "The household switch was rejected or the session could not be rotated.",
+        "permission": "Only households owned by the signed-in Parent account may be selected.",
+        "offline": "Household selection is unavailable offline and the current context is unchanged."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/server/features/auth/v21-adult-session.test.ts",
+        "tests/integration/portals/portal-mount.test.ts"
+      ]
+    },
+    {
+      "action_id": "auth.household_selector.view.route",
+      "label": "Choose household",
+      "surface": "route",
+      "route": "/select-household",
+      "roles": ["parent"],
+      "capability": "auth:household-context:read",
+      "handler": {
+        "method": "GET",
+        "path": "/select-household"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "session_read",
+        "event": "household_selector_viewed"
+      },
+      "states": {
+        "loading": "Resolving owned households from the signed-in Parent session.",
+        "success": "Only the households owned by this account are visible for selection.",
+        "error": "Owned household context could not be resolved and the selector fails closed.",
+        "permission": "Non-Parent and invalid sessions cannot read household choices.",
+        "offline": "The selector is unavailable offline and no household data is cached."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/server/features/auth/v21-adult-session.test.ts",
+        "tests/integration/portals/portal-mount.test.ts"
+      ]
+    },
     {
       "action_id": "auth.parent.logout.button",
       "label": "Logout",
@@ -877,6 +2193,68 @@
       "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
     },
     {
+      "action_id": "auth.role_selector.switch.button",
+      "label": "Continue with selected role",
+      "surface": "button",
+      "route": "/select-role",
+      "roles": ["admin", "parent"],
+      "capability": "auth:role-context:switch",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v2.1/account-context/role"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "session_rotation",
+        "event": "account_role_switched"
+      },
+      "states": {
+        "loading": "Verifying the signed-in account and rotating its active role session.",
+        "success": "The selected Admin or Parent workspace opens with a newly rotated session.",
+        "error": "The role switch was rejected or the session could not be rotated.",
+        "permission": "Only a signed-in adult account with both Admin and Parent memberships may switch here.",
+        "offline": "Role switching is unavailable offline and the current session is unchanged."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": ["tests/integration/portals/portal-mount.test.ts"]
+    },
+    {
+      "action_id": "auth.role_selector.view.route",
+      "label": "Choose account context",
+      "surface": "route",
+      "route": "/select-role",
+      "roles": ["admin", "parent"],
+      "capability": "auth:role-context:read",
+      "handler": {
+        "method": "GET",
+        "path": "/select-role"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "session_read",
+        "event": "role_selector_viewed"
+      },
+      "states": {
+        "loading": "Resolving the signed-in adult account memberships.",
+        "success": "The available Admin and Parent role choices are visible.",
+        "error": "The signed-in account could not be resolved and the selector fails closed.",
+        "permission": "Single-role accounts are redirected to their only authorized workspace.",
+        "offline": "The selector is unavailable offline and no protected role context is disclosed."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": ["tests/integration/portals/portal-mount.test.ts"]
+    },
+    {
       "action_id": "auth.student.logout.button",
       "label": "Logout",
       "surface": "button",
@@ -906,6 +2284,75 @@
       "provider_mode": "not_provider_dependent",
       "external_mutation": false,
       "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
+    },
+    {
+      "action_id": "classes.attendance.admin.correct.form",
+      "label": "Record audited attendance correction",
+      "surface": "form",
+      "route": "/app/classroom/attendance",
+      "roles": ["admin"],
+      "capability": "classroom:attendance:correct",
+      "handler": {
+        "method": "POST",
+        "path": "/api/app/classroom/attendance/admin-correction"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "client-generated idempotency_key"
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "attendance_admin_correction"
+      },
+      "states": {
+        "loading": "Recording the audited correction.",
+        "success": "The canonical attendance projection is refreshed.",
+        "error": "The correction is not recorded and may be retried with the same key.",
+        "permission": "Only an authenticated Admin with the exact local roster binding may correct attendance.",
+        "offline": "Attendance corrections are unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/server/features/classroom/embedded/router.test.ts",
+        "apps/web/src/server/features/classroom/embedded/adapters.test.ts",
+        "tests/e2e/admin-information-architecture.spec.ts"
+      ]
+    },
+    {
+      "action_id": "classes.attendance.admin.view.route",
+      "label": "Review attendance",
+      "surface": "route",
+      "route": "/app/classroom/attendance",
+      "roles": ["admin"],
+      "capability": "classroom:attendance:read",
+      "handler": {
+        "method": "GET",
+        "path": "/api/app/classroom/attendance/admin"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "attendance_admin_read"
+      },
+      "states": {
+        "loading": "Loading canonical attendance records.",
+        "success": "Attendance records are visible.",
+        "error": "Attendance records could not load.",
+        "permission": "Only an authenticated Admin may review attendance.",
+        "offline": "No protected attendance data is read from an offline cache."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/server/features/classroom/embedded/router.test.ts",
+        "tests/e2e/admin-information-architecture.spec.ts"
+      ]
     },
     {
       "action_id": "classes.open_detail.button",
@@ -1159,6 +2606,94 @@
       "test_evidence": ["tests/unit/live-class/live-class-service.test.ts"]
     },
     {
+      "action_id": "portal.parent.class_detail.view.route",
+      "label": "Parent class detail",
+      "surface": "route",
+      "route": "/app/parent/classes/:occurrenceId",
+      "roles": ["parent"],
+      "capability": "parent:class:read",
+      "handler": {
+        "method": "GET",
+        "path": "/api/app/parent/summary"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "parent_class_detail_read"
+      },
+      "states": {
+        "loading": "Loading the household-safe class schedule.",
+        "success": "The selected class schedule and status are visible.",
+        "error": "The class detail remains unavailable and no fallback data is shown.",
+        "permission": "Only the owning household Parent may read this class detail.",
+        "offline": "No protected class detail is read from cache."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/parent/schedule/ParentSchedule.test.tsx",
+        "tests/unit/portal-class-detail.test.tsx"
+      ]
+    },
+    {
+      "action_id": "portal.parent.classroom.production_basic_join.button",
+      "label": "Join class",
+      "surface": "button",
+      "route": "/app/parent/classroom",
+      "roles": ["parent"],
+      "capability": "parent:class:launch",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/portals/parent/classroom/production-basic/launch"
+      },
+      "visibility": {
+        "mode": "server_derived",
+        "handler": {
+          "method": "GET",
+          "path": "/api/v1/portals/parent/classroom/production-basic/status"
+        },
+        "required_response": {
+          "success": true,
+          "data": {
+            "mode": "production_basic",
+            "available": true
+          }
+        }
+      },
+      "request_body": {
+        "mode": "none",
+        "client_controlled_fields": []
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "none",
+        "event": "production_basic_parent_launch_ephemeral_not_persisted"
+      },
+      "states": {
+        "loading": "Re-authorizing the exact signed-in Parent learner and active canonical-class entitlement.",
+        "success": "The explicit click joins the verified recurring Zoom classroom with short-lived SDK material and no reusable provider URL.",
+        "error": "Production-basic remains unavailable without a legacy fallback or an automatic retry.",
+        "permission": "Only the entitled signed-in Parent learner may see and use Join class.",
+        "offline": "Participant launch material is never cached or queued offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "verified_binding_explicit_sdk_click",
+      "external_mutation": true,
+      "test_evidence": [
+        "apps/web/src/server/features/classroom/production-basic/production-basic.test.ts",
+        "apps/web/src/client/app/parent/learning/api.test.ts",
+        "apps/web/src/client/app/parent/learning/classroom-launch.test.ts",
+        "apps/web/src/client/app/parent/learning/ParentLearningWorkspace.test.tsx"
+      ]
+    },
+    {
       "action_id": "portal.parent.learner.select.button",
       "label": "Select learner",
       "surface": "button",
@@ -1188,6 +2723,78 @@
       "provider_mode": "not_provider_dependent",
       "external_mutation": false,
       "test_evidence": ["tests/ot-52/portal-ui.test.ts"]
+    },
+    {
+      "action_id": "portal.parent.library.entitled_content_open.button",
+      "label": "Open entitled content",
+      "surface": "button",
+      "route": "/app/parent/library",
+      "roles": ["parent"],
+      "capability": "parent:library:playback",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/portals/parent/learning/content/:contentId/open"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "none",
+        "event": "parent_entitled_content_open_authorized_not_persisted"
+      },
+      "states": {
+        "loading": "Rechecking the Parent learner and exact content entitlement.",
+        "success": "The entitled first-party content destination opens without exposing a provider locator.",
+        "error": "No content opens and the Parent library remains fail closed.",
+        "permission": "Only the owning, active Parent learner with the exact content entitlement may open it.",
+        "offline": "Protected content authorization is never cached or queued offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/server/features/portals/parent-learning/router.test.ts",
+        "apps/web/src/server/features/portals/parent-learning/service.test.ts",
+        "apps/web/src/client/app/parent/learning/api.test.ts",
+        "apps/web/src/client/app/parent/learning/ParentLearningWorkspace.test.tsx"
+      ]
+    },
+    {
+      "action_id": "portal.parent.private_question.submit.form",
+      "label": "Send private question",
+      "surface": "form",
+      "route": "/app/parent/questions",
+      "roles": ["parent"],
+      "capability": "parent:question:create",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/portals/parent/learning/questions"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "client-generated x-idempotency-key"
+      },
+      "audit": {
+        "mode": "local_write",
+        "event": "parent_private_question_submitted"
+      },
+      "states": {
+        "loading": "Submitting the question under the Parent learner identity.",
+        "success": "The private question is durably recorded for Rabbi Eli without using a child identity.",
+        "error": "The question is not retried automatically and a bounded error is shown.",
+        "permission": "Only the owning, active Parent learner with the canonical class entitlement may submit.",
+        "offline": "Private questions are never cached or queued offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/server/features/portals/parent-learning/router.test.ts",
+        "apps/web/src/server/features/portals/parent-learning/postgres-repository.test.ts",
+        "apps/web/src/client/app/parent/learning/api.test.ts",
+        "apps/web/src/client/app/parent/learning/ParentLearningWorkspace.test.tsx"
+      ]
     },
     {
       "action_id": "portal.parent.student_access.reset.button",
@@ -1283,6 +2890,197 @@
       "test_evidence": ["tests/integration/portals/portal-mount.test.ts"]
     },
     {
+      "action_id": "portal.student.class_detail.join.button",
+      "label": "Join class",
+      "surface": "button",
+      "route": "/app/student/classes/:occurrenceId",
+      "roles": ["student"],
+      "capability": "student:class:launch",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/portals/student/classes/:classKey/launch"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "body.idempotency_key"
+      },
+      "audit": {
+        "mode": "local_write",
+        "event": "student_class_launch_requested"
+      },
+      "states": {
+        "loading": "Preparing a scoped Student classroom grant.",
+        "success": "The protected classroom opens without exposing provider URLs.",
+        "error": "No classroom grant is consumed and a bounded retry state is shown.",
+        "permission": "Only the entitled signed-in Student may open this class.",
+        "offline": "Classroom grants are never queued offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "sink",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/classroom/zoom-learner-classroom.test.ts",
+        "tests/unit/portal-class-detail.test.tsx"
+      ]
+    },
+    {
+      "action_id": "portal.student.class_detail.view.route",
+      "label": "Student class detail",
+      "surface": "route",
+      "route": "/app/student/classes/:occurrenceId",
+      "roles": ["student"],
+      "capability": "student:class:read",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/portals/student/dashboard"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "student_class_detail_read"
+      },
+      "states": {
+        "loading": "Loading the signed-in Student class detail.",
+        "success": "The entitled class schedule and launch status are visible.",
+        "error": "The class detail remains unavailable and no sibling data is shown.",
+        "permission": "The Student session may read only its own entitled class.",
+        "offline": "No protected class detail is read from cache."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/student/calendar/StudentCalendar.test.tsx",
+        "tests/unit/portal-class-detail.test.tsx"
+      ]
+    },
+    {
+      "action_id": "portal.student.classroom.join.button",
+      "label": "Join classroom",
+      "surface": "button",
+      "route": "/app/student/class/:occurrenceId",
+      "roles": ["student"],
+      "capability": "student:class:launch",
+      "handler": {
+        "method": "POST",
+        "path": "/api/app/classroom/bootstrap"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "client-generated exchange secret"
+      },
+      "audit": {
+        "mode": "local_write",
+        "event": "embedded_classroom_launch_grant_committed"
+      },
+      "states": {
+        "loading": "Re-authorizing the exact Student and occurrence before SDK bootstrap.",
+        "success": "A bounded in-memory participant bootstrap is ready.",
+        "error": "A neutral denial or provider-off state is shown without provider detail.",
+        "permission": "Only the matching signed-in Student may bootstrap the requested occurrence.",
+        "offline": "Classroom bootstrap is unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "provider_off",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/server/features/classroom/embedded/service.test.ts",
+        "apps/web/src/server/features/classroom/embedded/router.test.ts",
+        "apps/web/src/client/app/student/classroom/api.test.ts"
+      ]
+    },
+    {
+      "action_id": "portal.student.classroom.leave.button",
+      "label": "Leave classroom",
+      "surface": "button",
+      "route": "/app/student/class/:occurrenceId",
+      "roles": ["student"],
+      "capability": "student:class:launch",
+      "handler": {
+        "method": "POST",
+        "path": "/api/app/classroom/attendance/client"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "client-generated idempotency key"
+      },
+      "audit": {
+        "mode": "local_write",
+        "event": "embedded_classroom_client_left"
+      },
+      "states": {
+        "loading": "Recording the bounded local leave event.",
+        "success": "The Student returns to the Student portal.",
+        "error": "The Student still exits without displaying provider detail.",
+        "permission": "Only the current signed-in Student session may record the leave event.",
+        "offline": "The protected classroom is cleared before returning to the portal."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/server/features/classroom/embedded/router.test.ts",
+        "apps/web/src/client/app/student/classroom/StudentClassroomWorkspace.test.tsx"
+      ]
+    },
+    {
+      "action_id": "portal.student.classroom.production_basic_join.button",
+      "label": "Join class",
+      "surface": "button",
+      "route": "/app/student/class/:occurrenceId",
+      "roles": ["student"],
+      "capability": "student:class:launch",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/portals/student/classroom/production-basic/launch"
+      },
+      "visibility": {
+        "mode": "server_derived",
+        "handler": {
+          "method": "GET",
+          "path": "/api/v1/portals/student/classroom/production-basic/status"
+        },
+        "required_response": {
+          "success": true,
+          "data": {
+            "mode": "production_basic",
+            "available": true
+          }
+        }
+      },
+      "request_body": {
+        "mode": "none",
+        "client_controlled_fields": []
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "none",
+        "event": "production_basic_student_launch_ephemeral_not_persisted"
+      },
+      "states": {
+        "loading": "Re-authorizing the exact signed-in Student and active canonical-class enrollment.",
+        "success": "The explicit click joins the verified recurring Zoom classroom with short-lived SDK material and no reusable provider URL.",
+        "error": "Production-basic remains unavailable and does not fall through to the legacy occurrence bootstrap.",
+        "permission": "Only the entitled signed-in Student enrolled in the active canonical class may see Join class.",
+        "offline": "Participant launch material is never cached or queued offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "verified_binding_explicit_sdk_click",
+      "external_mutation": true,
+      "test_evidence": [
+        "apps/web/src/server/features/classroom/production-basic/production-basic.test.ts",
+        "apps/web/src/client/classroom/production-basic-launch-client.test.ts",
+        "apps/web/src/client/app/student/classroom/StudentClassroomWorkspace.test.tsx",
+        "tests/integration/portals/portal-mount.test.ts"
+      ]
+    },
+    {
       "action_id": "portal.student.classroom.question.form",
       "label": "Send question",
       "surface": "form",
@@ -1312,6 +3110,312 @@
       "provider_mode": "sink",
       "external_mutation": false,
       "test_evidence": ["tests/integration/classroom/zoom-learner-classroom.test.ts"]
+    },
+    {
+      "action_id": "portal.student.classroom.view.route",
+      "label": "Open embedded classroom",
+      "surface": "route",
+      "route": "/app/student/class/:occurrenceId",
+      "roles": ["student"],
+      "capability": "student:class:launch",
+      "handler": {
+        "method": "GET",
+        "path": "/app/student/class/:occurrenceId"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "embedded_classroom_route_opened"
+      },
+      "states": {
+        "loading": "Loading the private Student classroom shell.",
+        "success": "The exact occurrence classroom is visible.",
+        "error": "Provider-off readiness remains neutral and fail closed.",
+        "permission": "Anonymous and non-Student actors are denied by the server shell.",
+        "offline": "No protected classroom state is read from an offline cache."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "provider_off",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/classroom/embedded-classroom-mount.test.ts",
+        "tests/integration/portals/portal-mount.test.ts"
+      ]
+    },
+    {
+      "action_id": "portal.student.data_rights.request.form",
+      "label": "Create verified Student data-rights request",
+      "surface": "form",
+      "route": "/app/student/data-rights",
+      "roles": ["student"],
+      "capability": "student:privacy:rights-request",
+      "handler": {
+        "method": "POST",
+        "path": "/api/app/student/privacy/requests"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "client-generated x-idempotency-key"
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "adult_self_student_privacy_request_created"
+      },
+      "states": {
+        "loading": "Verifying the current Student password and saving the exact-subject request.",
+        "success": "The durable request is visible with its requester-safe status.",
+        "error": "The request is not saved or replayed under a conflicting payload.",
+        "permission": "Only the verified adult owner of the exact self Student profile may submit.",
+        "offline": "No request is claimed while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/server/features/privacy/student-router.test.ts",
+        "tests/integration/portals/portal-mount.test.ts"
+      ]
+    },
+    {
+      "action_id": "portal.student.data_rights.view.route",
+      "label": "Student data rights",
+      "surface": "route",
+      "route": "/app/student/data-rights",
+      "roles": ["student"],
+      "capability": "student:privacy:read",
+      "handler": {
+        "method": "GET",
+        "path": "/app/student/data-rights"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "adult_self_student_data_rights_view"
+      },
+      "states": {
+        "loading": "Loading the exact self Student request history.",
+        "success": "Only the requester-safe status and own export scope are visible.",
+        "error": "The protected view fails closed without exposing another subject.",
+        "permission": "Dependent, ambiguous, cross-household, and non-Student sessions are denied.",
+        "offline": "No protected privacy data is read from cache."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/server/features/privacy/student-router.test.ts",
+        "tests/integration/portals/portal-mount.test.ts"
+      ]
+    },
+    {
+      "action_id": "portal.student.library_detail.open.button",
+      "label": "Open protected lesson",
+      "surface": "button",
+      "route": "/app/student/library/:contentId",
+      "roles": ["student"],
+      "capability": "student:library:playback",
+      "handler": {
+        "method": "POST",
+        "path": "/api/app/student/library/:contentId/bootstrap"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_write",
+        "event": "student_library_playback_granted"
+      },
+      "states": {
+        "loading": "Preparing a short-lived first-party playback grant.",
+        "success": "Protected playback is authorized without exposing provider data.",
+        "error": "No playback opens and the lesson remains fail closed.",
+        "permission": "Only the entitled signed-in Student may open the lesson.",
+        "offline": "Playback grants are never queued or read from offline storage."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/student/library/StudentLibraryWorkspace.test.tsx",
+        "tests/e2e/vimeo-mishnayos-catalog.spec.ts"
+      ]
+    },
+    {
+      "action_id": "portal.student.library_detail.renew.button",
+      "label": "Renew protected access",
+      "surface": "button",
+      "route": "/app/student/library/:contentId",
+      "roles": ["student"],
+      "capability": "student:library:playback",
+      "handler": {
+        "method": "POST",
+        "path": "/api/app/student/library/:contentId/renew"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_write",
+        "event": "student_library_playback_renewed"
+      },
+      "states": {
+        "loading": "Refreshing the short-lived first-party playback grant.",
+        "success": "Protected playback access is renewed for the entitled lesson.",
+        "error": "The current grant is not replaced and no provider data is exposed.",
+        "permission": "Only the entitled signed-in Student may renew the lesson grant.",
+        "offline": "Playback renewal is never queued offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/student/library/StudentLibraryWorkspace.test.tsx",
+        "tests/e2e/vimeo-mishnayos-catalog.spec.ts"
+      ]
+    },
+    {
+      "action_id": "portal.student.library_detail.resume.form",
+      "label": "Save progress",
+      "surface": "form",
+      "route": "/app/student/library/:contentId",
+      "roles": ["student"],
+      "capability": "student:library:progress",
+      "handler": {
+        "method": "POST",
+        "path": "/api/app/student/library/:contentId/resume"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "body.idempotency_key"
+      },
+      "audit": {
+        "mode": "local_write",
+        "event": "student_library_resume_saved"
+      },
+      "states": {
+        "loading": "Saving the Student-scoped resume position.",
+        "success": "The resume position is saved for this Student and content version.",
+        "error": "The prior resume position remains authoritative.",
+        "permission": "Only the entitled signed-in Student may save lesson progress.",
+        "offline": "Resume writes are never queued offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/server/features/content/publication/router.test.ts",
+        "apps/web/src/client/app/student/library/StudentLibraryWorkspace.test.tsx"
+      ]
+    },
+    {
+      "action_id": "portal.student.library_detail.view.route",
+      "label": "Student lesson detail",
+      "surface": "route",
+      "route": "/app/student/library/:contentId",
+      "roles": ["student"],
+      "capability": "student:library:read",
+      "handler": {
+        "method": "POST",
+        "path": "/api/app/student/library/search"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "student_library_detail_read"
+      },
+      "states": {
+        "loading": "Loading the entitlement-filtered private lesson.",
+        "success": "Only the assigned lesson metadata and protected controls are visible.",
+        "error": "The lesson remains unavailable and no sibling Student data is shown.",
+        "permission": "The Student session may read only its own assigned lessons.",
+        "offline": "No protected lesson detail is read from cache."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/student/library/StudentLibraryWorkspace.test.tsx",
+        "tests/e2e/vimeo-mishnayos-catalog.spec.ts"
+      ]
+    },
+    {
+      "action_id": "portal.student.privacy.consent.form",
+      "label": "Change own Student consent",
+      "surface": "form",
+      "route": "/app/student/privacy",
+      "roles": ["student"],
+      "capability": "student:privacy:consent",
+      "handler": {
+        "method": "POST",
+        "path": "/api/app/student/privacy/consents"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "client-generated x-idempotency-key"
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "adult_self_student_consent_recorded"
+      },
+      "states": {
+        "loading": "Saving append-only consent evidence for the exact self Student.",
+        "success": "The current consent is visible; recording withdrawal revokes unused launch grants.",
+        "error": "No consent success is claimed and no provider action is attempted.",
+        "permission": "Service-account consent is review-only and only the two adult self scopes may change.",
+        "offline": "No consent mutation is claimed while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/server/features/privacy/student-router.test.ts",
+        "apps/web/src/client/app/student/privacy/api.test.ts"
+      ]
+    },
+    {
+      "action_id": "portal.student.privacy.view.route",
+      "label": "Student privacy",
+      "surface": "route",
+      "route": "/app/student/privacy",
+      "roles": ["student"],
+      "capability": "student:privacy:read",
+      "handler": {
+        "method": "GET",
+        "path": "/app/student/privacy"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "adult_self_student_privacy_view"
+      },
+      "states": {
+        "loading": "Loading own consent evidence and policy versions.",
+        "success": "The exact self Student consent history is visible.",
+        "error": "The protected view fails closed without exposing another Student.",
+        "permission": "Dependent, ambiguous, cross-household, and non-Student sessions are denied.",
+        "offline": "No protected privacy data is read from cache."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/server/features/privacy/student-router.test.ts",
+        "tests/integration/portals/portal-mount.test.ts"
+      ]
     },
     {
       "action_id": "portal.student.private_question.send.button",
@@ -1376,6 +3480,40 @@
       "test_evidence": [
         "tests/integration/portals/portal-mount.test.ts",
         "tests/ot-52/portal-ui.test.ts"
+      ]
+    },
+    {
+      "action_id": "public.cancellation_refund.view.route",
+      "label": "Cancellation and Refund Policy",
+      "surface": "route",
+      "route": "/cancellation-refund",
+      "roles": ["public"],
+      "capability": "public:legal:read",
+      "handler": {
+        "method": "GET",
+        "path": "/cancellation-refund"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "public_cancellation_refund_policy_read"
+      },
+      "states": {
+        "loading": "Loading the current versioned cancellation and refund policy.",
+        "success": "Period-end access, manual refund review, and data-preservation terms are visible.",
+        "error": "The policy remains unavailable and no billing action is offered.",
+        "permission": "The policy is public and exposes no account-specific billing data.",
+        "offline": "The canonical policy is not replaced by protected cached account data."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/e2e/public-legal.spec.ts",
+        "tests/accessibility/w13-10/legal-pages-a11y.spec.ts"
       ]
     },
     {
@@ -1608,6 +3746,74 @@
       ]
     },
     {
+      "action_id": "public.signup.receipt.continue.button",
+      "label": "Continue after Family signup",
+      "surface": "button",
+      "route": "/signup/received",
+      "roles": ["public"],
+      "capability": "public:signup:continue",
+      "handler": {
+        "method": "CLIENT",
+        "path": "apps/web/src/client/public/public-entry.ts"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "none",
+        "event": "family_signup_receipt_continue"
+      },
+      "states": {
+        "loading": "Resolving the safe, same-origin signup continuation.",
+        "success": "The applicant continues to the allowed Parent or sign-in route.",
+        "error": "An unsafe continuation is ignored and the safe default remains visible.",
+        "permission": "The destination still enforces its own authenticated session boundary.",
+        "offline": "The receipt remains visible, but protected continuation is unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/e2e/landing-signup.spec.ts",
+        "tests/integration/security/auth-browser-boundaries.test.ts"
+      ]
+    },
+    {
+      "action_id": "public.signup.receipt.view.route",
+      "label": "Family signup receipt",
+      "surface": "route",
+      "route": "/signup/received",
+      "roles": ["public"],
+      "capability": "public:signup:receipt",
+      "handler": {
+        "method": "GET",
+        "path": "/signup/received"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "none",
+        "event": "family_signup_receipt_view"
+      },
+      "states": {
+        "loading": "Loading the durable Family-signup acknowledgment.",
+        "success": "The saved-account state and truthful next step are visible.",
+        "error": "The generic safe acknowledgment remains available without disclosing account state.",
+        "permission": "The public receipt grants no account or provider capability.",
+        "offline": "No protected account state is cached by the receipt."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/e2e/landing-signup.spec.ts",
+        "tests/integration/public-metadata-runtime.test.ts"
+      ]
+    },
+    {
       "action_id": "public.signup.route",
       "label": "Sign Up Now",
       "surface": "route",
@@ -1676,6 +3882,521 @@
       ]
     },
     {
+      "action_id": "support.admin.assign.form",
+      "label": "Assign support conversation",
+      "surface": "form",
+      "route": "/app/support",
+      "roles": ["admin"],
+      "capability": "support:ticket:assign",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/admin/support/v21/tickets/:ticketId/assign"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "assigned"
+      },
+      "states": {
+        "loading": "Saving the assignment.",
+        "success": "The durable conversation assignment and version are committed.",
+        "error": "The assignment failed or a newer version must be loaded.",
+        "permission": "An authenticated Admin session and valid CSRF token are required.",
+        "offline": "Network unavailable; retry after reloading the durable conversation."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "local_only",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/support/v21-support-lifecycle.test.ts",
+        "tests/e2e/support.spec.ts"
+      ]
+    },
+    {
+      "action_id": "support.admin.queue.view.route",
+      "label": "Support operations queue",
+      "surface": "route",
+      "route": "/app/support",
+      "roles": ["admin"],
+      "capability": "support:queue:read",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/admin/support/v21/tickets"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "support_queue_read"
+      },
+      "states": {
+        "loading": "Loading durable support conversations.",
+        "success": "The Admin-scoped support queue is visible.",
+        "error": "The local support queue could not be loaded.",
+        "permission": "Only an authenticated Admin may read the operations queue.",
+        "offline": "No protected support data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "local_only",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/support/v21-support-lifecycle.test.ts",
+        "tests/e2e/support.spec.ts"
+      ]
+    },
+    {
+      "action_id": "support.admin.reply.form",
+      "label": "Send in-app support reply",
+      "surface": "form",
+      "route": "/app/support",
+      "roles": ["admin"],
+      "capability": "support:ticket:reply",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/admin/support/v21/tickets/:ticketId/reply"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "client-generated idempotency_key"
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "admin_replied"
+      },
+      "states": {
+        "loading": "Saving the in-app reply.",
+        "success": "The durable in-app reply and redacted notification intent are committed.",
+        "error": "The reply failed, conflicted, or must be retried with a new version.",
+        "permission": "An authenticated Admin session and valid CSRF token are required.",
+        "offline": "Network unavailable; the reply is not treated as sent."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "local_only",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/support/v21-support-lifecycle.test.ts",
+        "tests/e2e/support.spec.ts"
+      ]
+    },
+    {
+      "action_id": "support.admin.status.form",
+      "label": "Update support lifecycle status",
+      "surface": "form",
+      "route": "/app/support",
+      "roles": ["admin"],
+      "capability": "support:ticket:status",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/admin/support/v21/tickets/:ticketId/status"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "status_changed"
+      },
+      "states": {
+        "loading": "Saving the lifecycle status.",
+        "success": "The allowed lifecycle transition and version are committed.",
+        "error": "The transition is invalid, conflicted, or could not be saved.",
+        "permission": "An authenticated Admin session and valid CSRF token are required.",
+        "offline": "Network unavailable; the lifecycle status is unchanged."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "local_only",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/support/v21-support-lifecycle.test.ts",
+        "tests/e2e/support.spec.ts"
+      ]
+    },
+    {
+      "action_id": "support.admin.ticket.assign.form",
+      "label": "Assign support ticket",
+      "surface": "form",
+      "route": "/app/tickets/:ticketId",
+      "roles": ["admin"],
+      "capability": "support:ticket:assign",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/admin/support/v21/tickets/:ticketId/assign"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "assigned"
+      },
+      "states": {
+        "loading": "Saving the assignment.",
+        "success": "The durable ticket assignment and version are committed.",
+        "error": "The assignment failed or a newer ticket version must be loaded.",
+        "permission": "An authenticated Admin session and valid CSRF token are required.",
+        "offline": "Network unavailable; the durable ticket is unchanged."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "local_only",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/admin/support/AdminSupportWorkspace.test.tsx",
+        "tests/integration/support/v21-support-lifecycle.test.ts",
+        "tests/e2e/support.spec.ts"
+      ]
+    },
+    {
+      "action_id": "support.admin.ticket.detail.view.route",
+      "label": "Support ticket detail",
+      "surface": "route",
+      "route": "/app/tickets/:ticketId",
+      "roles": ["admin"],
+      "capability": "support:ticket:read",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/admin/support/v21/tickets/:ticketId"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "support_ticket_read"
+      },
+      "states": {
+        "loading": "Loading the durable support ticket.",
+        "success": "The exact Admin-scoped ticket is visible.",
+        "error": "The ticket is unavailable or outside the current Admin scope.",
+        "permission": "Only an authenticated Admin with queue access may read this ticket.",
+        "offline": "No protected support data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "local_only",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/admin/support/AdminSupportWorkspace.test.tsx",
+        "tests/integration/support/v21-support-lifecycle.test.ts",
+        "tests/e2e/support.spec.ts"
+      ]
+    },
+    {
+      "action_id": "support.admin.ticket.open.button",
+      "label": "Open support ticket",
+      "surface": "button",
+      "route": "/app/tickets",
+      "roles": ["admin"],
+      "capability": "support:ticket:read",
+      "handler": {
+        "method": "CLIENT",
+        "path": "apps/web/src/client/app/admin/support/AdminSupportWorkspace.tsx"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_navigation",
+        "event": "support_ticket_opened"
+      },
+      "states": {
+        "loading": "Opening the selected ticket.",
+        "success": "The canonical ticket detail route is visible.",
+        "error": "The ticket route cannot be opened.",
+        "permission": "Only an authenticated Admin may open a queue ticket.",
+        "offline": "No protected support data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/admin/support/AdminSupportWorkspace.test.tsx",
+        "tests/e2e/support.spec.ts"
+      ]
+    },
+    {
+      "action_id": "support.admin.ticket.reply.form",
+      "label": "Reply to support ticket",
+      "surface": "form",
+      "route": "/app/tickets/:ticketId",
+      "roles": ["admin"],
+      "capability": "support:ticket:reply",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/admin/support/v21/tickets/:ticketId/reply"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "client-generated idempotency_key"
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "admin_replied"
+      },
+      "states": {
+        "loading": "Saving the in-app reply.",
+        "success": "The durable reply and redacted local notification intent are committed.",
+        "error": "The reply failed, conflicted, or must be retried with a new version.",
+        "permission": "An authenticated Admin session and valid CSRF token are required.",
+        "offline": "Network unavailable; the reply is not treated as sent."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "local_only",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/admin/support/AdminSupportWorkspace.test.tsx",
+        "tests/integration/support/v21-support-lifecycle.test.ts",
+        "tests/e2e/support.spec.ts"
+      ]
+    },
+    {
+      "action_id": "support.admin.ticket.status.form",
+      "label": "Update support ticket status",
+      "surface": "form",
+      "route": "/app/tickets/:ticketId",
+      "roles": ["admin"],
+      "capability": "support:ticket:status",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/admin/support/v21/tickets/:ticketId/status"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "status_changed"
+      },
+      "states": {
+        "loading": "Saving the lifecycle status.",
+        "success": "The allowed ticket transition and version are committed.",
+        "error": "The transition is invalid, conflicted, or could not be saved.",
+        "permission": "An authenticated Admin session and valid CSRF token are required.",
+        "offline": "Network unavailable; the lifecycle status is unchanged."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "local_only",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/admin/support/AdminSupportWorkspace.test.tsx",
+        "tests/integration/support/v21-support-lifecycle.test.ts",
+        "tests/e2e/support.spec.ts"
+      ]
+    },
+    {
+      "action_id": "support.admin.ticket_queue.back.button",
+      "label": "Back to ticket queue",
+      "surface": "button",
+      "route": "/app/tickets/:ticketId",
+      "roles": ["admin"],
+      "capability": "support:queue:read",
+      "handler": {
+        "method": "CLIENT",
+        "path": "apps/web/src/client/app/admin/support/AdminSupportWorkspace.tsx"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_navigation",
+        "event": "support_ticket_queue_returned"
+      },
+      "states": {
+        "loading": "Returning to the ticket queue.",
+        "success": "The canonical ticket queue route is visible.",
+        "error": "The queue route cannot be opened.",
+        "permission": "Only an authenticated Admin may return to the ticket queue.",
+        "offline": "No protected support data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/admin/support/AdminSupportWorkspace.test.tsx",
+        "tests/e2e/support.spec.ts"
+      ]
+    },
+    {
+      "action_id": "support.admin.ticket_queue.view.route",
+      "label": "Support ticket queue",
+      "surface": "route",
+      "route": "/app/tickets",
+      "roles": ["admin"],
+      "capability": "support:queue:read",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/admin/support/v21/tickets"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "support_ticket_queue_read"
+      },
+      "states": {
+        "loading": "Loading durable support tickets.",
+        "success": "The Admin-scoped canonical ticket queue is visible.",
+        "error": "The local support queue could not be loaded.",
+        "permission": "Only an authenticated Admin may read the ticket queue.",
+        "offline": "No protected support data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "local_only",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/admin/support/AdminSupportWorkspace.test.tsx",
+        "tests/integration/support/v21-support-lifecycle.test.ts",
+        "tests/e2e/support.spec.ts"
+      ]
+    },
+    {
+      "action_id": "support.admin.view.route",
+      "label": "Admin Support",
+      "surface": "route",
+      "route": "/app/support",
+      "roles": ["admin"],
+      "capability": "support:operations:view",
+      "handler": {
+        "method": "GET",
+        "path": "/app/support"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "support_operations_route_view"
+      },
+      "states": {
+        "loading": "Loading support operations.",
+        "success": "The durable Admin support workspace is mounted.",
+        "error": "A local error is shown without external mutation.",
+        "permission": "Only an authenticated Admin may open this route.",
+        "offline": "No protected support data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "local_only",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/support/v21-support-lifecycle.test.ts",
+        "tests/e2e/support.spec.ts"
+      ]
+    },
+    {
+      "action_id": "support.parent.receipt.view.route",
+      "label": "Support Receipt",
+      "surface": "route",
+      "route": "/app/parent/support/:ticketId",
+      "roles": ["parent"],
+      "capability": "support:ticket:status",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/support/v21/tickets/:ticketId"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "support_conversation_read"
+      },
+      "states": {
+        "loading": "Loading bounded local status.",
+        "success": "The durable same-requester conversation and messages are visible.",
+        "error": "The local support conversation could not be found.",
+        "permission": "Cross-requester and cross-role conversation reads are denied.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "local_only",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/support/v21-support-lifecycle.test.ts",
+        "tests/e2e/support.spec.ts"
+      ]
+    },
+    {
+      "action_id": "support.parent.submit.form",
+      "label": "Submit support request",
+      "surface": "form",
+      "route": "/app/parent/support",
+      "roles": ["parent"],
+      "capability": "support:ticket:create",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/support/v21/tickets"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "client-generated idempotency_key"
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "created"
+      },
+      "states": {
+        "loading": "Saving request.",
+        "success": "The durable conversation, first message, audit event, and redacted notification intent are committed.",
+        "error": "The request failed or conflicts with a prior idempotency key payload.",
+        "permission": "Only the authenticated requester may create this support conversation.",
+        "offline": "Network unavailable; retry before changing data."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "local_only",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/support/v21-support-lifecycle.test.ts",
+        "tests/e2e/support.spec.ts"
+      ]
+    },
+    {
+      "action_id": "support.parent.view.route",
+      "label": "Parent Support",
+      "surface": "route",
+      "route": "/app/parent/support",
+      "roles": ["parent"],
+      "capability": "support:ticket:create",
+      "handler": {
+        "method": "GET",
+        "path": "/app/parent/support"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "support_route_view"
+      },
+      "states": {
+        "loading": "Loading bounded local data.",
+        "success": "The durable requester support workspace is visible.",
+        "error": "A local error state is shown and no external mutation is attempted.",
+        "permission": "Unauthorized and cross-role sessions are denied.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "local_only",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/support/v21-support-lifecycle.test.ts",
+        "tests/e2e/support.spec.ts"
+      ]
+    },
+    {
       "action_id": "support.student.receipt.view.route",
       "label": "Support Receipt",
       "surface": "route",
@@ -1684,7 +4405,7 @@
       "capability": "support:ticket:status",
       "handler": {
         "method": "GET",
-        "path": "/api/v1/support/receipts/:receiptId/status"
+        "path": "/api/v1/support/v21/tickets/:ticketId"
       },
       "idempotency": {
         "required": false,
@@ -1692,21 +4413,21 @@
       },
       "audit": {
         "mode": "local_read",
-        "event": "support_status_projection_read"
+        "event": "support_conversation_read"
       },
       "states": {
         "loading": "Loading bounded local status.",
-        "success": "Cached same-account status is visible.",
-        "error": "The local receipt could not be found.",
-        "permission": "Cross-account and cross-user receipt reads are denied.",
+        "success": "The durable same-requester conversation and messages are visible.",
+        "error": "The local support conversation could not be found.",
+        "permission": "Cross-requester and cross-role conversation reads are denied.",
         "offline": "No protected cached data is used while offline."
       },
       "readiness_state": "ready",
-      "provider_mode": "mock_or_disabled_only",
+      "provider_mode": "local_only",
       "external_mutation": false,
       "test_evidence": [
-        "apps/web/src/client/app/router/canonical-route-views.test.ts",
-        "tests/unit/day-one/visible-action-registry.test.ts"
+        "tests/integration/support/v21-support-lifecycle.test.ts",
+        "tests/e2e/support.spec.ts"
       ]
     },
     {
@@ -1718,7 +4439,7 @@
       "capability": "support:ticket:create",
       "handler": {
         "method": "POST",
-        "path": "/api/v1/support/tickets"
+        "path": "/api/v1/support/v21/tickets"
       },
       "idempotency": {
         "required": true,
@@ -1726,21 +4447,21 @@
       },
       "audit": {
         "mode": "domain_audit",
-        "event": "support_submission_accepted"
+        "event": "created"
       },
       "states": {
         "loading": "Saving request.",
-        "success": "Durable receipt and local status projection are committed.",
-        "error": "The request could not be completed or delivery is delayed.",
-        "permission": "Server-side active entitlement recheck blocks non-subscribers.",
+        "success": "The durable conversation, first message, audit event, and redacted notification intent are committed.",
+        "error": "The request failed or conflicts with a prior idempotency key payload.",
+        "permission": "Only the authenticated requester may create this support conversation.",
         "offline": "Network unavailable; retry before changing data."
       },
       "readiness_state": "ready",
-      "provider_mode": "mock_or_disabled_only",
+      "provider_mode": "local_only",
       "external_mutation": false,
       "test_evidence": [
-        "apps/web/src/client/app/router/canonical-route-views.test.ts",
-        "tests/unit/day-one/visible-action-registry.test.ts"
+        "tests/integration/support/v21-support-lifecycle.test.ts",
+        "tests/e2e/support.spec.ts"
       ]
     },
     {
@@ -1764,17 +4485,17 @@
       },
       "states": {
         "loading": "Loading bounded local data.",
-        "success": "Action completed or the route is visible.",
+        "success": "The durable requester support workspace is visible.",
         "error": "A local error state is shown and no external mutation is attempted.",
-        "permission": "Unauthorized or non-subscriber accounts see only the public lead path.",
+        "permission": "Unauthorized and cross-role sessions are denied.",
         "offline": "No protected cached data is used while offline."
       },
       "readiness_state": "ready",
-      "provider_mode": "mock_or_disabled_only",
+      "provider_mode": "local_only",
       "external_mutation": false,
       "test_evidence": [
-        "apps/web/src/client/app/router/canonical-route-views.test.ts",
-        "tests/unit/day-one/visible-action-registry.test.ts"
+        "tests/integration/support/v21-support-lifecycle.test.ts",
+        "tests/e2e/support.spec.ts"
       ]
     }
   ]

@@ -68,7 +68,11 @@ describe('P13 Parent summary service', () => {
   it('returns only Parent-safe schedule, attendance, badges, updates, and support data', async () => {
     const snapshot = await buildService().overview(principal);
 
-    expect(snapshot.contract_version).toBe('1.0.0');
+    expect(snapshot.contract_version).toBe('1.1.0');
+    expect(snapshot.featured_welcome_video).toMatchObject({
+      status: 'unavailable',
+      reason: 'no_approved_version',
+    });
     expect(snapshot.progress[0]?.attendance.attended_sessions).toBe(7);
     expect(snapshot.schedule[0]?.title).toBe('Weekly learning session');
     expect(snapshot.updates[0]?.kind).toBe('reminder');

@@ -12,7 +12,6 @@ import {
   listAdminHouseholds,
   listAdminLearners,
   listAdminUsers,
-  requestAdminStudentSetup,
   requestAdminUserPasswordReset,
   setAdminHouseholdStatus,
   setAdminLearnerStatus,
@@ -24,11 +23,14 @@ import {
 } from '../../../../../../packages/domain/src/index.ts';
 
 type DirectoryRequest = Request & { traceId?: string };
+type AdminDirectorySessionUnavailable = { unavailable: true };
 
 export function createAdminDirectoryRouter(input: {
   pool: DbPool;
   config: AppConfig;
-  resolveSession(req: Request): Promise<AuthenticatedSession | null>;
+  resolveSession(
+    req: Request,
+  ): Promise<AuthenticatedSession | AdminDirectorySessionUnavailable | null>;
   verifyCsrf(req: Request, session: AuthenticatedSession): Promise<boolean>;
   verifyRecentAssurance(session: AuthenticatedSession): Promise<boolean>;
 }) {
@@ -352,24 +354,6 @@ export function createAdminDirectoryRouter(input: {
     }),
   );
 
-  router.post(
-    '/learners/:learnerKey/student-setup',
-    route(async (req, res) => {
-      const context = await requireMutation(req, res, input);
-      if (!context) return;
-      res.json({
-        success: true,
-        setup: await requestAdminStudentSetup({
-          pool: input.pool,
-          config: input.config,
-          actor: context.actor,
-          learnerKey: String(req.params.learnerKey),
-          payload: req.body,
-        }),
-      });
-    }),
-  );
-
   router.use(
     (error: unknown, req: DirectoryRequest, res: Response, _next: express.NextFunction) => {
       if (error instanceof ZodError) {
@@ -412,10 +396,21 @@ async function requireAdmin(
   req: DirectoryRequest,
   res: Response,
   input: {
-    resolveSession(req: Request): Promise<AuthenticatedSession | null>;
+    resolveSession(
+      req: Request,
+    ): Promise<AuthenticatedSession | AdminDirectorySessionUnavailable | null>;
   },
 ) {
   const session = await input.resolveSession(req);
+  if (session && 'unavailable' in session) {
+    res.status(503).json({
+      success: false,
+      code: 'ADMIN_DIRECTORY_UNAVAILABLE',
+      message: 'Admin directory is temporarily unavailable.',
+      request_id: req.traceId,
+    });
+    return null;
+  }
   if (!session) {
     res.status(401).json({
       success: false,
@@ -444,7 +439,9 @@ async function requireMutation(
   req: DirectoryRequest,
   res: Response,
   input: {
-    resolveSession(req: Request): Promise<AuthenticatedSession | null>;
+    resolveSession(
+      req: Request,
+    ): Promise<AuthenticatedSession | AdminDirectorySessionUnavailable | null>;
     verifyCsrf(req: Request, session: AuthenticatedSession): Promise<boolean>;
     verifyRecentAssurance(session: AuthenticatedSession): Promise<boolean>;
   },

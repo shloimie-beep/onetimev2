@@ -17,6 +17,10 @@ const scope: FamilySignupScope = {
   runtime_tier: 'isolated_staging',
   verification_environment_id: 'ci',
 };
+const crmBinding = {
+  accountKey: 'one_time',
+  productKey: 'one_time_mishnayos',
+};
 const command = (): FamilySignupCommand => ({
   classification: 'family',
   idempotency_key: '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg',
@@ -28,17 +32,17 @@ const command = (): FamilySignupCommand => ({
   timezone: 'Asia/Jerusalem',
   terms_accepted: true,
   privacy_accepted: true,
-  general_marketing_consent: false,
+  general_marketing_consent: true,
   parent_newsletter_consent: true,
 });
 const passwordHash = `argon2id-v1$v=19$m=19456,t=2,p=1$${'a'.repeat(22)}$${'b'.repeat(43)}`;
-const freeAccessExpiresAt = '2026-09-13T16:24:00.000Z';
+const freeAccessExpiresAt = '2026-09-11T15:00:00.000Z';
 
 describe('P08 PostgreSQL Family-signup repository', () => {
   it('serializes exact request and identity keys and commits every local aggregate atomically', async () => {
     const harness = recordingPool();
     const service = createFamilySignupService({
-      repository: createPostgresFamilySignupRepository(harness.pool),
+      repository: createPostgresFamilySignupRepository(harness.pool, crmBinding),
       freeAccessExpiresAt,
       hashPassword: async () => passwordHash,
       fingerprintPasswordForIdempotency: async () => 'c'.repeat(64),
@@ -52,7 +56,7 @@ describe('P08 PostgreSQL Family-signup repository', () => {
     const result = await service.submit({
       scope,
       command: command(),
-      now: new Date('2026-09-13T16:23:59.000Z'),
+      now: new Date('2026-09-11T14:59:59.000Z'),
     });
     expect(result).toMatchObject({
       disposition: 'created',
@@ -70,7 +74,10 @@ describe('P08 PostgreSQL Family-signup repository', () => {
       'v21_human_accounts',
       'v21_human_account_role_memberships',
       'v21_households',
+      'parent_learning_participants',
+      'parent_learning_class_entitlements',
       'v21_adult_credentials',
+      'contacts',
       'canonical_state_transition_events',
       'family_signup_requests',
       'family_signup_access_projections',
@@ -83,7 +90,7 @@ describe('P08 PostgreSQL Family-signup repository', () => {
     }
     expect(
       harness.calls.filter(({ text }) => text.includes('INTO onetime.family_signup_consents')),
-    ).toHaveLength(2);
+    ).toHaveLength(6);
     expect(
       harness.calls.filter(({ text }) =>
         text.includes('INTO onetime.canonical_state_transition_events'),
@@ -96,6 +103,36 @@ describe('P08 PostgreSQL Family-signup repository', () => {
       ),
     ).toBe(true);
     expect(JSON.stringify(harness.calls)).not.toContain(command().password);
+
+    const household = harness.calls.find(({ text }) =>
+      text.includes('INTO onetime.v21_households'),
+    );
+    expect(household?.text).toContain("'family','active',3,0");
+    const parentParticipant = harness.calls.find(({ text }) =>
+      text.includes('INTO onetime.parent_learning_participants'),
+    );
+    expect(parentParticipant?.values).toEqual(
+      expect.arrayContaining(['parent:household_1', 'household_1', 'adult_1', 'account_1']),
+    );
+    expect(
+      harness.calls.some(({ text }) =>
+        /INTO onetime\.(?:v21_student_profiles|portal_learners)/u.test(text),
+      ),
+    ).toBe(false);
+
+    const crmContact = harness.calls.find(({ text }) => text.includes('INTO onetime.contacts'));
+    expect(crmContact?.values).toEqual(
+      expect.arrayContaining([
+        'contact_adult_1',
+        'one_time',
+        'one_time_mishnayos',
+        'Ari Levi',
+        'ari@example.com',
+        'email',
+      ]),
+    );
+    const conflictUpdate = crmContact?.text.split('DO UPDATE SET')[1] ?? '';
+    expect(conflictUpdate).not.toMatch(/suppression_state|archived_at|source\s*=|phone_normalized/);
 
     const outbox = harness.calls.find(({ text }) =>
       text.includes('INTO onetime.family_signup_outbox'),
@@ -112,14 +149,69 @@ describe('P08 PostgreSQL Family-signup repository', () => {
     expect(
       outbox?.values.some((value) => String(value).includes('"provider_effect_authorized":false')),
     ).toBe(true);
+    expect(
+      outbox?.values.some((value) =>
+        String(value).includes('"policy_version":"one_time_family_signup_unified_v1"'),
+      ),
+    ).toBe(true);
+    expect(outbox?.values.some((value) => String(value).includes('"student_contacts":0'))).toBe(
+      true,
+    );
     expect(harness.calls.some(({ text }) => text.includes('INTO onetime.job_outbox'))).toBe(false);
+  });
+
+  it('uses the exact Family transaction client and rolls back all writes on session failure', async () => {
+    const harness = recordingPool();
+    const establishInTransaction = vi.fn(async (db: unknown) => {
+      expect(db).toBe(harness.client);
+      expect(
+        harness.calls.some(({ text }) => text.includes('INTO onetime.family_signup_requests')),
+      ).toBe(true);
+      throw new Error('forced_transaction_session_failure');
+    });
+    const service = createFamilySignupService({
+      repository: createPostgresFamilySignupRepository(harness.pool, crmBinding, {
+        establishInTransaction,
+      }),
+      freeAccessExpiresAt,
+      hashPassword: async () => passwordHash,
+      fingerprintPasswordForIdempotency: async () => 'c'.repeat(64),
+      allocateIds: () => ({
+        adult_id: 'adult_1',
+        human_account_id: 'account_1',
+        household_id: 'household_1',
+      }),
+    });
+
+    await expect(
+      service.submitWithSession({
+        scope,
+        command: command(),
+        now: new Date('2026-09-11T14:59:59.000Z'),
+      }),
+    ).rejects.toThrow('forced_transaction_session_failure');
+    expect(establishInTransaction).toHaveBeenCalledTimes(1);
+    expect(harness.calls.some(({ text }) => text === 'ROLLBACK')).toBe(true);
+    expect(harness.calls.some(({ text }) => text === 'COMMIT')).toBe(false);
+    for (const table of [
+      'v21_adult_identities',
+      'v21_human_accounts',
+      'v21_households',
+      'parent_learning_participants',
+      'parent_learning_class_entitlements',
+      'v21_adult_credentials',
+      'family_signup_requests',
+    ]) {
+      expect(harness.calls.some(({ text }) => text.includes(`INTO onetime.${table}`))).toBe(true);
+    }
   });
 
   it('persists the exact P25 standard hosted-checkout handoff at the expiry boundary', async () => {
     const harness = recordingPool();
     const service = createFamilySignupService({
-      repository: createPostgresFamilySignupRepository(harness.pool),
+      repository: createPostgresFamilySignupRepository(harness.pool, crmBinding),
       freeAccessExpiresAt,
+      ghlPaymentLinkConfigured: true,
       hashPassword: async () => passwordHash,
       fingerprintPasswordForIdempotency: async () => 'c'.repeat(64),
       allocateIds: () => ({
@@ -132,7 +224,7 @@ describe('P08 PostgreSQL Family-signup repository', () => {
     const result = await service.submit({
       scope,
       command: command(),
-      now: new Date('2026-09-13T16:24:00.000Z'),
+      now: new Date('2026-09-11T15:00:00.000Z'),
     });
     expect(result).toMatchObject({
       next_action: 'checkout',
@@ -172,7 +264,7 @@ describe('P08 PostgreSQL Family-signup repository', () => {
   it('rolls back the full transaction when any required insert is not singular', async () => {
     const harness = recordingPool('v21_adult_credentials');
     const service = createFamilySignupService({
-      repository: createPostgresFamilySignupRepository(harness.pool),
+      repository: createPostgresFamilySignupRepository(harness.pool, crmBinding),
       freeAccessExpiresAt,
       hashPassword: async () => passwordHash,
       fingerprintPasswordForIdempotency: async () => 'c'.repeat(64),
@@ -187,7 +279,35 @@ describe('P08 PostgreSQL Family-signup repository', () => {
       service.submit({
         scope,
         command: command(),
-        now: new Date('2026-09-13T16:23:59.000Z'),
+        now: new Date('2026-09-11T14:59:59.000Z'),
+      }),
+    ).rejects.toMatchObject({ code: 'persistence_invariant' });
+    expect(harness.calls.some(({ text }) => text === 'ROLLBACK')).toBe(true);
+    expect(harness.calls.some(({ text }) => text === 'COMMIT')).toBe(false);
+    expect(
+      harness.calls.some(({ text }) => text.includes('INTO onetime.family_signup_requests')),
+    ).toBe(false);
+  });
+
+  it('rolls back the Parent account when its canonical learning entitlement is unavailable', async () => {
+    const harness = recordingPool('parent_learning_class_entitlements');
+    const service = createFamilySignupService({
+      repository: createPostgresFamilySignupRepository(harness.pool, crmBinding),
+      freeAccessExpiresAt,
+      hashPassword: async () => passwordHash,
+      fingerprintPasswordForIdempotency: async () => 'c'.repeat(64),
+      allocateIds: () => ({
+        adult_id: 'adult_1',
+        human_account_id: 'account_1',
+        household_id: 'household_1',
+      }),
+    });
+
+    await expect(
+      service.submit({
+        scope,
+        command: command(),
+        now: new Date('2026-09-11T14:59:59.000Z'),
       }),
     ).rejects.toMatchObject({ code: 'persistence_invariant' });
     expect(harness.calls.some(({ text }) => text === 'ROLLBACK')).toBe(true);
@@ -200,7 +320,7 @@ describe('P08 PostgreSQL Family-signup repository', () => {
   it('fails closed before local inserts in production_read_only', async () => {
     const harness = recordingPool();
     const service = createFamilySignupService({
-      repository: createPostgresFamilySignupRepository(harness.pool),
+      repository: createPostgresFamilySignupRepository(harness.pool, crmBinding),
       freeAccessExpiresAt,
       hashPassword: async () => passwordHash,
       fingerprintPasswordForIdempotency: async () => 'c'.repeat(64),
@@ -219,7 +339,7 @@ describe('P08 PostgreSQL Family-signup repository', () => {
           verification_environment_id: 'production_read_only',
         },
         command: command(),
-        now: new Date('2026-09-13T16:23:59.000Z'),
+        now: new Date('2026-09-11T14:59:59.000Z'),
       }),
     ).rejects.toBeInstanceOf(PostgresFamilySignupRepositoryError);
     expect(harness.calls.some(({ text }) => text === 'ROLLBACK')).toBe(true);
@@ -230,6 +350,7 @@ describe('P08 PostgreSQL Family-signup repository', () => {
 function recordingPool(zeroRowInsertTable?: string): {
   pool: DbPool;
   calls: QueryCall[];
+  client: object;
 } {
   const calls: QueryCall[] = [];
   const query = vi.fn(async (text: string, values: readonly unknown[] = []) => {
@@ -251,6 +372,7 @@ function recordingPool(zeroRowInsertTable?: string): {
   };
   return {
     calls,
+    client,
     pool: {
       connect: async () => client as never,
       query: query as never,

@@ -13,6 +13,7 @@ import {
 } from '../../../../../../../packages/domain/src/signup/school/index.ts';
 
 type ApprovedSchoolRequest = Request & { traceId?: string };
+type ApprovedSchoolSessionUnavailable = { unavailable: true };
 
 const approvedSchoolPayloadSchema = z
   .object({
@@ -50,7 +51,9 @@ export interface ApprovedSchoolConfigurator {
 
 export interface ApprovedSchoolAdminRouterInput {
   runtimeBinding: SchoolSignupScope;
-  resolveSession(req: Request): Promise<ApprovedSchoolAdminSession | null>;
+  resolveSession(
+    req: Request,
+  ): Promise<ApprovedSchoolAdminSession | ApprovedSchoolSessionUnavailable | null>;
   verifyCsrf(req: Request, session: ApprovedSchoolAdminSession): Promise<boolean>;
   now(): string;
   configurator: ApprovedSchoolConfigurator;
@@ -175,6 +178,10 @@ async function requireAdmin(
   input: Pick<ApprovedSchoolAdminRouterInput, 'resolveSession' | 'runtimeBinding'>,
 ): Promise<SchoolConfigurationActor | null> {
   const session = await input.resolveSession(req);
+  if (session && 'unavailable' in session) {
+    res.status(503).json({ success: false, code: 'APPROVED_SCHOOLS_UNAVAILABLE' });
+    return null;
+  }
   if (!session) {
     respond(res, req, 401, 'UNAUTHENTICATED', 'Please log in again.');
     return null;

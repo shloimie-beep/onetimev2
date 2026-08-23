@@ -48,13 +48,23 @@ export function buildProviderEventRecord(input: BuildProviderEventInput): Provid
 }
 
 export function normalizeResendEventState(eventType: string): ProviderCanonicalState {
-  const normalized = eventType.toLowerCase();
-  if (normalized.includes('delivered')) return 'delivered';
-  if (normalized.includes('bounced')) return 'bounced';
-  if (normalized.includes('complained') || normalized.includes('complaint')) return 'complained';
-  if (normalized.includes('failed')) return 'failed';
-  if (normalized.includes('sent') || normalized.includes('accepted')) return 'provider_accepted';
-  return 'unavailable';
+  const normalized = eventType.trim().toLowerCase();
+  switch (normalized) {
+    case 'email.delivered':
+      return 'delivered';
+    case 'email.bounced':
+      return 'bounced';
+    case 'email.complained':
+      return 'complained';
+    case 'email.failed':
+      return 'failed';
+    case 'email.sent':
+      return 'provider_accepted';
+    case 'email.suppressed':
+      return 'suppressed';
+    default:
+      return 'unavailable';
+  }
 }
 
 export function normalizeWapiEventState(

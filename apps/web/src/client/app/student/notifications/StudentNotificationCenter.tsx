@@ -5,7 +5,7 @@ import type {
   StudentNotificationView,
 } from '../../../../../../../packages/contracts/src/notifications/student/index.ts';
 import { V21StatePanel } from '../../../../../../../packages/brand-system/src/react-v21.tsx';
-import { shouldPlayForegroundNotificationSound } from '../../../../../../../packages/domain/src/notifications/student/index.ts';
+import { shouldPlayForegroundNotificationSound } from '../../../../../../../packages/domain/src/notifications/student/foreground-sound.ts';
 
 const FILTERS: { id: StudentNotificationFilter; label: string }[] = [
   { id: 'unread', label: 'Unread' },
@@ -64,8 +64,11 @@ export function StudentNotificationCenter({
   }, [newlyRenderedNotice, onPlayForegroundCue, snapshot]);
 
   return (
-    <section aria-labelledby="student-notifications-heading">
-      <header>
+    <section
+      className="student-notification-center"
+      aria-labelledby="student-notifications-heading"
+    >
+      <header className="student-notification-center__header">
         <h2 id="student-notifications-heading">Notifications</h2>
         <p role="status" aria-live="polite" aria-atomic="true">
           {snapshot.unreadCount} unread{' '}
@@ -73,7 +76,11 @@ export function StudentNotificationCenter({
         </p>
       </header>
 
-      <div role="tablist" aria-label="Notification filters">
+      <div
+        className="student-notification-center__filters"
+        role="tablist"
+        aria-label="Notification filters"
+      >
         {FILTERS.map((filter) => (
           <button
             key={filter.id}
@@ -105,7 +112,7 @@ export function StudentNotificationCenter({
         ))}
       </div>
 
-      <div>
+      <div className="student-notification-center__preferences">
         <button type="button" disabled={snapshot.unreadCount === 0} onClick={onMarkAllRead}>
           Mark all as read
         </button>
@@ -124,6 +131,7 @@ export function StudentNotificationCenter({
       </div>
 
       <div
+        className="student-notification-center__panel"
         ref={panelRef}
         id={`student-notifications-panel-${snapshot.filter}`}
         role="tabpanel"
@@ -135,7 +143,10 @@ export function StudentNotificationCenter({
             <p>New updates will appear here.</p>
           </V21StatePanel>
         ) : (
-          <ol aria-label={`${labelForFilter(snapshot.filter)} notifications`}>
+          <ol
+            className="student-notification-center__list"
+            aria-label={`${labelForFilter(snapshot.filter)} notifications`}
+          >
             {snapshot.notifications.map((view) => (
               <NotificationItem
                 key={view.notification.id}
@@ -167,7 +178,7 @@ function NotificationItem({
   const descriptionId = `${notification.id}-description`;
   const availabilityId = `${notification.id}-availability`;
   return (
-    <li>
+    <li className="student-notification-center__item">
       <article
         aria-labelledby={`${notification.id}-title`}
         data-notification-category={notification.category}

@@ -42,6 +42,7 @@ afterEach(async () => {
 
 describe('canonical current household access projection', () => {
   it('grants a bounded free pilot idempotently without writing payment history', async () => {
+    const evaluationNow = new Date('2026-07-23T09:00:00.000Z');
     const command = {
       household_key: 'household_alpha',
       idempotency_key: 'pilot-grant-alpha-v1',
@@ -57,7 +58,7 @@ describe('canonical current household access projection', () => {
       productKey,
       actorKind: 'provisioner',
       command,
-      now: new Date('2026-07-23T09:00:00.000Z'),
+      now: evaluationNow,
     });
     expect(applied).toMatchObject({
       state: 'applied',
@@ -122,7 +123,7 @@ describe('canonical current household access projection', () => {
     });
 
     const event = await pool.query(
-      `SELECT source_reference_digest, response_json
+      `SELECT source_reference_digest, response_json, created_at
          FROM onetime.account_access_events
         WHERE account_key = $1
           AND product_key = $2
@@ -130,6 +131,9 @@ describe('canonical current household access projection', () => {
       [accountKey, productKey, command.idempotency_key],
     );
     expect(String(event.rows[0]?.source_reference_digest)).toMatch(/^[a-f0-9]{64}$/u);
+    expect(new Date(String(event.rows[0]?.created_at)).toISOString()).toBe(
+      evaluationNow.toISOString(),
+    );
   });
 
   it('fails closed on idempotency conflict and stale same-slot updates while sources stay independent', async () => {

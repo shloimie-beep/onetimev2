@@ -193,7 +193,7 @@ export async function applyHouseholdAccessStateWithClient(
     );
   }
 
-  const requestHash = accessRequestHash({
+  const requestHash = accountAccessRequestHash({
     accountKey: input.accountKey,
     productKey: input.productKey,
     sourceKind: input.sourceKind,
@@ -327,6 +327,7 @@ export async function applyHouseholdAccessStateWithClient(
       decision: 'replayed',
       result,
       actorKind: input.actorKind,
+      createdAt: now,
     });
     return result;
   }
@@ -509,6 +510,7 @@ export async function applyHouseholdAccessStateWithClient(
     decision: 'applied',
     result,
     actorKind: input.actorKind,
+    createdAt: now,
   });
   return result;
 }
@@ -995,6 +997,7 @@ async function insertAccessEvent(
     decision: 'applied' | 'replayed';
     result: AccountAccessApplyResult;
     actorKind: AccountAccessActorKind;
+    createdAt: Date;
   },
 ) {
   await db.query(
@@ -1002,8 +1005,8 @@ async function insertAccessEvent(
        (event_key, account_key, product_key, household_key, idempotency_key,
         request_hash, source_kind, source_reference_digest, source_revision,
         source_updated_at, previous_state, next_state, decision, response_json,
-        actor_kind)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14::jsonb,$15)`,
+        actor_kind, created_at)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14::jsonb,$15,$16)`,
     [
       input.eventKey,
       input.accountKey,
@@ -1020,6 +1023,7 @@ async function insertAccessEvent(
       input.decision,
       JSON.stringify(input.result),
       input.actorKind,
+      input.createdAt,
     ],
   );
 }
@@ -1088,7 +1092,7 @@ async function recordRejectedAccessAttempt(
     );
     if (current.rowCount !== 1) return;
 
-    const requestHash = accessRequestHash({
+    const requestHash = accountAccessRequestHash({
       accountKey: input.accountKey,
       productKey: input.productKey,
       sourceKind: input.sourceKind,
@@ -1361,7 +1365,7 @@ function projectionFromRow(row: ProjectionRow, now: Date) {
   });
 }
 
-function accessRequestHash(input: {
+export function accountAccessRequestHash(input: {
   accountKey: string;
   productKey: string;
   sourceKind: AccountAccessSourceKind;

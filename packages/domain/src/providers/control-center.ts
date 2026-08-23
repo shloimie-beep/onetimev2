@@ -126,17 +126,17 @@ export function buildWebhookEndpoints(config?: AppConfig): WebhookEndpointContra
     }),
     endpoint({
       provider: 'vimeo_private_content',
-      path: null,
-      method: null,
-      maxBytes: 128 * 1024,
+      path: '/api/v1/content/vimeo/webhook',
+      method: 'POST',
+      maxBytes: 256 * 1024,
       contentType: 'application/json',
       rawBody: true,
-      scheme: 'vimeo_callback_verifier_required_before_enablement',
-      replay: ['provider_event_id_dedupe', 'content_scope'],
-      mounted: false,
-      durable: false,
-      asyncProcessing: true,
-      note: 'No Vimeo callback endpoint is mounted in this base.',
+      scheme: 'vimeo_payload_shared_secret_constant_time',
+      replay: ['provider_event_id_body_digest_dedupe', 'content_scope'],
+      mounted: true,
+      durable: true,
+      asyncProcessing: false,
+      note: "Mounted before express.json; verifies Vimeo's configured payload secret before durable scoped receipt handling.",
     }),
     endpoint({
       provider: 'buffer_social',
@@ -202,19 +202,51 @@ export function buildEmailReadinessChecks(
   env: EnvLike = process.env,
 ): EmailReadinessCheck[] {
   return [
-    readiness('verified_sender_or_domain', ['ONE_TIME_EMAIL_FROM', 'RESEND_DOMAIN_VERIFIED'], env),
-    readiness('spf_readiness', ['RESEND_DOMAIN_SPF_READY'], env),
-    readiness('dkim_readiness', ['RESEND_DOMAIN_DKIM_READY'], env),
-    readiness('dmarc_policy', ['RESEND_DOMAIN_DMARC_POLICY'], env),
-    readiness('return_path_bounce_handling', ['RESEND_BOUNCE_WEBHOOK_ENABLED'], env),
-    readiness('reply_to_support_mailbox', ['ONE_TIME_EMAIL_REPLY_TO'], env),
-    readiness('suppression_bounce_complaint_state', ['RESEND_SUPPRESSION_READBACK_READY'], env),
-    readiness('lifecycle_encryption_key', ['ONE_TIME_LIFECYCLE_DELIVERY_KEY'], env, {
-      readyOverride: config.lifecycleDeliveryKeyConfigured,
-    }),
-    readiness('exact_canary_allowlist', ['ONE_TIME_DELIVERY_TEST_CANARY_EMAIL'], env, {
-      readyOverride: Boolean(config.deliveryTestCanaryEmail),
-    }),
+    readiness(
+      'verified_sender_or_domain',
+      ['ONE_TIME_EMAIL_FROM', 'RESEND_DOMAIN_VERIFIED'],
+      hasValue(env.ONE_TIME_EMAIL_FROM) && isAffirmativeEvidence(env.RESEND_DOMAIN_VERIFIED),
+    ),
+    readiness(
+      'spf_readiness',
+      ['RESEND_DOMAIN_SPF_READY'],
+      isAffirmativeEvidence(env.RESEND_DOMAIN_SPF_READY),
+    ),
+    readiness(
+      'dkim_readiness',
+      ['RESEND_DOMAIN_DKIM_READY'],
+      isAffirmativeEvidence(env.RESEND_DOMAIN_DKIM_READY),
+    ),
+    readiness(
+      'dmarc_policy',
+      ['RESEND_DOMAIN_DMARC_POLICY'],
+      isExplicitDmarcPolicy(env.RESEND_DOMAIN_DMARC_POLICY),
+    ),
+    readiness(
+      'return_path_bounce_handling',
+      ['RESEND_BOUNCE_WEBHOOK_ENABLED'],
+      isAffirmativeEvidence(env.RESEND_BOUNCE_WEBHOOK_ENABLED),
+    ),
+    readiness(
+      'reply_to_support_mailbox',
+      ['ONE_TIME_EMAIL_REPLY_TO'],
+      hasValue(env.ONE_TIME_EMAIL_REPLY_TO),
+    ),
+    readiness(
+      'suppression_bounce_complaint_state',
+      ['RESEND_SUPPRESSION_READBACK_READY'],
+      isAffirmativeEvidence(env.RESEND_SUPPRESSION_READBACK_READY),
+    ),
+    readiness(
+      'lifecycle_encryption_key',
+      ['ONE_TIME_LIFECYCLE_DELIVERY_KEY'],
+      config.lifecycleDeliveryKeyConfigured,
+    ),
+    readiness(
+      'exact_canary_allowlist',
+      ['ONE_TIME_DELIVERY_TEST_CANARY_EMAIL'],
+      Boolean(config.deliveryTestCanaryEmail),
+    ),
     readiness(
       'guarded_provider_flags',
       [
@@ -222,7 +254,9 @@ export function buildEmailReadinessChecks(
         'ONE_TIME_RESEND_TRANSPORT_ENABLED',
         'ONE_TIME_RESEND_WEBHOOK_ENABLED',
       ],
-      env,
+      config.deliveryProviderTransportEnabled &&
+        config.resendTransportEnabled &&
+        config.resendWebhookEnabled,
     ),
   ];
 }
@@ -538,16 +572,7 @@ function requiredEndpoint(
   return found;
 }
 
-function readiness(
-  check: string,
-  requiredNames: string[],
-  env: EnvLike,
-  options: { readyOverride?: boolean | undefined } = {},
-): EmailReadinessCheck {
-  const ready =
-    options.readyOverride !== undefined
-      ? options.readyOverride
-      : requiredNames.every((name) => hasValue(env[name]));
+function readiness(check: string, requiredNames: string[], ready: boolean): EmailReadinessCheck {
   return {
     check,
     required_variable_names: requiredNames,
@@ -582,4 +607,12 @@ function recentAssuranceOk(value: string | undefined, now: Date) {
 
 function hasValue(value: string | undefined) {
   return typeof value === 'string' && value.trim().length > 0;
+}
+
+function isAffirmativeEvidence(value: string | undefined) {
+  return value?.trim() === 'true';
+}
+
+function isExplicitDmarcPolicy(value: string | undefined) {
+  return /^(?:p=)(?:none|quarantine|reject)$/u.test(value?.trim() ?? '');
 }

@@ -10,11 +10,20 @@ type RegistryAction = {
   surface: string;
   route: string;
   roles: string[];
+  canonical_binding?: { route: string; roles: string[] };
   capability: string;
   handler: { method: string; path: string };
+  visibility?: {
+    mode: string;
+    handler: { method: string; path: string };
+    required_response: { success: boolean; data: { mode: string; available: boolean } };
+  };
+  request_body?: { mode: string; client_controlled_fields: string[] };
+  idempotency: { required: boolean; key_source: string | null };
   audit: { mode: string; event: string };
   states: Record<string, string>;
   readiness_state: string;
+  provider_mode: string;
   external_mutation: boolean;
   test_evidence: string[];
 };
@@ -46,30 +55,283 @@ const EXPECTED_SOURCE_INPUT_PATHS = [
   'ops/v2.1-execution/source-spec/03-DECISION-REGISTER-v2.1.md',
   'ops/v2.1-execution/source-spec/05-ACTOR-ROLE-CAPABILITY-ROUTE-MATRIX-v2.1.md',
   'ops/v2.1-execution/source-spec/08-SCREEN-CATALOG-AND-DESIGN-SYSTEM-v2.1.md',
+  'integrations/highlevel/registry/workflow-registry.yaml',
   'apps/web/src/server/app.ts',
+  'apps/web/src/server/communications/register.ts',
+  'apps/web/src/server/communications/workflow-readback.ts',
+  'apps/web/src/server/features/admin/operations/index.ts',
+  'apps/web/src/server/features/admin/operations/repository.ts',
+  'apps/web/src/server/features/admin/operations/router.ts',
+  'apps/web/src/server/features/admin/operations/service.ts',
+  'apps/web/src/server/features/auth/v21-adult-session.ts',
+  'apps/web/src/server/features/classroom/embedded/adapters.ts',
+  'apps/web/src/server/features/classroom/embedded/composition.ts',
+  'apps/web/src/server/features/classroom/embedded/router.ts',
+  'apps/web/src/server/features/classroom/embedded/service.ts',
+  'apps/web/src/server/features/classroom/production-basic/router.ts',
+  'apps/web/src/server/features/classroom/production-basic/service.ts',
+  'apps/web/src/server/features/learning/router.ts',
+  'apps/web/src/server/features/learning/service.ts',
+  'apps/web/src/server/features/privacy/student-router.ts',
   'apps/web/src/server/features/portals/routers.ts',
   'apps/web/src/server/features/support/router.ts',
+  'apps/web/src/server/features/support/v21-router.ts',
   'apps/web/src/server/features/signup/school/router.ts',
   'apps/web/src/server/features/v21-canonical-routes/router.ts',
   'apps/web/src/client/app/admin-ia.ts',
+  'apps/web/src/client/app/admin-directory/AdminDirectoryPanel.tsx',
+  'apps/web/src/client/app/admin/learning/AdminLearningWorkspace.tsx',
+  'apps/web/src/client/app/admin/search/AdminGlobalSearch.tsx',
+  'apps/web/src/client/app/admin/support/AdminSupportWorkspace.tsx',
+  'apps/web/src/client/app/communications/CommunicationsFeature.tsx',
+  'apps/web/src/client/app/communications/WorkflowReadbackFeature.tsx',
+  'apps/web/src/client/app/crm-api.ts',
+  'apps/web/src/client/app/classes/ClassManagementWorkspace.tsx',
   'apps/web/src/client/app/crm-entry.tsx',
   'apps/web/src/client/app/live-entry.tsx',
+  'apps/web/src/client/app/zoom-meeting-sdk-client.ts',
   'apps/web/src/client/app/portal-entry.tsx',
+  'apps/web/src/client/app/student/classroom/StudentClassroomWorkspace.tsx',
+  'apps/web/src/client/app/student/classroom/api.ts',
+  'apps/web/src/client/app/student/library/StudentLibraryWorkspace.tsx',
+  'apps/web/src/client/app/student/privacy/StudentPrivacyWorkspace.tsx',
+  'apps/web/src/client/app/student/privacy/api.ts',
+  'apps/web/src/client/classroom/production-basic-launch-client.ts',
   'apps/web/src/client/features/portals/PortalFeatures.tsx',
   'apps/web/src/client/app/router/registry.ts',
   'apps/web/src/client/app/router/canonical-route-views.ts',
+  'apps/web/src/client/app/shell/AppShell.tsx',
   'apps/web/src/client/app/support/SupportFeature.tsx',
   'apps/web/src/client/public/public-entry.ts',
   'apps/web/src/client/public/school/model.ts',
+  'packages/brand-system/src/styles/communications.css',
+  'packages/brand-system/src/styles/react.css',
   'packages/brand-system/src/route-branding.ts',
   'packages/brand-system/src/v21.ts',
+  'packages/contracts/src/communications/index.ts',
+  'packages/contracts/src/classroom/embedded/index.ts',
+  'packages/contracts/src/learning/index.ts',
+  'packages/db/src/index.ts',
+  'packages/db/src/learning/repository.ts',
   'scripts/build-public-pages.ts',
+  'scripts/highlevel/workflow-registry-source.ts',
   'packages/domain/src/dashboard/service.ts',
+  'packages/domain/src/learning/engagement.ts',
+  'packages/domain/src/landing/content.ts',
+  'packages/domain/src/legal/content.ts',
+  'packages/domain/src/privacy/redaction.ts',
+  'packages/domain/src/privacy/rights.ts',
 ] as const;
 
 const EXPECTED_ACTION_BINDINGS = [
+  [
+    'admin.class_series.archive.button',
+    '/app/classroom/classes/:classId',
+    ['admin'],
+    'PATCH',
+    '/api/v1/admin/classes/series/:seriesKey',
+  ],
+  [
+    'admin.class_series.edit.form',
+    '/app/classroom/classes/:classId',
+    ['admin'],
+    'PATCH',
+    '/api/v1/admin/classes/series/:seriesKey',
+  ],
+  [
+    'admin.class_series.view.route',
+    '/app/classroom/classes/:classId',
+    ['admin'],
+    'GET',
+    '/api/v1/admin/classes/series',
+  ],
+  [
+    'admin.communications.workflow_readback.view.route',
+    '/app/operations/workflow-readback/:workflowId',
+    ['admin'],
+    'GET',
+    '/api/v1/operations/workflow-readback/:workflowId',
+  ],
+  [
+    'admin.content.review.artifact_approve.button',
+    '/app/content/:contentId/review',
+    ['admin'],
+    'POST',
+    '/api/v1/admin/content/sources/:sourceKey/artifacts/approve',
+  ],
+  [
+    'admin.content.review.artifact_publish.button',
+    '/app/content/:contentId/review',
+    ['admin'],
+    'POST',
+    '/api/v1/admin/content/sources/:sourceKey/artifacts/publish',
+  ],
+  [
+    'admin.content.review.social_approve.button',
+    '/app/content/:contentId/review',
+    ['admin'],
+    'POST',
+    '/api/v1/admin/content/sources/:sourceKey/social/approve',
+  ],
+  [
+    'admin.content.review.social_retract.button',
+    '/app/content/:contentId/review',
+    ['admin'],
+    'POST',
+    '/api/v1/admin/content/sources/:sourceKey/social/retract',
+  ],
+  [
+    'admin.content.review.social_schedule.button',
+    '/app/content/:contentId/review',
+    ['admin'],
+    'POST',
+    '/api/v1/admin/content/sources/:sourceKey/social/schedule',
+  ],
+  [
+    'admin.content.review.transcript_approve.button',
+    '/app/content/:contentId/review',
+    ['admin'],
+    'POST',
+    '/api/v1/admin/content/sources/:sourceKey/transcript/approve',
+  ],
+  [
+    'admin.content.review.view.route',
+    '/app/content/:contentId/review',
+    ['admin'],
+    'GET',
+    '/api/v1/admin/content/sources/:sourceKey',
+  ],
+  [
+    'admin.directory.student.archive_restore.button',
+    '/app/students/:studentId',
+    ['admin'],
+    'POST',
+    '/api/v1/admin-directory/learners/:learnerKey/:action',
+  ],
+  [
+    'admin.directory.student.edit.form',
+    '/app/students/:studentId',
+    ['admin'],
+    'PATCH',
+    '/api/v1/admin-directory/learners/:learnerKey',
+  ],
+  [
+    'admin.directory.student.view.route',
+    '/app/students/:studentId',
+    ['admin'],
+    'GET',
+    '/api/v1/admin-directory/learners',
+  ],
+  [
+    'admin.directory.user.disable_reactivate.button',
+    '/app/users/:userId',
+    ['admin'],
+    'POST',
+    '/api/v1/admin-directory/users/:userKey/:action',
+  ],
+  [
+    'admin.directory.user.edit.form',
+    '/app/users/:userId',
+    ['admin'],
+    'PATCH',
+    '/api/v1/admin-directory/users/:userKey',
+  ],
+  [
+    'admin.directory.user.password_reset.button',
+    '/app/users/:userId',
+    ['admin'],
+    'POST',
+    '/api/v1/admin-directory/users/:userKey/password-reset',
+  ],
+  [
+    'admin.directory.user.view.route',
+    '/app/users/:userId',
+    ['admin'],
+    'GET',
+    '/api/v1/admin-directory/users',
+  ],
+  [
+    'admin.production_basic.start.button',
+    '/app/live-console',
+    ['admin', 'rabbi'],
+    'POST',
+    '/api/v1/admin/classroom/production-basic/launch',
+  ],
+  [
+    'admin.question_moderation.transition.form',
+    '/app/classroom/questions',
+    ['admin'],
+    'POST',
+    '/api/app/learning/questions/:questionId/transitions',
+  ],
+  [
+    'admin.question_moderation.view.route',
+    '/app/classroom/questions',
+    ['admin'],
+    'GET',
+    '/api/app/learning/questions',
+  ],
+  ['admin.search.next_page.button', '/app/search', ['admin'], 'POST', '/api/v2.1/admin/search'],
+  [
+    'admin.search.open.button',
+    '/app/search',
+    ['admin'],
+    'CLIENT',
+    'apps/web/src/client/app/shell/AppShell.tsx',
+  ],
+  ['admin.search.query.form', '/app/search', ['admin'], 'POST', '/api/v2.1/admin/search'],
+  [
+    'admin.search.recent.clear.button',
+    '/app/search',
+    ['admin'],
+    'CLIENT',
+    'apps/web/src/client/app/admin/search/AdminGlobalSearch.tsx',
+  ],
+  [
+    'admin.search.result.open.button',
+    '/app/search',
+    ['admin'],
+    'POST',
+    '/api/v2.1/admin/operations/resolve',
+  ],
+  [
+    'auth.household_selector.switch.button',
+    '/select-household',
+    ['parent'],
+    'POST',
+    '/api/v2.1/account-context/household',
+  ],
+  [
+    'auth.household_selector.view.route',
+    '/select-household',
+    ['parent'],
+    'GET',
+    '/select-household',
+  ],
   ['auth.parent.logout.button', '/app/parent/students', ['parent'], 'POST', '/api/v1/auth/logout'],
+  [
+    'auth.role_selector.switch.button',
+    '/select-role',
+    ['admin', 'parent'],
+    'POST',
+    '/api/v2.1/account-context/role',
+  ],
+  ['auth.role_selector.view.route', '/select-role', ['admin', 'parent'], 'GET', '/select-role'],
   ['auth.student.logout.button', '/app/student', ['student'], 'POST', '/api/v1/auth/logout'],
+  [
+    'classes.attendance.admin.correct.form',
+    '/app/classroom/attendance',
+    ['admin'],
+    'POST',
+    '/api/app/classroom/attendance/admin-correction',
+  ],
+  [
+    'classes.attendance.admin.view.route',
+    '/app/classroom/attendance',
+    ['admin'],
+    'GET',
+    '/api/app/classroom/attendance/admin',
+  ],
   [
     'classes.open_detail.button',
     '/app/classroom/occurrences/:occurrenceId',
@@ -109,11 +371,39 @@ const EXPECTED_ACTION_BINDINGS = [
     '/api/v1/live-class/questions',
   ],
   [
+    'portal.parent.class_detail.view.route',
+    '/app/parent/classes/:occurrenceId',
+    ['parent'],
+    'GET',
+    '/api/app/parent/summary',
+  ],
+  [
+    'portal.parent.classroom.production_basic_join.button',
+    '/app/parent/classroom',
+    ['parent'],
+    'POST',
+    '/api/v1/portals/parent/classroom/production-basic/launch',
+  ],
+  [
     'portal.parent.learner.select.button',
     '/app/parent/students',
     ['parent'],
     'CLIENT',
     'apps/web/src/client/features/portals/PortalFeatures.tsx',
+  ],
+  [
+    'portal.parent.library.entitled_content_open.button',
+    '/app/parent/library',
+    ['parent'],
+    'GET',
+    '/api/v1/portals/parent/learning/content/:contentId/open',
+  ],
+  [
+    'portal.parent.private_question.submit.form',
+    '/app/parent/questions',
+    ['parent'],
+    'POST',
+    '/api/v1/portals/parent/learning/questions',
   ],
   [
     'portal.parent.student_access.reset.button',
@@ -137,11 +427,109 @@ const EXPECTED_ACTION_BINDINGS = [
     '/api/v1/portals/parent/households/:householdKey/learners/:learnerKey/student-access/suspend',
   ],
   [
+    'portal.student.class_detail.join.button',
+    '/app/student/classes/:occurrenceId',
+    ['student'],
+    'POST',
+    '/api/v1/portals/student/classes/:classKey/launch',
+  ],
+  [
+    'portal.student.class_detail.view.route',
+    '/app/student/classes/:occurrenceId',
+    ['student'],
+    'GET',
+    '/api/v1/portals/student/dashboard',
+  ],
+  [
+    'portal.student.classroom.join.button',
+    '/app/student/class/:occurrenceId',
+    ['student'],
+    'POST',
+    '/api/app/classroom/bootstrap',
+  ],
+  [
+    'portal.student.classroom.leave.button',
+    '/app/student/class/:occurrenceId',
+    ['student'],
+    'POST',
+    '/api/app/classroom/attendance/client',
+  ],
+  [
+    'portal.student.classroom.production_basic_join.button',
+    '/app/student/class/:occurrenceId',
+    ['student'],
+    'POST',
+    '/api/v1/portals/student/classroom/production-basic/launch',
+  ],
+  [
     'portal.student.classroom.question.form',
     '/app/student',
     ['student'],
     'POST',
     '/api/v1/classroom/questions',
+  ],
+  [
+    'portal.student.classroom.view.route',
+    '/app/student/class/:occurrenceId',
+    ['student'],
+    'GET',
+    '/app/student/class/:occurrenceId',
+  ],
+  [
+    'portal.student.data_rights.request.form',
+    '/app/student/data-rights',
+    ['student'],
+    'POST',
+    '/api/app/student/privacy/requests',
+  ],
+  [
+    'portal.student.data_rights.view.route',
+    '/app/student/data-rights',
+    ['student'],
+    'GET',
+    '/app/student/data-rights',
+  ],
+  [
+    'portal.student.library_detail.open.button',
+    '/app/student/library/:contentId',
+    ['student'],
+    'POST',
+    '/api/app/student/library/:contentId/bootstrap',
+  ],
+  [
+    'portal.student.library_detail.renew.button',
+    '/app/student/library/:contentId',
+    ['student'],
+    'POST',
+    '/api/app/student/library/:contentId/renew',
+  ],
+  [
+    'portal.student.library_detail.resume.form',
+    '/app/student/library/:contentId',
+    ['student'],
+    'POST',
+    '/api/app/student/library/:contentId/resume',
+  ],
+  [
+    'portal.student.library_detail.view.route',
+    '/app/student/library/:contentId',
+    ['student'],
+    'POST',
+    '/api/app/student/library/search',
+  ],
+  [
+    'portal.student.privacy.consent.form',
+    '/app/student/privacy',
+    ['student'],
+    'POST',
+    '/api/app/student/privacy/consents',
+  ],
+  [
+    'portal.student.privacy.view.route',
+    '/app/student/privacy',
+    ['student'],
+    'GET',
+    '/app/student/privacy',
   ],
   [
     'portal.student.private_question.send.button',
@@ -156,6 +544,13 @@ const EXPECTED_ACTION_BINDINGS = [
     ['student'],
     'GET',
     '/api/v1/portals/student/dashboard',
+  ],
+  [
+    'public.cancellation_refund.view.route',
+    '/cancellation-refund',
+    ['public'],
+    'GET',
+    '/cancellation-refund',
   ],
   [
     'public.gallery.next.button',
@@ -194,21 +589,122 @@ const EXPECTED_ACTION_BINDINGS = [
     'POST',
     '/api/v2.1/signup/school-inquiry',
   ],
+  [
+    'public.signup.receipt.continue.button',
+    '/signup/received',
+    ['public'],
+    'CLIENT',
+    'apps/web/src/client/public/public-entry.ts',
+  ],
+  ['public.signup.receipt.view.route', '/signup/received', ['public'], 'GET', '/signup/received'],
   ['public.signup.route', '/signup', ['public'], 'GET', '/signup'],
   ['public.signup.submit.form', '/signup', ['public'], 'POST', '/api/v1/signup/family'],
+  [
+    'support.admin.assign.form',
+    '/app/support',
+    ['admin'],
+    'POST',
+    '/api/v1/admin/support/v21/tickets/:ticketId/assign',
+  ],
+  [
+    'support.admin.queue.view.route',
+    '/app/support',
+    ['admin'],
+    'GET',
+    '/api/v1/admin/support/v21/tickets',
+  ],
+  [
+    'support.admin.reply.form',
+    '/app/support',
+    ['admin'],
+    'POST',
+    '/api/v1/admin/support/v21/tickets/:ticketId/reply',
+  ],
+  [
+    'support.admin.status.form',
+    '/app/support',
+    ['admin'],
+    'POST',
+    '/api/v1/admin/support/v21/tickets/:ticketId/status',
+  ],
+  [
+    'support.admin.ticket.assign.form',
+    '/app/tickets/:ticketId',
+    ['admin'],
+    'POST',
+    '/api/v1/admin/support/v21/tickets/:ticketId/assign',
+  ],
+  [
+    'support.admin.ticket.detail.view.route',
+    '/app/tickets/:ticketId',
+    ['admin'],
+    'GET',
+    '/api/v1/admin/support/v21/tickets/:ticketId',
+  ],
+  [
+    'support.admin.ticket.open.button',
+    '/app/tickets',
+    ['admin'],
+    'CLIENT',
+    'apps/web/src/client/app/admin/support/AdminSupportWorkspace.tsx',
+  ],
+  [
+    'support.admin.ticket.reply.form',
+    '/app/tickets/:ticketId',
+    ['admin'],
+    'POST',
+    '/api/v1/admin/support/v21/tickets/:ticketId/reply',
+  ],
+  [
+    'support.admin.ticket.status.form',
+    '/app/tickets/:ticketId',
+    ['admin'],
+    'POST',
+    '/api/v1/admin/support/v21/tickets/:ticketId/status',
+  ],
+  [
+    'support.admin.ticket_queue.back.button',
+    '/app/tickets/:ticketId',
+    ['admin'],
+    'CLIENT',
+    'apps/web/src/client/app/admin/support/AdminSupportWorkspace.tsx',
+  ],
+  [
+    'support.admin.ticket_queue.view.route',
+    '/app/tickets',
+    ['admin'],
+    'GET',
+    '/api/v1/admin/support/v21/tickets',
+  ],
+  ['support.admin.view.route', '/app/support', ['admin'], 'GET', '/app/support'],
+  [
+    'support.parent.receipt.view.route',
+    '/app/parent/support/:ticketId',
+    ['parent'],
+    'GET',
+    '/api/v1/support/v21/tickets/:ticketId',
+  ],
+  [
+    'support.parent.submit.form',
+    '/app/parent/support',
+    ['parent'],
+    'POST',
+    '/api/v1/support/v21/tickets',
+  ],
+  ['support.parent.view.route', '/app/parent/support', ['parent'], 'GET', '/app/parent/support'],
   [
     'support.student.receipt.view.route',
     '/app/student/support/:ticketId',
     ['student'],
     'GET',
-    '/api/v1/support/receipts/:receiptId/status',
+    '/api/v1/support/v21/tickets/:ticketId',
   ],
   [
     'support.student.submit.form',
     '/app/student/support',
     ['student'],
     'POST',
-    '/api/v1/support/tickets',
+    '/api/v1/support/v21/tickets',
   ],
   [
     'support.student.view.route',
@@ -226,7 +722,7 @@ describe('v2.1 visible action registry', () => {
   it('is an exact deterministic projection of locked routes and raw source bytes', () => {
     expect(registry.schema_version).toBe('onetime.v2_1.visible_actions.v2');
     expect(registry.generated_by).toBe('I36');
-    expect(registry.production_roles).toEqual(['admin', 'parent', 'student']);
+    expect(registry.production_roles).toEqual(['admin', 'parent', 'rabbi', 'student']);
     expect(registry.public_actor).toBe('public');
     expect(registry.readiness_states).toEqual(['ready', 'isolated', 'missing']);
     expect(registry.source_inputs.map(({ path }) => path)).toEqual(EXPECTED_SOURCE_INPUT_PATHS);
@@ -248,18 +744,25 @@ describe('v2.1 visible action registry', () => {
         handler_disposition: route.handlerDisposition,
       })),
     );
-    expect(registry.canonical_routes).toHaveLength(93);
+    expect(registry.canonical_routes).toHaveLength(111);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'ready'),
-    ).toHaveLength(33);
+    ).toHaveLength(111);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'isolated'),
-    ).toHaveLength(32);
+    ).toHaveLength(0);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'missing'),
-    ).toHaveLength(28);
+    ).toHaveLength(0);
+    expect(registry.canonical_routes.map(({ path }) => path)).toEqual(
+      expect.arrayContaining([
+        '/app/parent/classroom',
+        '/app/parent/library',
+        '/app/parent/questions',
+      ]),
+    );
     expect(sourceText.endsWith('\n')).toBe(true);
-  });
+  }, 15_000);
 
   it('advertises actions only on canonical routes with ready local behavior', () => {
     const readyRoutes = registry.canonical_routes.filter(
@@ -267,8 +770,10 @@ describe('v2.1 visible action registry', () => {
     );
     const actionIds = registry.actions.map(({ action_id }) => action_id);
     const sourcePaths = new Set(registry.source_inputs.map(({ path }) => path));
+    expect(registry.actions).toHaveLength(97);
     expect(actionIds).toEqual([...actionIds].sort());
     expect(new Set(actionIds).size).toBe(actionIds.length);
+    expect(actionIds).not.toContain('admin.directory.student.setup.form');
     expect(
       registry.actions.map((action) => [
         action.action_id,
@@ -279,10 +784,18 @@ describe('v2.1 visible action registry', () => {
       ]),
     ).toEqual(EXPECTED_ACTION_BINDINGS);
     for (const action of registry.actions) {
-      const route = readyRoutes.find(({ path }) => path === action.route);
+      const canonicalRoute = action.canonical_binding?.route ?? action.route;
+      const canonicalRoles = action.canonical_binding?.roles ?? action.roles;
+      const route = readyRoutes.find(({ path }) => path === canonicalRoute);
       expect(route, action.action_id).toBeDefined();
       expect(
-        action.roles.every((role) => route?.roles.includes(role)),
+        canonicalRoles.every((role) => route?.roles.includes(role)),
+        action.action_id,
+      ).toBe(true);
+      expect(
+        action.roles.every(
+          (role) => role === registry.public_actor || registry.production_roles.includes(role),
+        ),
         action.action_id,
       ).toBe(true);
       expect(action.surface).toMatch(/^(route|button|form)$/u);
@@ -293,7 +806,6 @@ describe('v2.1 visible action registry', () => {
       }
       expect(action.audit.event).toBeTruthy();
       expect(action.readiness_state).toBe('ready');
-      expect(action.external_mutation).toBe(false);
       expect(action.test_evidence.length).toBeGreaterThan(0);
       expect(Object.keys(action.states).sort()).toEqual([
         'error',
@@ -303,6 +815,101 @@ describe('v2.1 visible action registry', () => {
         'success',
       ]);
     }
+    expect(
+      registry.actions
+        .filter(({ external_mutation }) => external_mutation)
+        .map(({ action_id }) => action_id),
+    ).toEqual([
+      'admin.production_basic.start.button',
+      'portal.parent.classroom.production_basic_join.button',
+      'portal.student.classroom.production_basic_join.button',
+    ]);
+  });
+
+  it('models conditional bodyless production-basic launches separately from legacy bootstrap', () => {
+    const byId = new Map(registry.actions.map((action) => [action.action_id, action]));
+    const conditionalLaunch = (role: 'admin' | 'parent' | 'student') => ({
+      handler: {
+        method: 'POST',
+        path:
+          role === 'admin'
+            ? '/api/v1/admin/classroom/production-basic/launch'
+            : `/api/v1/portals/${role}/classroom/production-basic/launch`,
+      },
+      visibility: {
+        mode: 'server_derived',
+        handler: {
+          method: 'GET',
+          path:
+            role === 'admin'
+              ? '/api/v1/admin/classroom/production-basic/status'
+              : `/api/v1/portals/${role}/classroom/production-basic/status`,
+        },
+        required_response: {
+          success: true,
+          data: { mode: 'production_basic', available: true },
+        },
+      },
+      request_body: { mode: 'none', client_controlled_fields: [] },
+      idempotency: { required: false, key_source: null },
+      provider_mode: 'verified_binding_explicit_sdk_click',
+      external_mutation: true,
+    });
+
+    expect(byId.get('admin.production_basic.start.button')).toMatchObject({
+      ...conditionalLaunch('admin'),
+      route: '/app/live-console',
+      roles: ['admin', 'rabbi'],
+      canonical_binding: { route: '/app/live', roles: ['admin', 'rabbi'] },
+    });
+    expect(byId.get('portal.student.classroom.production_basic_join.button')).toMatchObject({
+      ...conditionalLaunch('student'),
+      route: '/app/student/class/:occurrenceId',
+      roles: ['student'],
+    });
+    expect(byId.get('portal.parent.classroom.production_basic_join.button')).toMatchObject({
+      ...conditionalLaunch('parent'),
+      route: '/app/parent/classroom',
+      roles: ['parent'],
+    });
+
+    const legacyJoin = byId.get('portal.student.classroom.join.button');
+    expect(legacyJoin).toMatchObject({
+      handler: { method: 'POST', path: '/api/app/classroom/bootstrap' },
+      provider_mode: 'provider_off',
+    });
+    expect(legacyJoin?.visibility).toBeUndefined();
+    expect(legacyJoin?.request_body).toBeUndefined();
+  });
+
+  it('governs Parent learner content and private questions without provider locators', () => {
+    const byId = new Map(registry.actions.map((action) => [action.action_id, action]));
+
+    expect(byId.get('portal.parent.library.entitled_content_open.button')).toMatchObject({
+      route: '/app/parent/library',
+      roles: ['parent'],
+      capability: 'parent:library:playback',
+      handler: {
+        method: 'GET',
+        path: '/api/v1/portals/parent/learning/content/:contentId/open',
+      },
+      external_mutation: false,
+    });
+    expect(byId.get('portal.parent.private_question.submit.form')).toMatchObject({
+      route: '/app/parent/questions',
+      roles: ['parent'],
+      capability: 'parent:question:create',
+      handler: { method: 'POST', path: '/api/v1/portals/parent/learning/questions' },
+      idempotency: { required: true, key_source: 'client-generated x-idempotency-key' },
+      external_mutation: false,
+    });
+
+    const parentActions = registry.actions.filter(({ action_id }) =>
+      action_id.startsWith('portal.parent.'),
+    );
+    expect(JSON.stringify(parentActions)).not.toMatch(
+      /(?:https?:\/\/|zoom\.us|vimeo\.com|meeting_password|signature|launch_token_ref)/iu,
+    );
   });
 
   it('keeps non-ready routes handler-free and excludes retired surfaces and roles', () => {
@@ -377,19 +984,19 @@ describe('v2.1 visible action registry', () => {
     expect(byId.get('support.student.submit.form')).toMatchObject({
       route: '/app/student/support',
       roles: ['student'],
-      handler: { method: 'POST', path: '/api/v1/support/tickets' },
+      handler: { method: 'POST', path: '/api/v1/support/v21/tickets' },
       test_evidence: [
-        'apps/web/src/client/app/router/canonical-route-views.test.ts',
-        'tests/unit/day-one/visible-action-registry.test.ts',
+        'tests/integration/support/v21-support-lifecycle.test.ts',
+        'tests/e2e/support.spec.ts',
       ],
     });
     expect(byId.get('support.student.receipt.view.route')).toMatchObject({
       route: '/app/student/support/:ticketId',
       roles: ['student'],
-      handler: { method: 'GET', path: '/api/v1/support/receipts/:receiptId/status' },
+      handler: { method: 'GET', path: '/api/v1/support/v21/tickets/:ticketId' },
       test_evidence: [
-        'apps/web/src/client/app/router/canonical-route-views.test.ts',
-        'tests/unit/day-one/visible-action-registry.test.ts',
+        'tests/integration/support/v21-support-lifecycle.test.ts',
+        'tests/e2e/support.spec.ts',
       ],
     });
     expect(byId.get('support.student.view.route')).toMatchObject({
@@ -397,15 +1004,64 @@ describe('v2.1 visible action registry', () => {
       roles: ['student'],
       handler: { method: 'GET', path: '/app/student/support' },
       test_evidence: [
-        'apps/web/src/client/app/router/canonical-route-views.test.ts',
-        'tests/unit/day-one/visible-action-registry.test.ts',
+        'tests/integration/support/v21-support-lifecycle.test.ts',
+        'tests/e2e/support.spec.ts',
       ],
     });
     expect(supportFeature).toContain(
       'href={`${basePath}/${encodeURIComponent(ticket.receipt_id)}`}',
     );
     expect(supportFeature).not.toContain('/app/support/receipts/');
-    expect(supportFeature).not.toContain('/app/parent/support');
-    expect([...byId.keys()].some((actionId) => actionId.startsWith('support.parent.'))).toBe(false);
+    expect(supportFeature).toContain("basePath?: '/app/student/support' | '/app/parent/support'");
+    expect(byId.get('support.parent.submit.form')).toMatchObject({
+      route: '/app/parent/support',
+      roles: ['parent'],
+      handler: { method: 'POST', path: '/api/v1/support/v21/tickets' },
+      external_mutation: false,
+    });
+    expect(byId.get('support.parent.receipt.view.route')).toMatchObject({
+      route: '/app/parent/support/:ticketId',
+      roles: ['parent'],
+      handler: { method: 'GET', path: '/api/v1/support/v21/tickets/:ticketId' },
+    });
+    expect(byId.get('support.admin.assign.form')).toMatchObject({
+      route: '/app/support',
+      roles: ['admin'],
+      handler: {
+        method: 'POST',
+        path: '/api/v1/admin/support/v21/tickets/:ticketId/assign',
+      },
+    });
+    expect(byId.get('support.admin.queue.view.route')).toMatchObject({
+      route: '/app/support',
+      roles: ['admin'],
+      handler: { method: 'GET', path: '/api/v1/admin/support/v21/tickets' },
+    });
+    expect(byId.get('support.admin.reply.form')).toMatchObject({
+      route: '/app/support',
+      roles: ['admin'],
+      handler: {
+        method: 'POST',
+        path: '/api/v1/admin/support/v21/tickets/:ticketId/reply',
+      },
+    });
+    expect(byId.get('support.admin.status.form')).toMatchObject({
+      route: '/app/support',
+      roles: ['admin'],
+      handler: {
+        method: 'POST',
+        path: '/api/v1/admin/support/v21/tickets/:ticketId/status',
+      },
+    });
+    expect(byId.get('support.admin.view.route')).toMatchObject({
+      route: '/app/support',
+      roles: ['admin'],
+      handler: { method: 'GET', path: '/app/support' },
+    });
+    expect(byId.get('support.parent.view.route')).toMatchObject({
+      route: '/app/parent/support',
+      roles: ['parent'],
+      handler: { method: 'GET', path: '/app/parent/support' },
+    });
   });
 });

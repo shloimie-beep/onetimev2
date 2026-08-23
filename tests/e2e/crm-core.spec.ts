@@ -1,46 +1,38 @@
 import { expect, test } from '@playwright/test';
+import { CRM_CORE_E2E_OWNER_SESSION_TOKEN } from '../support/contact-operations-session.ts';
 
-test('synthetic signup appears once in authenticated CRM and opens detail on mobile', async ({
-  page,
-}) => {
+test('synthetic Family signup commits safely on mobile', async ({ page }) => {
   const requested: string[] = [];
   page.on('request', (request) => requested.push(request.url()));
   await page.setViewportSize({ width: 390, height: 844 });
   const email = `crm-${Date.now()}@example.test`;
-  const contactName = `CRM Browser Parent ${Date.now()}`;
+  const suffix = Date.now();
 
   await page.goto('/signup');
-  await page.getByLabel('Adult name').fill(contactName);
-  await page.getByLabel('Family or household name').fill('CRM Browser Family');
-  await page.getByLabel('Adult location').fill('Jerusalem');
-  await page.getByRole('textbox', { name: 'Adult email' }).fill(email);
-  await expect(page.getByLabel(/Student|WhatsApp|marketing/i)).toHaveCount(0);
-  await page.getByRole('button', { name: 'Pre-register my Family' }).click();
-  await expect(
-    page.getByRole('heading', { name: 'Adult pre-registration received.' }),
-  ).toBeVisible();
-
-  await login(page);
-  await expect(page.getByRole('heading', { name: 'Contacts' })).toBeVisible();
-  await expect(page.getByLabel('Search')).toBeEnabled();
-  await page.getByLabel('Search').fill(email);
-  await page.getByRole('button', { name: 'Apply' }).click();
-  await expect(page.getByRole('button', { name: new RegExp(contactName) })).toHaveCount(1);
-  await page.getByRole('button', { name: new RegExp(contactName) }).click();
-  await expect(page.getByRole('heading', { name: contactName })).toBeVisible();
-  await expect(page.getByText(email)).toBeVisible();
-  await expect(page.getByText('Public signup captured')).toBeVisible();
+  const testOrigin = new URL(page.url()).origin;
+  await page.route('https://app.onetimeonetime.com/app/parent', (route) =>
+    route.fulfill({
+      status: 302,
+      headers: { location: `${testOrigin}/app/parent` },
+      body: '',
+    }),
+  );
+  await page.getByLabel('First name', { exact: true }).fill('CRM Browser Parent');
+  await page.getByLabel('Last name', { exact: true }).fill(String(suffix));
+  await page.getByRole('textbox', { name: 'Adult account email' }).fill(email);
+  await page.getByLabel('Password', { exact: true }).fill('StrongPassword!234');
+  await page.getByLabel('Confirm password').fill('StrongPassword!234');
+  await expect(page.getByLabel(/Student.*email|WhatsApp|phone|card/i)).toHaveCount(0);
+  await page.getByLabel(/I agree to the Terms/).check();
+  await page.getByRole('button', { name: 'Create your Family account' }).click();
+  await expect(page).toHaveURL(/\/app\/parent$/u);
+  await expect(page.getByRole('heading', { name: 'Parent Portal', exact: true })).toBeVisible();
 
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
   );
   expect(overflow).toBe(false);
   expect(requested.some((url) => url.includes('operations') || url.includes('bna'))).toBe(false);
-
-  await page.getByRole('button', { name: 'Back to CRM' }).click();
-  await expect(page.getByRole('heading', { name: 'Contacts' })).toBeVisible();
-  await page.goBack();
-  await expect(page.getByRole('heading', { name: contactName })).toBeVisible();
 });
 
 test('CRM create and edit controls are keyboard reachable with readable names', async ({
@@ -81,10 +73,17 @@ test('CRM create and edit controls are keyboard reachable with readable names', 
 });
 
 async function login(page: import('@playwright/test').Page) {
-  await page.goto('/login');
-  await page.getByLabel('Email').fill('ot-admin@example.test');
-  await page.getByLabel('Password').fill('TestPassword!234');
-  await page.getByRole('button', { name: 'Login' }).click();
-  await page.waitForURL('**/app/crm');
+  await page.context().clearCookies();
+  await page.context().addCookies([
+    {
+      name: 'otcrm_session',
+      value: CRM_CORE_E2E_OWNER_SESSION_TOKEN,
+      domain: '127.0.0.1',
+      path: '/',
+      httpOnly: true,
+      sameSite: 'Lax',
+    },
+  ]);
+  await page.goto('/app/crm');
   await page.waitForFunction(() => performance.getEntriesByName('ot-crm-list-usable').length > 0);
 }

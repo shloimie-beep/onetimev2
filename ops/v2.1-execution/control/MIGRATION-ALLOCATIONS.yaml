@@ -7,6 +7,10 @@ reviewed_latest: 2233_zoom_class_occurrence_resources.sql
 next_available_ordinal: 2234
 never_allocate:
 - 2231
+# 2280 was intentionally skipped while this bounded existing-reviewed-recording
+# lane was renumbered before merge. It has no migration file and must remain
+# absent; 2278, 2279, and 2281 are the complete governed sequence for the lane.
+- 2280
 allocations: []
 rule: F02 is the only semantic allocator and migration-file writer. It pushes a proposal on its task branch; C00
   is the only writer of this control-plane mirror and copies the exact approved allocation without semantic change.

@@ -1,4 +1,60 @@
+import { AxeBuilder } from '@axe-core/playwright';
 import { expect, test, type Page, type Request } from '@playwright/test';
+
+test.use({ timezoneId: 'Asia/Jerusalem' });
+
+const studentHomeViewports = [
+  { label: 'mobile', width: 390, height: 844 },
+  { label: 'tablet', width: 768, height: 1024 },
+  { label: 'desktop', width: 1200, height: 900 },
+] as const;
+
+for (const viewport of studentHomeViewports) {
+  test(`keeps the live Student banner prominent and the scheduled class visible on ${viewport.label}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: viewport.width, height: viewport.height });
+    await loginStudent(page);
+
+    const banner = page.locator('[data-student-live-banner="true"]');
+    const overview = page.getByRole('region', { name: 'My learning overview' });
+    await expect(banner).toBeVisible();
+    await expect(overview).toBeVisible();
+    expect(
+      await page.evaluate(() => {
+        const liveBanner = document.querySelector('[data-student-live-banner="true"]');
+        const scheduledOverview = document.querySelector('[aria-label="My learning overview"]');
+        if (!liveBanner || !scheduledOverview) return false;
+        const position = liveBanner.compareDocumentPosition(scheduledOverview);
+        return Boolean(position & Node.DOCUMENT_POSITION_FOLLOWING);
+      }),
+    ).toBe(true);
+
+    await expect(page.getByText('Join class', { exact: true })).toHaveCount(1);
+    const joinAction = banner.getByRole('button', { name: 'Join class' });
+    await expect(joinAction).toBeVisible();
+    const joinBox = await joinAction.boundingBox();
+    expect(joinBox?.height ?? 0).toBeGreaterThanOrEqual(44);
+
+    const nextClass = page
+      .locator('.ot-portal-summary-card')
+      .filter({ has: page.getByRole('heading', { name: 'Next class', exact: true }) });
+    await expect(nextClass).toContainText('Daily One Time Mishnayos');
+    await expect(nextClass).toContainText('7:00 PM');
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      ),
+    ).toBeLessThanOrEqual(1);
+
+    const axe = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(
+      axe.violations.filter((violation) =>
+        ['critical', 'serious'].includes(violation.impact ?? ''),
+      ),
+    ).toEqual([]);
+  });
+}
 
 test.describe('OT-88 mocked Zoom classroom launch', () => {
   test('runs the mocked SDK lifecycle on desktop component view without provider network calls', async ({
@@ -160,14 +216,28 @@ test.describe('OT-88 mocked Zoom classroom launch', () => {
           contentType: 'application/javascript',
           body: `
             window.__zoomJoinCalls = [];
+            window.__zoomMeetingStatusListener = undefined;
             window.ZoomMtg = {
               setZoomJSLib() {},
               preLoadWasm() {},
               prepareWebSDK() {},
+              inMeetingServiceListener(name, listener) {
+                if (name === 'onMeetingStatus') {
+                  window.__zoomMeetingStatusListener = listener;
+                }
+              },
+              removeInMeetingServiceListener(name, listener) {
+                if (
+                  name === 'onMeetingStatus' &&
+                  window.__zoomMeetingStatusListener === listener
+                ) {
+                  window.__zoomMeetingStatusListener = undefined;
+                }
+              },
               init(options) { options.success(); },
               join(options) {
                 window.__zoomJoinCalls.push({
-                  sdkKey: options.sdkKey,
+                  sdkKeyPresent: Object.prototype.hasOwnProperty.call(options, 'sdkKey'),
                   meetingNumber: options.meetingNumber,
                   passWord: options.passWord,
                   customerKey: options.customerKey,
@@ -177,6 +247,7 @@ test.describe('OT-88 mocked Zoom classroom launch', () => {
                   options.error({ errorCode: 1, reason: 'deterministic test rejection' });
                 } else {
                   options.success();
+                  window.__zoomMeetingStatusListener?.({ status: 2 });
                 }
               }
             };
@@ -218,14 +289,14 @@ test.describe('OT-88 mocked Zoom classroom launch', () => {
     expect(bootstrapPosts).toBe(1);
     expect(await zoomJoinCalls(page)).toEqual([
       {
-        sdkKey: 'sdk-client-e2e',
+        sdkKeyPresent: false,
         meetingNumber: '987654321',
         passWord: 'protected-test-passcode',
         customerKey: 'zoom_ck_1234567890abcdef12345678',
         userName: 'E2E Zoom Learner',
       },
       {
-        sdkKey: 'sdk-client-e2e',
+        sdkKeyPresent: false,
         meetingNumber: '987654321',
         passWord: 'protected-test-passcode',
         customerKey: 'zoom_ck_1234567890abcdef12345678',
@@ -310,7 +381,7 @@ async function zoomJoinCalls(page: Page) {
       (
         window as unknown as {
           __zoomJoinCalls?: Array<{
-            sdkKey: string;
+            sdkKeyPresent: boolean;
             meetingNumber: string;
             passWord: string;
             customerKey: string;

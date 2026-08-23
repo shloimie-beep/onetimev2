@@ -19,46 +19,57 @@ import {
 } from '../../apps/web/src/client/app/admin-ia.ts';
 
 describe('OT-LAUNCH-01 Admin information architecture', () => {
-  it('keeps five canonical Admin areas and gates Live Console by server readiness', () => {
+  it('keeps Live Console directly reachable in the canonical Admin and Rabbi areas', () => {
     expect(ADMIN_PRIMARY_AREAS).toEqual([
-      { id: 'dashboard', label: 'Dashboard', href: '/app/dashboard' },
-      { id: 'contacts', label: 'Contacts', href: '/app/contacts' },
-      { id: 'content', label: 'Content', href: '/app/content' },
-      { id: 'classroom', label: 'Classroom', href: '/app/classroom/classes' },
-      { id: 'live-console', label: 'Live Console', href: '/app/live' },
+      { id: 'today', label: 'Today', href: '/app/today' },
+      { id: 'learning', label: 'Learning', href: '/app/learning/classroom' },
+      {
+        id: 'live-console',
+        label: 'Live Console',
+        href: '/app/live-console?section=zoom',
+      },
+      { id: 'people', label: 'People', href: '/app/people/families' },
+      { id: 'communications', label: 'Communications', href: '/app/communications' },
+      { id: 'operations', label: 'Operations', href: '/app/operations' },
+      { id: 'account', label: 'Account', href: '/app/account/profile' },
     ]);
-    expect(adminPrimaryNav('content', true).filter((item) => item.current)).toEqual([
-      { id: 'content', label: 'Content', href: '/app/content', current: true },
+    expect(adminPrimaryNav('learning', true).filter((item) => item.current)).toEqual([
+      { id: 'learning', label: 'Learning', href: '/app/learning/classroom', current: true },
     ]);
-    expect(adminPrimaryNav('content', false).map((item) => item.label)).toEqual([
-      'Dashboard',
-      'Contacts',
-      'Content',
-      'Classroom',
-    ]);
-    expect(rabbiPrimaryNav('classroom', true).map((item) => item.label)).toEqual([
-      'Dashboard',
-      'Content',
-      'Classroom',
+    expect(adminPrimaryNav('learning', false).map((item) => item.label)).toEqual([
+      'Today',
+      'Learning',
       'Live Console',
+      'People',
+      'Communications',
+      'Operations',
+      'Account',
     ]);
-    expect(rabbiPrimaryNav('classroom', true).some((item) => item.id === 'contacts')).toBe(false);
+    expect(rabbiPrimaryNav('learning', true).map((item) => item.label)).toEqual([
+      'Today',
+      'Learning',
+      'Live Console',
+      'Account',
+    ]);
+    expect(rabbiPrimaryNav('learning', true).some((item) => item.id === 'people')).toBe(false);
   });
 
   it('defines one canonical section model for each focused workspace', () => {
-    expect(DASHBOARD_SECTIONS.map((item) => item.label)).toEqual(['Overview']);
+    expect(DASHBOARD_SECTIONS.map((item) => item.label)).toEqual(['Today']);
     expect(CONTACTS_SECTIONS.map((item) => item.label)).toEqual([
-      'People / Contacts',
-      'Audit History',
+      'Families',
+      'Parents',
+      'Students',
+      'Access',
+      'Audit',
     ]);
     expect(CONTENT_SECTIONS.map((item) => item.label)).toEqual(['Library', 'Pipeline', 'Upload']);
     expect(CLASSROOM_SECTIONS.map((item) => item.label)).toEqual([
-      'Classes',
-      'Occurrences',
-      'Enrollments',
-      'Recordings',
-      'Access',
+      'Classroom',
+      'Library',
       'Questions',
+      'Attendance',
+      'Recordings',
     ]);
     expect(LIVE_CONSOLE_SECTIONS.map((item) => item.label)).toEqual([
       'Current Class',
@@ -68,7 +79,7 @@ describe('OT-LAUNCH-01 Admin information architecture', () => {
   });
 
   it('maps legacy and deep URLs into safe focused destinations', () => {
-    expect(dashboardSectionFromPath('/app/dashboard/internal-tasks')).toBe('overview');
+    expect(dashboardSectionFromPath('/app/dashboard/internal-tasks')).toBe('today');
     expect(contactsSectionFromPath('/app/crm/households')).toBe('households');
     expect(contactsSectionFromPath('/app/crm/users')).toBe('users');
     expect(contactsSectionFromPath('/app/crm/audit')).toBe('audit');
@@ -81,9 +92,11 @@ describe('OT-LAUNCH-01 Admin information architecture', () => {
     expect(classroomSectionFromPath('/app/rewards')).toBe('rewards');
     expect(classroomSectionFromPath('/app/classes/schedule')).toBe('occurrences');
     expect(classroomSectionFromPath('/app/classes/enrollments')).toBe('enrollments');
+    expect(classroomSectionFromPath('/app/classes/attendance')).toBe('attendance');
     expect(classroomSectionFromPath('/app/classes/recordings')).toBe('recordings');
     expect(classroomSectionFromPath('/app/classes/access')).toBe('access');
     expect(classroomSectionFromPath('/app/classes/questions')).toBe('questions');
+    expect(classroomSectionFromPath('/app/classroom/questions')).toBe('questions');
     expect(classroomOccurrenceFromLocation('/app/classes/occurrence-1', '')).toBe('occurrence-1');
     expect(
       classroomOccurrenceFromLocation('/app/classes/questions', '?occurrence_key=occurrence-2'),
@@ -94,7 +107,7 @@ describe('OT-LAUNCH-01 Admin information architecture', () => {
     expect(liveConsoleSectionFromSearch('?section=zoom')).toBe('zoom');
     expect(liveConsoleSectionFromSearch('?section=unknown')).toBe('current-class');
     expect(liveConsoleHref('questions', 'occurrence / 2')).toBe(
-      '/app/live?section=questions&occurrence_key=occurrence+%2F+2',
+      '/app/live-console?section=questions&occurrence_key=occurrence+%2F+2',
     );
   });
 });

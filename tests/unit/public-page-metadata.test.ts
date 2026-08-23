@@ -22,6 +22,9 @@ describe('public page metadata origins', () => {
       'https://ot99-web-staging.up.railway.app/signup',
     );
     expect(publicCanonicalUrl('/signup', stagingOrigin)).not.toContain('join.onetimeonetime.com');
+    expect(publicCanonicalUrl('/cancellation-refund', stagingOrigin)).toBe(
+      'https://ot99-web-staging.up.railway.app/cancellation-refund',
+    );
   });
 
   it('rejects non-root-relative canonical paths', () => {

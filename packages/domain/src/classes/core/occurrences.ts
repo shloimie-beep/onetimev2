@@ -10,6 +10,7 @@ import {
 } from '../../../../contracts/src/classes/core/index.ts';
 import { generateRollingOccurrences } from '../../calendar/index.ts';
 import { ClassroomCoreError } from './errors.ts';
+import { CANONICAL_CLASS_FIRST_LOCAL_DATE } from './series.ts';
 
 const ALLOWED_TRANSITIONS: Readonly<Record<ClassOccurrenceState, readonly ClassOccurrenceState[]>> =
   {
@@ -26,6 +27,10 @@ export function generateCoreOccurrences(
   options: { fromLocalDate: string; occurredAt: string },
 ) {
   if (series.state !== 'active') return [];
+  const fromLocalDate =
+    series.canonical && options.fromLocalDate < CANONICAL_CLASS_FIRST_LOCAL_DATE
+      ? CANONICAL_CLASS_FIRST_LOCAL_DATE
+      : options.fromLocalDate;
   return generateRollingOccurrences(
     {
       id: series.id,
@@ -39,7 +44,7 @@ export function generateCoreOccurrences(
       active: true,
       version: series.version,
     },
-    { fromLocalDate: options.fromLocalDate },
+    { fromLocalDate },
   ).map((occurrence): ClassOccurrenceRecord => ({
     accountKey: series.accountKey,
     productKey: series.productKey,

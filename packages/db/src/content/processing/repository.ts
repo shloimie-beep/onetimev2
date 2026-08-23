@@ -6,7 +6,7 @@ import type {
   ContentProcessingSource,
   ContentProcessingUnitOfWork,
   ContentProcessingVersion,
-  ControlledCaptureEvidence,
+  ContentSourceEvidence,
   ProcessingArtifact,
   SourceCompleteApprovedForPublicationProjection,
 } from '../../../../contracts/src/content/processing/index.ts';
@@ -79,7 +79,7 @@ export function createContentProcessingRepository(
               AND evidence_row.product_key = version_row.product_key
               AND evidence_row.source_key = version_row.source_key
               AND evidence_row.linked_ingest_source_key = version_row.source_key
-             JOIN participant_snapshots AS snapshot_row
+             LEFT JOIN participant_snapshots AS snapshot_row
                ON snapshot_row.occurrence_id = version_row.record_json->>'contentId'
              LEFT JOIN ranked_artifacts AS artifact_row
                ON artifact_row.latest_rank = 1
@@ -95,18 +95,11 @@ export function createContentProcessingRepository(
         if (!row) return null;
         const version = parseRecord<ContentProcessingVersion>(row.version_json);
         const source = parseRecord<ContentProcessingSource>(row.source_json);
-        const captureEvidence = parseRecord<ControlledCaptureEvidence>(row.evidence_json);
+        const captureEvidence = parseRecord<ContentSourceEvidence>(row.evidence_json);
         const artifacts = parseRecord<ProcessingArtifact[]>(row.artifacts_json);
-        const recordingParticipantSnapshots = parseRecord<RecordingParticipantSnapshot[]>(
-          row.snapshots_json,
-        );
-        if (
-          !version ||
-          !source ||
-          !captureEvidence ||
-          !artifacts ||
-          !recordingParticipantSnapshots
-        ) {
+        const recordingParticipantSnapshots =
+          parseRecord<RecordingParticipantSnapshot[]>(row.snapshots_json) ?? [];
+        if (!version || !source || !captureEvidence || !artifacts) {
           return null;
         }
         try {
@@ -217,9 +210,9 @@ function createUnit(client: ContentProcessingSqlClient): ContentProcessingUnitOf
       await client.query(
         `INSERT INTO onetime.content_processing_capture_evidence
            (account_key, product_key, source_key, evidence_version,
-            participant_snapshot_digest, checksum_readback_receipt_key,
+            participant_snapshot_digest, source_review_digest, checksum_readback_receipt_key,
             linked_ingest_source_key, record_json, captured_at, upload_confirmed_at)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8::jsonb, $9, $10)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::jsonb, $10, $11)
          ON CONFLICT (account_key, product_key, source_key)
          DO UPDATE SET
            record_json = EXCLUDED.record_json,
@@ -229,11 +222,18 @@ function createUnit(client: ContentProcessingSqlClient): ContentProcessingUnitOf
           scope.productKey,
           evidence.sourceId,
           evidence.evidenceVersion,
-          evidence.consentedParticipantSnapshotDigest,
+          evidence.evidenceVersion === 'OT-OBS-CAPTURE-1'
+            ? evidence.consentedParticipantSnapshotDigest
+            : null,
+          evidence.evidenceVersion === 'OT-EXISTING-REVIEWED-RECORDING-1'
+            ? evidence.reviewedSourceDigest
+            : null,
           evidence.durableChecksumReadbackReceiptId,
           evidence.linkedIngestSourceId,
           JSON.stringify(evidence),
-          evidence.capturedAt,
+          evidence.evidenceVersion === 'OT-OBS-CAPTURE-1'
+            ? evidence.capturedAt
+            : evidence.attestation.humanReviewedAt,
           evidence.uploadConfirmedAt,
         ],
       );
@@ -346,4 +346,4 @@ function parseRecord<T>(value: unknown): T | null {
 export type ContentProcessingSqlScope = ContentProcessingScope;
 export type ContentProcessingSqlVersion = ContentProcessingVersion;
 export type ContentProcessingSqlArtifact = ProcessingArtifact;
-export type ContentProcessingSqlCaptureEvidence = ControlledCaptureEvidence;
+export type ContentProcessingSqlCaptureEvidence = ContentSourceEvidence;

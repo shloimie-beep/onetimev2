@@ -33,7 +33,8 @@ export type ReadOnlySessionScope = {
   role: CommunicationsRole;
 };
 
-export type CommunicationsMode = { kind: 'global' } | { kind: 'contact'; contactId: string };
+/** The public Communications surface is intentionally global account-email history only. */
+export type CommunicationsMode = { kind: 'global' };
 
 export type CommunicationsQuery = {
   from?: string | undefined;
@@ -84,18 +85,12 @@ export type CommunicationIntentListInput = {
   rawEventType?: string | undefined;
 };
 
-export type CommunicationContactLookupInput = {
-  scope: ReadOnlySessionScope;
-  contactId: string;
-};
-
 export type CommunicationIntentListResult = {
   rows: CommunicationIntentRow[];
   sourceAvailable: boolean;
 };
 
 export interface CommunicationsReadRepository {
-  contactExists(input: CommunicationContactLookupInput): Promise<boolean>;
   list(input: CommunicationIntentListInput): Promise<CommunicationIntentListResult>;
 }
 
@@ -132,8 +127,29 @@ export type BuildCommunicationsListInput = {
 const MAX_RANGE_MS = 90 * 24 * 60 * 60 * 1000;
 const DEFAULT_RANGE_MS = 30 * 24 * 60 * 60 * 1000;
 const CURSOR_TTL_MS = 30 * 60 * 1000;
+const ACCOUNT_EMAIL_INTENT_TYPES = new Set<CommunicationsIntentType>([
+  'password_reset',
+  'account_activation',
+  'student_pin_setup',
+  'student_pin_reset',
+]);
+
+function isAllowedAccountEmailRow(row: CommunicationIntentRow) {
+  const event = normalizeCommunicationsEvent(row.eventType, row.channel);
+  return (
+    row.channel === 'email' &&
+    normalizeDirection(row.direction, event.channel) === 'outbound' &&
+    row.source === 'account_lifecycle_outbox' &&
+    ACCOUNT_EMAIL_INTENT_TYPES.has(event.intentType)
+  );
+}
 
 export function canReadCommunications(role: unknown) {
+  return role === 'owner' || role === 'admin' || role === 'rabbi';
+}
+
+/** Account-lifecycle delivery history is not part of the Rabbi teaching role. */
+export function canReadAccountEmailHistory(role: unknown) {
   return role === 'owner' || role === 'admin';
 }
 
@@ -146,16 +162,24 @@ export async function buildCommunicationsListResponse({
   now = new Date(),
 }: BuildCommunicationsListInput): Promise<CommunicationsListResponse> {
   if (!session) throw new CommunicationsAuthorizationError(401);
-  if (!canReadCommunications(session.role)) throw new CommunicationsAuthorizationError(403);
+  if (!canReadAccountEmailHistory(session.role)) throw new CommunicationsAuthorizationError(403);
 
-  const filters = parseCommunicationsFilters(query, now);
-  if (mode.kind === 'contact') {
-    const contactExists = await repository.contactExists({
-      scope: session,
-      contactId: mode.contactId,
-    });
-    if (!contactExists) throw new CommunicationsNotFoundError('Contact was not found.');
+  const requestedFilters = parseCommunicationsFilters(query, now);
+  if (
+    requestedFilters.intent_type &&
+    !ACCOUNT_EMAIL_INTENT_TYPES.has(requestedFilters.intent_type)
+  ) {
+    throw new CommunicationsValidationError(
+      'ACCOUNT_EMAIL_INTENT_FORBIDDEN',
+      'Only One Time account-email history is available here.',
+    );
   }
+  const filters: CommunicationsFilters = {
+    ...requestedFilters,
+    channel: 'email',
+    direction: 'outbound',
+    source: 'account_lifecycle_outbox',
+  };
   const rawEventType = filters.intent_type
     ? (eventTypeForIntent(filters.intent_type) ?? undefined)
     : undefined;
@@ -188,7 +212,9 @@ export async function buildCommunicationsListResponse({
     };
   }
 
-  const pageRows = result.rows.slice(0, filters.limit);
+  // Recheck returned data as well as query filters: a repository anomaly must never
+  // widen this browser-visible account-email boundary.
+  const pageRows = result.rows.filter(isAllowedAccountEmailRow).slice(0, filters.limit);
   const items = pageRows.map((row) => {
     const event = normalizeCommunicationsEvent(row.eventType, row.channel);
     const status = normalizeCommunicationsStatus({
@@ -200,11 +226,9 @@ export async function buildCommunicationsListResponse({
     const source = normalizeSource(row.source);
     const provenance = normalizeProvenance(row.provenance);
     const direction = normalizeDirection(row.direction, event.channel);
-    const contactPath = row.contactKey
-      ? `/app/crm/contacts/${encodeURIComponent(row.contactKey)}`
-      : null;
+    const contactPath = null;
     const householdPath = row.householdKey
-      ? `/app/parent/households/${encodeURIComponent(row.householdKey)}`
+      ? `/app/people/families/${encodeURIComponent(row.householdKey)}`
       : null;
     return {
       event_id: row.id,
@@ -221,11 +245,14 @@ export async function buildCommunicationsListResponse({
       provenance,
       participant_kind: participantKind(row),
       participant_label: row.participantLabel ?? participantLabel(row),
-      recipient_masked: maskCommunicationsRecipient({
-        channel: event.channel,
-        email: row.emailNormalized,
-        phone: row.phoneNormalized,
-      }),
+      recipient_masked:
+        source === 'account_lifecycle_outbox'
+          ? 'Account email (hidden)'
+          : maskCommunicationsRecipient({
+              channel: event.channel,
+              email: row.emailNormalized,
+              phone: row.phoneNormalized,
+            }),
       queued_at: toIso(occurredAt),
       occurred_at: toIso(occurredAt),
       state_at: status.stateAt,
@@ -246,8 +273,6 @@ export async function buildCommunicationsListResponse({
           v: 1,
           mode: mode.kind,
           scope_hash: scopeHash(cursorSecret, session),
-          contact_hash:
-            mode.kind === 'contact' ? contactHash(cursorSecret, mode.contactId) : undefined,
           filters_hash: hashCursorFilters(cursorSecret, filters),
           last_created_at: toIso(last.createdAt),
           last_id: last.id,
@@ -354,13 +379,7 @@ function parseCursor(input: {
     hashCursorFilters(input.secret, input.filters),
     'CURSOR_FILTER_MISMATCH',
   );
-  if (input.mode.kind === 'contact') {
-    assertCursorBinding(
-      payload.contact_hash ?? '',
-      contactHash(input.secret, input.mode.contactId),
-      'CURSOR_CONTACT_MISMATCH',
-    );
-  } else if (payload.contact_hash) {
+  if (payload.contact_hash) {
     throw new CommunicationsCursorError('CURSOR_MODE_MISMATCH');
   }
   return { lastCreatedAt: payload.last_created_at, lastId: payload.last_id };
@@ -381,10 +400,6 @@ function scopeHash(secret: string, session: ReadOnlySessionScope) {
   return hashCursorScope(secret, [session.accountKey, session.productKey]);
 }
 
-function contactHash(secret: string, contactId: string) {
-  return hashCursorScope(secret, ['contact', contactId]);
-}
-
 function isChannel(value: string): value is CommunicationsChannel {
   return value === 'email' || value === 'whatsapp' || value === 'internal_email';
 }
@@ -395,6 +410,10 @@ function isIntentType(value: string): value is CommunicationsIntentType {
     value === 'family_signup_whatsapp_confirmation' ||
     value === 'internal_lead_alert' ||
     value === 'single_recipient_reply' ||
+    value === 'password_reset' ||
+    value === 'account_activation' ||
+    value === 'student_pin_setup' ||
+    value === 'student_pin_reset' ||
     value === 'whatsapp_inbound_message' ||
     value === 'whatsapp_provider_event' ||
     value === 'historical_import_event' ||
@@ -416,8 +435,14 @@ function isLocalState(value: string): value is CommunicationsLocalState {
     value === 'complained' ||
     value === 'suppressed' ||
     value === 'draft_saved' ||
+    value === 'sink_delivered' ||
     value === 'duplicate' ||
     value === 'unknown' ||
+    value === 'retrying' ||
+    value === 'expired' ||
+    value === 'superseded' ||
+    value === 'provider_off' ||
+    value === 'cleared' ||
     value === 'history_unavailable'
   );
 }
@@ -437,6 +462,7 @@ function isSource(value: string): value is CommunicationsSource {
     value === 'crm_reply_draft' ||
     value === 'stored_whatsapp_webhook' ||
     value === 'stored_provider_delivery_event' ||
+    value === 'account_lifecycle_outbox' ||
     value === 'historical_import' ||
     value === 'provider_history_unavailable'
   );
@@ -481,13 +507,17 @@ function defaultThreadLabel(row: CommunicationIntentRow) {
   return 'Unlinked communication history';
 }
 
-function participantKind(row: CommunicationIntentRow): 'contact' | 'household' | 'unknown' {
+function participantKind(
+  row: CommunicationIntentRow,
+): 'account' | 'contact' | 'household' | 'unknown' {
+  if (row.participantKind === 'account') return 'account';
   if (row.participantKind === 'contact' || row.contactKey) return 'contact';
   if (row.participantKind === 'household' || row.householdKey) return 'household';
   return 'unknown';
 }
 
 function participantLabel(row: CommunicationIntentRow) {
+  if (row.source === 'account_lifecycle_outbox') return 'Active One Time account';
   if (row.contactKey) return 'Linked contact';
   if (row.householdKey) return 'Linked household';
   return 'Unlinked participant';
@@ -499,6 +529,7 @@ function sourceLabel(source: CommunicationsSource) {
   if (source === 'crm_reply_draft') return 'Provider-off reply draft';
   if (source === 'stored_whatsapp_webhook') return 'Stored WhatsApp webhook';
   if (source === 'stored_provider_delivery_event') return 'Stored provider status';
+  if (source === 'account_lifecycle_outbox') return 'Account security delivery';
   if (source === 'historical_import') return 'Historical import';
   return 'Provider history unavailable';
 }
@@ -512,6 +543,14 @@ function previewFor(row: CommunicationIntentRow, stateLabel: string) {
   }
   if (row.eventType === 'whatsapp_provider_delivery_event.v1') {
     return `Provider status recorded: ${stateLabel}.`;
+  }
+  if (
+    row.eventType === 'account_password_reset.v1' ||
+    row.eventType === 'account_activation.v1' ||
+    row.eventType === 'student_pin_setup.v1' ||
+    row.eventType === 'student_pin_reset.v1'
+  ) {
+    return `Account security delivery status: ${stateLabel}. Message body and secure link are hidden.`;
   }
   if (row.source === 'provider_history_unavailable') {
     return 'Provider history is not available from the configured source.';

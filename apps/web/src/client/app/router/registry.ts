@@ -1,6 +1,6 @@
 export const CLIENT_ROUTER_CONTRACT_VERSION = '2.1.0' as const;
 
-export type CurrentClientRole = 'admin' | 'parent' | 'student';
+export type CurrentClientRole = 'admin' | 'rabbi' | 'parent' | 'student';
 export type CanonicalRouteAudience = CurrentClientRole | 'public' | 'authenticated';
 export type ClientShellId = 'public' | 'auth' | 'admin' | 'parent' | 'student' | 'live';
 export type ClientRouteMatch = 'exact' | 'template';
@@ -45,80 +45,42 @@ const BOUNDED_ALIAS_ROUTE_IDS = new Set<CanonicalRouteId>([
   'RT-AUTH-007',
   'RT-ADM-010',
   'RT-ADM-011',
-  'RT-ADM-013',
-  'RT-ADM-034',
-  'RT-ADM-035',
-  'RT-ADM-037',
-  'RT-ADM-039',
-  'RT-ADM-067',
-  'RT-STU-020',
-]);
-
-const ISOLATED_ROUTE_IDS = new Set<CanonicalRouteId>([
-  'RT-PUB-003',
-  'RT-AUTH-005',
-  'RT-AUTH-008',
-  'RT-PAR-010',
-  'RT-PAR-020',
-  'RT-PAR-021',
-  'RT-PAR-030',
-  'RT-PAR-040',
-  'RT-PAR-041',
-  'RT-PAR-071',
-  'RT-PAR-072',
-  'RT-STU-030',
-  'RT-STU-051',
-  'RT-STU-070',
-  'RT-STU-071',
-  'RT-STU-072',
-  'RT-STU-012',
-  'RT-STU-040',
-  'RT-ADM-040',
-  'RT-ADM-020',
-  'RT-ADM-021',
-  'RT-ADM-024',
-  'RT-ADM-032',
-  'RT-ADM-036',
-  'RT-ADM-043',
-  'RT-ADM-050',
-  'RT-ADM-051',
-  'RT-STU-041',
-  'RT-STU-042',
-  'RT-PAR-060',
-  'RT-PAR-061',
-  'RT-STU-050',
-]);
-
-const MISSING_ROUTE_IDS = new Set<CanonicalRouteId>([
-  'RT-PUB-008',
-  'RT-ADM-002',
   'RT-ADM-012',
+  'RT-ADM-013',
   'RT-ADM-014',
   'RT-ADM-015',
   'RT-ADM-016',
   'RT-ADM-017',
-  'RT-ADM-023',
+  'RT-ADM-024',
   'RT-ADM-030',
   'RT-ADM-031',
+  'RT-ADM-032',
   'RT-ADM-033',
+  'RT-ADM-034',
+  'RT-ADM-035',
+  'RT-ADM-036',
+  'RT-ADM-037',
   'RT-ADM-038',
+  'RT-ADM-039',
   'RT-ADM-041',
   'RT-ADM-042',
-  'RT-ADM-060',
+  'RT-ADM-043',
+  'RT-ADM-050',
+  'RT-ADM-051',
   'RT-ADM-061',
   'RT-ADM-062',
   'RT-ADM-063',
   'RT-ADM-064',
   'RT-ADM-065',
-  'RT-ADM-066',
-  'RT-ADM-068',
+  'RT-ADM-067',
   'RT-ADM-069',
-  'RT-PAR-011',
-  'RT-PAR-050',
-  'RT-STU-010',
-  'RT-STU-011',
-  'RT-STU-021',
+  'RT-STU-041',
+  'RT-STU-042',
 ]);
+
+const ISOLATED_ROUTE_IDS = new Set<CanonicalRouteId>();
+
+const MISSING_ROUTE_IDS = new Set<CanonicalRouteId>();
 
 const route = (definition: RouteSeed): ClientRouteDefinition => {
   const handlerDisposition = MISSING_ROUTE_IDS.has(definition.routeId)
@@ -176,8 +138,22 @@ const app = (
     pathname,
     title,
     shell,
-    roles: [shell === 'live' ? 'admin' : shell],
+    roles: shell === 'live' ? ['admin', 'rabbi'] : [shell],
     handler: `${shell}.${routeId.toLowerCase()}`,
+  });
+
+const teaching = (
+  routeId: CanonicalRouteId,
+  pathname: `/${string}`,
+  title: string,
+): ClientRouteDefinition =>
+  route({
+    routeId,
+    pathname,
+    title,
+    shell: 'admin',
+    roles: ['admin', 'rabbi'],
+    handler: `admin.${routeId.toLowerCase()}`,
   });
 
 /**
@@ -260,11 +236,29 @@ export const CANONICAL_V21_ROUTES = [
   app('RT-ADM-067', '/app/audit', 'Audit', 'admin'),
   app('RT-ADM-068', '/app/support', 'Admin support', 'admin'),
   app('RT-ADM-069', '/app/account', 'Admin account', 'admin'),
+  teaching('RT-ADM-070', '/app/today', 'Today'),
+  teaching('RT-ADM-071', '/app/learning/classroom', 'Classroom'),
+  teaching('RT-ADM-072', '/app/learning/library', 'Library'),
+  teaching('RT-ADM-073', '/app/learning/questions', 'Questions'),
+  teaching('RT-ADM-074', '/app/learning/attendance', 'Attendance'),
+  teaching('RT-ADM-075', '/app/learning/recordings', 'Recordings'),
+  app('RT-ADM-076', '/app/people/families', 'Families', 'admin'),
+  app('RT-ADM-077', '/app/people/parents', 'Parents', 'admin'),
+  app('RT-ADM-078', '/app/people/students', 'Students', 'admin'),
+  app('RT-ADM-079', '/app/people/access', 'Access', 'admin'),
+  app('RT-ADM-080', '/app/people/audit', 'People audit', 'admin'),
+  teaching('RT-ADM-081', '/app/account/profile', 'Account profile'),
+  teaching('RT-ADM-082', '/app/account/security', 'Sign-in and security'),
+  teaching('RT-ADM-083', '/app/account/privacy', 'Account privacy'),
+  app('RT-ADM-084', '/app/operations/workflow-readback/:workflowId', 'Workflow readback', 'admin'),
 
-  app('RT-PAR-001', '/app/parent', 'Parent overview', 'parent'),
+  app('RT-PAR-001', '/app/parent', 'Today', 'parent'),
   app('RT-PAR-002', '/app/parent/students', 'Students', 'parent'),
   app('RT-PAR-003', '/app/parent/students/new', 'New Student', 'parent'),
   app('RT-PAR-004', '/app/parent/students/:studentId', 'Student management', 'parent'),
+  app('RT-PAR-005', '/app/parent/classroom', 'Classroom', 'parent'),
+  app('RT-PAR-006', '/app/parent/library', 'Library', 'parent'),
+  app('RT-PAR-007', '/app/parent/questions', 'Questions', 'parent'),
   app('RT-PAR-010', '/app/parent/calendar', 'Family calendar', 'parent'),
   app('RT-PAR-011', '/app/parent/classes/:occurrenceId', 'Parent class detail', 'parent'),
   app('RT-PAR-020', '/app/parent/progress', 'Progress summary', 'parent'),

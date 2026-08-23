@@ -4,6 +4,7 @@ import { z, ZodError } from 'zod';
 import type { AttendanceEvent } from '../../../../../../../packages/contracts/src/classroom/embedded/index.ts';
 import { EmbeddedClassroomError } from '../../../../../../../packages/domain/src/classroom/embedded/index.ts';
 import type {
+  AdminAttendanceRecordReader,
   AdminAttendanceSubjectResolver,
   EmbeddedClassroomRequestIdentityResolver,
   VerifiedProviderAttendanceResolver,
@@ -11,7 +12,12 @@ import type {
 import { digestEmbeddedAttendanceEvidence, hashEmbeddedExchangeSecret } from './adapters.ts';
 import type { EmbeddedClassroomService } from './service.ts';
 
-const exchangeSecretSchema = z.object({ exchange_secret: z.string().min(32).max(512) }).strict();
+const exchangeSecretSchema = z
+  .object({
+    exchange_secret: z.string().min(32).max(512),
+    occurrence_id: z.string().trim().min(1).max(256),
+  })
+  .strict();
 const heartbeatSchema = z
   .object({
     lease_generation: z.number().int().positive(),
@@ -49,6 +55,7 @@ export type EmbeddedClassroomRouterInput = {
   service: EmbeddedClassroomService;
   identities: EmbeddedClassroomRequestIdentityResolver;
   providerAttendance: VerifiedProviderAttendanceResolver;
+  adminAttendanceRecords: AdminAttendanceRecordReader;
   adminAttendanceSubjects: AdminAttendanceSubjectResolver;
   clock?: () => Date;
   allocateId?: () => string;
@@ -63,6 +70,23 @@ export function createEmbeddedClassroomRouter(input: EmbeddedClassroomRouterInpu
     setPrivateNoStore(response);
     next();
   });
+
+  router.get(
+    '/attendance/admin',
+    route(async (request, response) => {
+      const identity = await input.identities.resolveAdminRead?.(request);
+      if (identity === null || identity === undefined) {
+        response.status(403).json(neutralDenied('authorization_changed'));
+        return;
+      }
+      const records = await input.adminAttendanceRecords.list(identity);
+      if (records === null) {
+        response.status(503).json(genericUnavailable());
+        return;
+      }
+      response.json({ success: true, data: records });
+    }),
+  );
 
   router.post(
     '/bootstrap',
@@ -80,6 +104,7 @@ export function createEmbeddedClassroomRouter(input: EmbeddedClassroomRouterInpu
       }
       const result = await input.service.bootstrap({
         ...identity,
+        occurrence_id: body.occurrence_id,
         grant_id: `p18-grant-${grantKeyDigest}`,
         grant_key_digest: grantKeyDigest,
         live_session_id: `p18-live-${allocateId()}`,

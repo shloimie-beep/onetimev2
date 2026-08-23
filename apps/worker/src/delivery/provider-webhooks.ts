@@ -1,4 +1,5 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
+import { providerEventRecordSchema } from '../../../../packages/contracts/src/providers/events.ts';
 import {
   buildProviderEventRecord,
   normalizeResendEventState,
@@ -94,35 +95,62 @@ export function normalizeResendWebhookEvent(input: {
   rawBody: Buffer;
   headers: ResendSvixHeaders;
   webhookSecret: string;
+  environment?: 'test' | 'staging' | 'production' | undefined;
   now?: Date | undefined;
   toleranceSeconds?: number | undefined;
 }) {
   verifyResendSvixSignature(input);
   const payload = JSON.parse(input.rawBody.toString('utf8')) as Record<string, unknown>;
+  const data = objectValue(payload.data);
   const eventType = stringValue(payload.type) ?? 'unknown';
-  const providerEventRef = stringValue(payload.id) ?? stringValue(payload.message_id) ?? eventType;
-  const messageRef = stringValue(payload.message_id);
-  return buildProviderEventRecord({
+  const messageRef = stringValue(data?.email_id) ?? stringValue(payload.message_id);
+  const canonicalState = normalizeResendEventState(eventType);
+  const providerCreatedAt = stringValue(payload.created_at);
+  if (isTerminalResendEmailState(canonicalState) && !providerCreatedAt) {
+    throw new ProviderWebhookConformanceError('provider_created_at_required', 400);
+  }
+  if (
+    isTerminalResendEmailState(canonicalState) &&
+    !providerEventRecordSchema.shape.provider_created_at.safeParse(providerCreatedAt).success
+  ) {
+    throw new ProviderWebhookConformanceError('provider_created_at_invalid', 400);
+  }
+  const providerEventRef = resendProviderEventRef(payload, eventType, messageRef, input.headers.id);
+  const record = buildProviderEventRecord({
     accountKey: input.accountKey,
     productKey: input.productKey,
     provider: 'resend',
-    environment: 'staging',
+    environment: input.environment ?? 'staging',
     providerEventRef,
     eventType,
-    canonicalState: normalizeResendEventState(eventType),
-    providerCreatedAt: stringValue(payload.created_at) ?? null,
+    canonicalState,
+    providerCreatedAt: providerCreatedAt ?? null,
     objectRefs: {
       ...(input.headers.id ? { svix_message_ref_hash: redactedRefHash(input.headers.id) } : {}),
       ...(messageRef ? { message_ref_hash: redactedRefHash(messageRef) } : {}),
-      message_ref_hash_present: Boolean(payload.message_id),
+      message_ref_hash_present: Boolean(messageRef),
       svix_message_ref_hash_present: Boolean(input.headers.id),
     },
     minimizedPayload: {
       type: eventType,
-      has_message_ref: Boolean(payload.message_id),
+      has_message_ref: Boolean(messageRef),
       has_svix_message_ref: Boolean(input.headers.id),
     },
   });
+  return {
+    ...record,
+    payload_digest: sha256Hex(input.rawBody),
+  };
+}
+
+function isTerminalResendEmailState(state: ReturnType<typeof normalizeResendEventState>) {
+  return (
+    state === 'delivered' ||
+    state === 'bounced' ||
+    state === 'complained' ||
+    state === 'failed' ||
+    state === 'suppressed'
+  );
 }
 
 export function verifyAndNormalizeResendWebhookEvent(input: {
@@ -132,6 +160,7 @@ export function verifyAndNormalizeResendWebhookEvent(input: {
   contentType?: string | undefined;
   headers: ResendSvixHeaders;
   webhookSecret: string;
+  environment?: 'test' | 'staging' | 'production' | undefined;
   ledger?: ProviderWebhookLedger | undefined;
   now?: Date | undefined;
   maxBytes?: number | undefined;
@@ -148,17 +177,23 @@ export function verifyAndNormalizeResendWebhookEvent(input: {
     rawBody,
     headers: input.headers,
     webhookSecret: input.webhookSecret,
+    environment: input.environment,
     now: input.now,
   });
   const payload = JSON.parse(rawBody.toString('utf8')) as Record<string, unknown>;
+  const data = objectValue(payload.data);
   const disposition =
     input.ledger?.record({
       provider: 'resend',
       svixId: input.headers.id ?? '',
-      providerEventRef:
-        stringValue(payload.id) ?? stringValue(payload.message_id) ?? record.event_type,
+      providerEventRef: resendProviderEventRef(
+        payload,
+        record.event_type,
+        stringValue(data?.email_id) ?? stringValue(payload.message_id),
+        input.headers.id,
+      ),
       rawBodyDigest: sha256Hex(rawBody),
-      orderingKey: stringValue(payload.message_id),
+      orderingKey: stringValue(data?.email_id) ?? stringValue(payload.message_id),
       providerCreatedAt: stringValue(payload.created_at) ?? null,
     }) ?? 'accepted';
 
@@ -167,6 +202,20 @@ export function verifyAndNormalizeResendWebhookEvent(input: {
     record,
     raw_body_digest: sha256Hex(rawBody),
   };
+}
+
+function resendProviderEventRef(
+  payload: Record<string, unknown>,
+  eventType: string,
+  messageRef: string | undefined,
+  svixId: string | undefined,
+) {
+  return (
+    stringValue(payload.id) ??
+    ([messageRef, eventType, stringValue(payload.created_at)].filter(Boolean).join(':') ||
+      svixId ||
+      eventType)
+  );
 }
 
 export function normalizeWapiWebhookEvent(input: {
@@ -285,6 +334,12 @@ export function signResendSvixFixture(input: {
 
 function stringValue(value: unknown): string | undefined {
   return typeof value === 'string' && value.trim() ? value.trim() : undefined;
+}
+
+function objectValue(value: unknown): Record<string, unknown> | undefined {
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : undefined;
 }
 
 function svixSecretBytes(secret: string) {

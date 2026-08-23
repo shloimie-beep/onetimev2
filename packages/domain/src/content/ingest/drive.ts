@@ -49,6 +49,22 @@ export function observeDriveFile(
     previous?.byteCount === input.byteCount &&
     previous.changeMarker === input.changeMarker &&
     previous.mimeType === metadata.mimeType;
+  if (
+    unchanged &&
+    previous &&
+    ['processed', 'quarantined', 'dead_lettered'].includes(previous.state)
+  ) {
+    return {
+      observation: {
+        ...previous,
+        lastObservedAt: input.observedAt,
+        version: previous.version + 1,
+      },
+      stable: false,
+      changed: false,
+      terminal: true as const,
+    };
+  }
   const firstObservedAt = unchanged ? previous.firstObservedAt : input.observedAt;
   const stable =
     unchanged &&
@@ -71,7 +87,12 @@ export function observeDriveFile(
     retryState: 'ready',
     version: (previous?.version ?? 0) + 1,
   };
-  return { observation, stable, changed: Boolean(previous && !unchanged) };
+  return {
+    observation,
+    stable,
+    changed: Boolean(previous && !unchanged),
+    terminal: false as const,
+  };
 }
 
 export function planDriveRanges(byteCount: number) {
@@ -130,18 +151,40 @@ export function confirmDriveImport(
     observation.driveFileRefDigest,
     observation.changeMarker,
   ]);
+  const journalWrittenAt = Date.parse(input.journalReceipt.writtenAt);
+  const journalReadBackAt = Date.parse(input.journalReceipt.readBackAt);
+  const versionedDurabilityEvidence =
+    input.readback.durabilityEvidenceVersion !== undefined ||
+    input.journalReceipt.durabilityEvidenceVersion !== undefined;
+  const versionedDurabilityMismatch =
+    versionedDurabilityEvidence &&
+    (input.readback.durabilityEvidenceVersion !== 'OT-MANAGED-ORIGINAL-1' ||
+      input.journalReceipt.durabilityEvidenceVersion !== input.readback.durabilityEvidenceVersion ||
+      input.readback.checksumAlgorithm !== 'sha256' ||
+      typeof input.readback.storageClass !== 'string' ||
+      !input.readback.storageClass.trim() ||
+      input.journalReceipt.bucketRef !== input.readback.bucketRef ||
+      input.journalReceipt.objectKeyDigest !== input.readback.objectKeyDigest ||
+      input.journalReceipt.checksumAlgorithm !== input.readback.checksumAlgorithm ||
+      input.journalReceipt.kmsKeyVersionRef !== input.readback.kmsKeyVersionRef ||
+      input.journalReceipt.storageClass !== input.readback.storageClass);
   if (
     input.finalByteCount !== observation.byteCount ||
     input.finalChangeMarker !== observation.changeMarker ||
     input.readback.region !== CONTENT_INGEST_REGION ||
     input.readback.byteCount !== observation.byteCount ||
     input.readback.sha256 !== input.fullSha256 ||
+    !input.journalReceipt.receiptId.trim() ||
     input.journalReceipt.uploadSessionId !== transferId ||
     input.journalReceipt.runtimeTier !== input.readback.runtimeTier ||
     input.journalReceipt.verificationEnvironmentId !== input.readback.verificationEnvironmentId ||
     input.journalReceipt.objectVersionId !== input.readback.objectVersionId ||
     input.journalReceipt.byteCount !== input.readback.byteCount ||
     input.journalReceipt.sha256 !== input.readback.sha256 ||
+    versionedDurabilityMismatch ||
+    !Number.isFinite(journalWrittenAt) ||
+    !Number.isFinite(journalReadBackAt) ||
+    journalReadBackAt < journalWrittenAt ||
     !input.readback.blockPublicAccess ||
     !input.readback.bucketOwnerEnforced ||
     !input.readback.objectVersionId ||

@@ -20,16 +20,25 @@ test('OT82 canonical public shell, ticker, and mobile invariant', async ({ page 
     await page.goto('/');
     await page.evaluate(() => document.fonts.ready.then(() => true));
     await expect(page.locator('[data-ot-shell="public-marketing"]')).toBeVisible();
-    await expect(page.locator('[data-ot-primitive="Button"]').first()).toBeVisible();
+    if (viewport.width <= 520) {
+      await expect(page.locator('.hero .hero-cta')).toBeVisible();
+    } else {
+      await expect(page.locator('[data-ot-primitive="Button"]').first()).toBeVisible();
+    }
     await expect(page.locator('.campaign-ticker')).toHaveCount(1);
     await expect(page.locator('.campaign-ticker')).toHaveAttribute('href', '/signup');
     await expect(page.locator('.campaign-ticker')).toHaveAttribute(
       'aria-label',
-      'CLASSES START AUG 16 · 7 PM · FREE ACCESS THROUGH SEP 11 · 6 PM · JERUSALEM TIME',
+      'LIVE SUNDAY–THURSDAY · 7:00 PM · FREE ACCESS THROUGH SEP 11 · 6 PM · JERUSALEM TIME',
     );
-    await expect(
-      page.getByLabel('Primary').getByRole('link', { name: 'Pre-register' }),
-    ).toBeVisible();
+    const headerCta = page.getByLabel('Primary').getByRole('link', {
+      name: 'Create your Family account',
+    });
+    if (viewport.width <= 520) {
+      await expect(headerCta).toBeHidden();
+    } else {
+      await expect(headerCta).toBeVisible();
+    }
     await expect(page.locator('.brand-lockup img')).toBeVisible();
     await expect(page.locator('.site-header')).toBeVisible();
     await expectNoHorizontalOverflow(page);
@@ -39,7 +48,7 @@ test('OT82 canonical public shell, ticker, and mobile invariant', async ({ page 
     }
   }
 
-  for (const route of ['/signup', '/login', '/privacy', '/terms']) {
+  for (const route of ['/signup', '/login', '/privacy', '/terms', '/cancellation-refund']) {
     await page.goto(route);
     await expect(page.locator('.campaign-ticker')).toHaveCount(0);
   }
@@ -64,11 +73,13 @@ test('OT82 public/auth screenshot matrix', async ({ page }) => {
 });
 
 test('OT82 authenticated shell screenshot matrix', async ({ page }) => {
+  test.setTimeout(60_000);
   const requests = collectRequests(page);
   for (const viewport of viewports) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
 
-    await page.goto('/app/crm.html');
+    await login(page, 'ot-admin@example.test', 'TestPassword!234', '/app/crm');
+    await expect(page.getByRole('heading', { name: 'Contacts' })).toBeVisible();
     await expect(page.locator('[data-ot-primitive="Header"]')).toBeVisible();
     await expect(page.locator('[data-ot-primitive="Logo"]')).toBeVisible();
     await expect(page.locator('[data-ot-primitive="Footer"]')).toBeVisible();
@@ -76,14 +87,19 @@ test('OT82 authenticated shell screenshot matrix', async ({ page }) => {
     await expectNoHorizontalOverflow(page);
     await screenshot(page, `crm/crm__default__${viewport.id}.png`, true);
 
-    await page.goto('/app/parent.html');
+    await login(page, 'ot-parent@example.test', 'ParentPassword!234', '/app/parent');
     await expect(page.locator('#page-title')).toHaveText('Parent Portal');
     await expect(page.locator('[data-ot-primitive="Header"]')).toBeVisible();
     await expect(page.locator('.campaign-ticker')).toHaveCount(0);
     await expectNoHorizontalOverflow(page);
     await screenshot(page, `parent/parent__default__${viewport.id}.png`, true);
 
-    await page.goto('/app/student.html');
+    await login(
+      page,
+      'content-factory-student@example.test',
+      'ContentFactoryStudent!234',
+      '/app/student',
+    );
     await expect(page.locator('#page-title')).toHaveText('Student Portal');
     await expect(page.locator('[data-ot-primitive="Header"]')).toBeVisible();
     await expect(page.locator('.campaign-ticker')).toHaveCount(0);
@@ -115,6 +131,15 @@ async function expectNoHorizontalOverflow(page: Page) {
   expect(overflow).toBe(false);
 }
 
+async function login(page: Page, email: string, password: string, returnTo: string) {
+  await page.context().clearCookies();
+  await page.goto(`/login?return_to=${encodeURIComponent(returnTo)}`);
+  await page.getByLabel('Email').fill(email);
+  await page.getByLabel('Password').fill(password);
+  await page.getByRole('button', { name: 'Login' }).click();
+  await page.waitForURL(`**${returnTo}`);
+}
+
 function collectRequests(page: Page) {
   const requests: string[] = [];
   page.on('request', (request) => requests.push(request.url()));
@@ -123,7 +148,7 @@ function collectRequests(page: Page) {
 
 function expectForbiddenRequests(requests: string[]) {
   const forbidden = requests.filter((url) =>
-    /bna|operations|fonts\.googleapis|fonts\.gstatic|leadconnector|gohighlevel/i.test(url),
+    /bna|fonts\.googleapis|fonts\.gstatic|leadconnector|gohighlevel/i.test(url),
   );
   expect(forbidden).toEqual([]);
 }

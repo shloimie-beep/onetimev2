@@ -1,5 +1,9 @@
 import { argon2Sync, randomBytes, timingSafeEqual } from 'node:crypto';
-import { PASSWORD_POLICIES, type AuthRole } from '../../../contracts/src/identity/auth/index.ts';
+import {
+  isStudentPin,
+  PASSWORD_POLICIES,
+  type AuthRole,
+} from '../../../contracts/src/identity/auth/index.ts';
 
 export const ARGON2ID_POLICY_VERSION = 'argon2id-v1' as const;
 export const ARGON2ID_PARAMETERS = {
@@ -11,7 +15,7 @@ export const ARGON2ID_PARAMETERS = {
 } as const;
 
 export type PasswordRejectionReason =
-  'too_short' | 'too_long' | 'common' | 'compromised' | 'identity_equivalent';
+  'too_short' | 'too_long' | 'invalid_format' | 'common' | 'compromised' | 'identity_equivalent';
 
 export type PasswordEvaluation =
   { accepted: true } | { accepted: false; reason: PasswordRejectionReason };
@@ -28,6 +32,23 @@ export type PasswordEvaluationInput = PasswordIdentityContext & {
   common_passwords?: ReadonlySet<string>;
   is_compromised?: (password: string) => boolean;
 };
+
+export const COMMON_AUTH_PASSWORDS: ReadonlySet<string> = new Set([
+  '000000',
+  '111111',
+  '123456',
+  '1234567',
+  '12345678',
+  '123456789',
+  'abc123',
+  'letmein',
+  'letmein123',
+  'password',
+  'password1',
+  'password123',
+  'qwerty',
+  'qwerty123',
+]);
 
 export function normalizeAuthIdentifier(value: string): string {
   return value.normalize('NFKC').trim().toLocaleLowerCase('en-US');
@@ -46,9 +67,13 @@ export function evaluatePassword(input: PasswordEvaluationInput): PasswordEvalua
   const length = unicodeCodePointLength(input.password);
   if (length < policy.minimum_code_points) return { accepted: false, reason: 'too_short' };
   if (length > policy.maximum_code_points) return { accepted: false, reason: 'too_long' };
+  if (policy.composition_rule === 'exact_six_ascii_digits' && !isStudentPin(input.password)) {
+    return { accepted: false, reason: 'invalid_format' };
+  }
 
   const normalizedPassword = normalizePasswordComparisonValue(input.password);
   if (
+    policy.reject_common &&
     input.common_passwords &&
     [...input.common_passwords].some(
       (candidate) => normalizePasswordComparisonValue(candidate) === normalizedPassword,
@@ -56,7 +81,7 @@ export function evaluatePassword(input: PasswordEvaluationInput): PasswordEvalua
   ) {
     return { accepted: false, reason: 'common' };
   }
-  if (input.is_compromised?.(input.password)) {
+  if (policy.reject_compromised && input.is_compromised?.(input.password)) {
     return { accepted: false, reason: 'compromised' };
   }
 
@@ -64,6 +89,7 @@ export function evaluatePassword(input: PasswordEvaluationInput): PasswordEvalua
     (value): value is string => Boolean(value?.trim()),
   );
   if (
+    policy.reject_identity_equivalent &&
     identityValues.some(
       (candidate) => normalizePasswordComparisonValue(candidate) === normalizedPassword,
     )

@@ -8,6 +8,7 @@ import {
   renderPublicHeader,
 } from '@onetime/brand-system/static';
 import {
+  cancellationRefundPolicy,
   communicationConsentNotice,
   landingContent,
   legalPolicyMetadata,
@@ -25,11 +26,18 @@ const outDir = path.resolve(process.cwd(), 'dist/apps/web/public');
 
 const landingSocialImage = '/assets/social/mishnayos-made-memorable.png';
 const freeAccessExpiresAtPlaceholder = '__ONE_TIME_FREE_ACCESS_EXPIRES_AT__';
+const canonicalApplicationOrigin = 'https://app.onetimeonetime.com';
 
 const imageDimensions = new Map<string, readonly [number, number]>([
   ['/assets/brand/onetimelogo.webp', [400, 400]],
-  [landingSocialImage, [1200, 630]],
+  [landingSocialImage, [2060, 763]],
   ['/assets/hero/hero-classroom-background.webp', [1680, 944]],
+  ['/assets/how-it-works/family-learning-overview-480.webp', [480, 600]],
+  ['/assets/how-it-works/family-learning-overview-800.webp', [800, 1000]],
+  ['/assets/how-it-works/family-learning-overview-1254.webp', [1122, 1402]],
+  ['/assets/how-it-works/student-learning-mishnayos-480.webp', [480, 480]],
+  ['/assets/how-it-works/student-learning-mishnayos-800.webp', [800, 800]],
+  ['/assets/how-it-works/student-learning-mishnayos-1254.webp', [1254, 1254]],
   ['/assets/students/smiley-kid.png', [337, 600]],
   ['/assets/outcomes/clarity-class.webp', [945, 2048]],
   ['/assets/outcomes/retention-review-class-480.webp', [480, 1040]],
@@ -121,13 +129,13 @@ function header() {
   return renderPublicHeader(sharedNav);
 }
 
-function footer() {
-  return renderPublicFooter(landingContent.footer.links, landingContent.footer.line);
+function footer(links: Parameters<typeof renderPublicFooter>[0] = landingContent.footer.links) {
+  return renderPublicFooter(links, landingContent.footer.line);
 }
 
 function ticker() {
   return renderCampaignTicker(
-    'CLASSES START AUG 16 · 7 PM · FREE ACCESS THROUGH SEP 11 · 6 PM · JERUSALEM TIME',
+    'LIVE SUNDAY–THURSDAY · 7:00 PM · FREE ACCESS THROUGH SEP 11 · 6 PM · JERUSALEM TIME',
     freeAccessExpiresAtPlaceholder,
   ).replace('class="campaign-ticker-shell"', 'class="campaign-ticker-shell" hidden');
 }
@@ -161,7 +169,7 @@ function landingPage() {
             : `<div class="asset-blocker" role="img" aria-label="${escapeHtml(visualCard.assetBlocker ?? 'Missing assigned asset')}">Missing approved asset</div>`;
       return `<article class="benefit-card" data-benefit="${escapeHtml(card.title)}" data-scroll-reveal>
         <div class="benefit-visual">${visual}</div>
-        <h3>${escapeHtml(card.title)}</h3>
+        <h2>${escapeHtml(card.title)}</h2>
         <p>${escapeHtml(card.body)}</p>
         ${card.provisionalCopy ? `<small>${escapeHtml(card.provisionalCopy)}</small>` : ''}
       </article>`;
@@ -176,8 +184,8 @@ function landingPage() {
   const howFlows = landingContent.how.flows
     .map(
       (flow, index) => `<figure class="how-flow" data-how-step="${index + 1}">
-        <img src="${flow.image}" alt="${escapeHtml(flow.alt)}"${mediaSizeAttributes(flow.image)} loading="lazy" decoding="async" data-image-watch>
-        ${fallbackImageSpan('Flow screenshot unavailable')}
+        <img src="${flow.image}" srcset="${escapeHtml(flow.srcset)}" sizes="${escapeHtml(flow.sizes)}" width="${flow.width}" height="${flow.height}" alt="${escapeHtml(flow.alt)}" loading="lazy" decoding="async" data-image-watch>
+        ${fallbackImageSpan('Family learning image unavailable')}
         <figcaption><span>${index + 1}</span><strong>${escapeHtml(flow.title)}</strong><small>${escapeHtml(flow.body)}</small></figcaption>
       </figure>`,
     )
@@ -213,14 +221,18 @@ function landingPage() {
         <div class="gallery-track" data-gallery-track>${slides}</div>
       </div>
       <p class="sr-only" aria-live="polite" data-gallery-status>Showing ${escapeHtml(landingContent.gallery.slides[0][0])}</p>
-      <div class="gallery-controls">
+      <div class="gallery-controls sr-only" inert aria-hidden="true">
         <button type="button" data-gallery-prev aria-label="Previous teaching photo">&lt;</button>
         <div>${dots}</div>
         <button type="button" data-gallery-next aria-label="Next teaching photo">&gt;</button>
         <button type="button" class="gallery-playback" data-gallery-toggle aria-pressed="false">Pause slideshow</button>
       </div>
     </div>
-    <div class="press-strip" aria-label="Torah media and publication logos"><div>${press}</div></div>
+  </section>`;
+  const pressSection = `<section class="section press-section">
+    <h2 id="press-heading">As seen across the Jewish world.</h2>
+    <div class="press-strip" data-press-carousel role="region" aria-roledescription="carousel" aria-label="Torah media and publication logos" tabindex="0"><div data-press-track>${press}</div></div>
+    <p class="sr-only" aria-live="polite" data-press-status>Showing TorahAnytime</p>
   </section>`;
 
   return pageShell(
@@ -231,9 +243,14 @@ function landingPage() {
     <div class="hero-inner">
       <p class="hero-eyebrow">${escapeHtml(landingContent.hero.eyebrow)}</p>
       <h1 id="landing-hero-heading">${escapeHtml(landingContent.hero.headline)}</h1>
+      <p class="hero-subheadline">${escapeHtml(landingContent.hero.subheadline)}</p>
+      <p class="hero-access-detail">${escapeHtml(landingContent.hero.accessDetail)}</p>
       <a class="button button-primary hero-cta" href="${escapeHtml(landingContent.hero.cta.href)}" data-ot-analytics-event="${escapeHtml(landingContent.hero.cta.analyticsEvent)}" data-ot-analytics-destination="${escapeHtml(landingContent.hero.cta.href)}" data-ot-analytics-placement="${escapeHtml(landingContent.hero.cta.analyticsPlacement)}">${escapeHtml(landingContent.hero.cta.label)}</a>
     </div>
     <figure class="hero-photo"><img src="${landingContent.hero.image}" alt="${escapeHtml(landingContent.hero.imageAlt)}"${mediaSizeAttributes(landingContent.hero.image)} decoding="async" fetchpriority="high"></figure>
+  </section>
+  <section class="section" id="gain">
+    <div class="benefit-grid">${gainCards}</div>
   </section>
   <section class="section receive" id="receive">
     <h2 class="receive-heading">${escapeHtml(landingContent.receive.heading)}</h2>
@@ -246,11 +263,6 @@ function landingPage() {
       <ul>${receiveBullets}</ul>
     </div>
   </section>
-  <section class="section" id="gain">
-    <h2>${escapeHtml(landingContent.gain.heading)}</h2>
-    <p class="section-intro">${escapeHtml(landingContent.gain.intro)}</p>
-    <div class="benefit-grid">${gainCards}</div>
-  </section>
   <section class="section who" id="who">
     <div>
       <h2>${escapeHtml(landingContent.who.heading)}</h2>
@@ -260,11 +272,10 @@ function landingPage() {
   <section class="section how" id="how-it-works">
     <div class="how-intro">
       <div><h2>${escapeHtml(landingContent.how.heading)}</h2><p>${escapeHtml(landingContent.how.body)}</p></div>
-      <img src="${landingContent.how.overviewImage}" alt="${escapeHtml(landingContent.how.overviewAlt)}"${mediaSizeAttributes(landingContent.how.overviewImage)} loading="lazy" decoding="async" data-image-watch>
     </div>
     <div class="how-flow-grid">${howFlows}</div>
   </section>
-  ${gallerySection}
+  ${pressSection}
   <section class="section rabbi" id="rabbi">
     <div class="rabbi-bio">
       <div>
@@ -275,7 +286,8 @@ function landingPage() {
       <img src="/assets/rabbi/rabbi-eli-holding-book.jpg" alt="Rabbi Eli Scheller holding the One Time book"${mediaSizeAttributes('/assets/rabbi/rabbi-eli-holding-book.jpg')} loading="lazy" decoding="async">
     </div>
   </section>
-  <section class="final-cta"><h2>${escapeHtml(landingContent.finalCta.heading)}</h2><a class="button button-primary" href="/signup">Pre-register your Family</a></section>
+  ${gallerySection}
+  <section class="final-cta"><h2>${escapeHtml(landingContent.finalCta.heading)}</h2><a class="button button-primary" href="${escapeHtml(landingContent.hero.cta.href)}">Create your Family account</a></section>
 </main>${footer()}`,
     {
       canonicalPath: '/',
@@ -284,8 +296,8 @@ function landingPage() {
       ogImage: publicCanonicalUrl(landingSocialImage),
       ogImageSecureUrl: publicCanonicalUrl(landingSocialImage),
       ogImageType: 'image/png',
-      ogImageWidth: 1200,
-      ogImageHeight: 630,
+      ogImageWidth: 2060,
+      ogImageHeight: 763,
       ogImageAlt: 'Mishnayos Made Memorable with Rabbi Eli Scheller',
       twitterImage: publicCanonicalUrl(landingSocialImage),
     },
@@ -294,42 +306,45 @@ function landingPage() {
 
 function signupPage() {
   return pageShell(
-    'Pre-register Your Family | One Time Mishnayos',
+    'Create Your Family Account | One Time Mishnayos',
     `${header()}<main class="signup-page">
   <section class="signup-intro">
-    <h1>Pre-register Your Family</h1>
-    <p>Adult pre-registration is open for One Time Mishnayos with Rabbi Eli Scheller.</p>
-    <p>This saves an adult contact for follow-up. It does not yet create portal access, a Student account, or a subscription.</p>
-    <p>No card is collected and there is no automatic charge.</p>
+    <h1>Create Family Account</h1>
   </section>
   <section class="signup-shell">
-    <noscript><div class="noscript-panel" role="status"><strong>JavaScript is required for secure pre-registration submission.</strong><span>Please use a browser with JavaScript enabled or use the Support path. Do not send Student names or other Student information through this public form.</span></div></noscript>
-    <form class="signup-form" action="/api/v1/leads" method="post" data-signup-form data-signup-entry="preregistration" data-consent-policy-version="${escapeHtml(legalPolicyMetadata.consentPolicyVersion)}" novalidate>
-      <section data-preregistration-fields aria-labelledby="preregistration-fields-heading">
-        <h2 id="preregistration-fields-heading">Adult contact details</h2>
-        <p class="section-note">Enter adult information only. Do not include Student names, ages, email addresses, medical details, or private learner notes.</p>
-        <div class="field"><label for="contact_name">Adult name</label><input id="contact_name" name="contact_name" autocomplete="name" required><p tabindex="-1" class="error" data-error-for="contact_name"></p></div>
-        <div class="field"><label for="family_or_school">Family or household name</label><input id="family_or_school" name="family_or_school" required><p tabindex="-1" class="error" data-error-for="family_or_school"></p></div>
-        <input name="audience_type" type="hidden" value="family">
-        <div class="field"><label for="location">Adult location</label><input id="location" name="location" autocomplete="address-level2" placeholder="City or area" required><p tabindex="-1" class="error" data-error-for="location"></p></div>
-        <div class="field"><label for="timezone">Time zone</label><input id="timezone" name="timezone" autocomplete="off" placeholder="America/New_York" required><small>Use an IANA time zone. Your browser suggestion remains editable.</small><p tabindex="-1" class="error" data-error-for="timezone"></p></div>
-        <div class="field"><label for="email">Adult email</label><input id="email" name="email" type="email" autocomplete="email" inputmode="email" required><p tabindex="-1" class="error" data-error-for="email"></p></div>
-        <fieldset class="service-communications" aria-describedby="service_communications_note"><legend>Follow-up requested</legend><p id="service_communications_note">By submitting, you ask the One Time team to follow up at this adult email about Family access. This form does not opt you into marketing or WhatsApp messages.</p></fieldset>
-        <p class="signup-policy-note">By submitting, you acknowledge the <a href="/privacy">Privacy Notice</a>. No Student data should be entered here.</p>
+    <noscript><div class="noscript-panel" role="status"><strong>JavaScript is required for secure signup submission.</strong><span>Please use a browser with JavaScript enabled or use the Support path. Do not send Student names or other Student information through this public form.</span></div></noscript>
+    <form class="signup-form" action="/api/v1/signup/family" method="post" data-signup-form data-access-boundary="${freeAccessExpiresAtPlaceholder}" data-consent-policy-version="${escapeHtml(legalPolicyMetadata.consentPolicyVersion)}" novalidate>
+      <section data-family-fields aria-label="Family account details">
+        <div class="field-grid">
+          <div class="field"><label for="first_name">First name</label><input id="first_name" name="first_name" autocomplete="given-name" required aria-invalid="false" aria-describedby="first_name-error"><p id="first_name-error" tabindex="-1" class="error" data-error-for="first_name" aria-live="polite"></p></div>
+          <div class="field"><label for="last_name">Last name</label><input id="last_name" name="last_name" autocomplete="family-name" required aria-invalid="false" aria-describedby="last_name-error"><p id="last_name-error" tabindex="-1" class="error" data-error-for="last_name" aria-live="polite"></p></div>
+        </div>
+        <div class="field"><label for="email">Adult account email</label><input id="email" name="email" type="email" autocomplete="email" inputmode="email" required aria-invalid="false" aria-describedby="email-error"><p id="email-error" tabindex="-1" class="error" data-error-for="email" aria-live="polite"></p></div>
+        <div class="field"><label for="timezone">Time zone</label><input id="timezone" name="timezone" autocomplete="off" placeholder="America/New_York" required aria-invalid="false" aria-describedby="timezone-help timezone-error"><small id="timezone-help">Use an IANA time zone. Your browser suggestion remains editable.</small><p id="timezone-error" tabindex="-1" class="error" data-error-for="timezone" aria-live="polite"></p></div>
+        <div class="field-grid">
+          <div class="field"><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="new-password" minlength="6" maxlength="128" required aria-invalid="false" aria-describedby="password-error"><p id="password-error" tabindex="-1" class="error" data-error-for="password" aria-live="polite"></p></div>
+          <div class="field"><label for="password_confirmation">Confirm password</label><input id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" minlength="6" maxlength="128" required aria-invalid="false" aria-describedby="password_confirmation-error"><p id="password_confirmation-error" tabindex="-1" class="error" data-error-for="password_confirmation" aria-live="polite"></p></div>
+        </div>
+        <fieldset class="required-acceptances"><legend>Agreement</legend>
+          <label><input id="terms_accepted" name="terms_accepted" type="checkbox" required aria-invalid="false" aria-describedby="terms_accepted-error"><span>I agree to the <a href="/terms">Terms of Use</a>, <a href="/privacy">Privacy Notice</a>, <a href="/student-data">Student Data Notice</a>, and <a href="/cancellation-refund">Cancellation and Refund Policy</a>.</span></label>
+          <p id="terms_accepted-error" tabindex="-1" class="error" data-error-for="terms_accepted" aria-live="polite"></p>
+          <p class="section-note">This single agreement covers service communications, One Time updates, general marketing, and the Parent newsletter. Unsubscribe, DND, complaint, and suppression requests remain controlling.</p>
+        </fieldset>
       </section>
-      <button class="button button-primary" type="submit" data-enhanced-submit hidden>Pre-register my Family</button>
+      <button class="button button-primary" type="submit" data-enhanced-submit hidden>Create your Family account</button>
       <p class="form-status" role="status" data-form-status></p>
     </form>
     <div class="success-panel" data-success-panel hidden tabindex="-1">
-      <h2 data-success-heading>Adult pre-registration received</h2>
-      <p data-success-body>We saved the adult contact for follow-up. No portal account, Student account, subscription, or charge was created.</p>
+      <h2 data-success-heading>You’re all set.</h2>
+      <p data-success-body>Your Family account is ready. You can continue now while we finish sending your confirmation email.</p>
+      <a class="button button-primary" href="/parent" data-success-continue>Go to Parent dashboard</a>
     </div>
   </section>
-</main>${footer()}`,
+</main>${footer(landingContent.footer.signupLinks)}`,
     {
       canonicalPath: '/signup',
       description:
-        'Pre-register an adult contact for One Time Mishnayos Family access without creating a portal, Student account, subscription, or charge.',
+        'Create an adult-managed One Time Mishnayos Family account and begin free access through September 11, 2026 at 6:00 PM Asia/Jerusalem.',
     },
   );
 }
@@ -420,6 +435,27 @@ function simplePage(
   return html.replace('index, follow', robots);
 }
 
+function signupReceivedPage() {
+  const html = pageShell(
+    'Signup received | One Time Mishnayos',
+    `${header()}<main class="simple-page" data-signup-received tabindex="-1">
+      <p class="eyebrow">Family signup</p>
+      <h1 data-signup-received-heading>Signup received</h1>
+      <p data-signup-received-body>Your Family signup was saved. Sign in to continue.</p>
+      <p data-signup-received-charge>No card was charged by this signup form.</p>
+      <div class="form-actions">
+        <a class="button button-primary" href="${canonicalApplicationOrigin}/login" data-signup-received-primary>Sign in</a>
+        <a class="button button-secondary" href="/">Return home</a>
+      </div>
+    </main>${footer()}`,
+    {
+      canonicalPath: '/signup/received',
+      description: 'Safe confirmation that a One Time Family signup was received.',
+    },
+  );
+  return html.replace('index, follow', 'noindex, nofollow');
+}
+
 function renderParagraphs(paragraphs: readonly string[] | undefined) {
   return (paragraphs ?? []).map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join('');
 }
@@ -450,7 +486,7 @@ function renderLegalDocument(document: LegalDocument, headingLevel: 'h1' | 'h2' 
       <p>${escapeHtml(document.summary)}</p>
       <dl class="legal-meta">
         <div><dt>Effective date</dt><dd>${escapeHtml(document.effectiveDate)}</dd></div>
-        <div><dt>Last updated</dt><dd>${escapeHtml(legalPolicyMetadata.lastUpdated)}</dd></div>
+        <div><dt>Last updated</dt><dd>${escapeHtml(document.effectiveDate)}</dd></div>
         <div><dt>Review status</dt><dd>counsel_review_required</dd></div>
       </dl>
     </div>
@@ -516,16 +552,7 @@ await Promise.all([
 ]);
 await writeFile(path.join(outDir, 'index.html'), landingPage());
 await writeFile(path.join(outDir, 'signup.html'), signupPage());
-await writeFile(
-  path.join(outDir, 'signup', 'received.html'),
-  simplePage(
-    'Signup received | One Time Mishnayos',
-    'Signup received',
-    'Your Family signup was saved. Check your email for the secure next step.',
-    'noindex, nofollow',
-    '/signup/received',
-  ),
-);
+await writeFile(path.join(outDir, 'signup', 'received.html'), signupReceivedPage());
 await writeFile(path.join(outDir, 'school.html'), schoolPage());
 await writeFile(
   path.join(outDir, 'school', 'received.html'),
@@ -562,6 +589,14 @@ await writeFile(
   legalPage('Terms of Use | One Time Mishnayos', termsOfUse, '/terms', [
     communicationConsentNotice,
   ]),
+);
+await writeFile(
+  path.join(outDir, 'cancellation-refund.html'),
+  legalPage(
+    'Cancellation and Refund Policy | One Time Mishnayos',
+    cancellationRefundPolicy,
+    '/cancellation-refund',
+  ),
 );
 await writeFile(
   path.join(outDir, 'communications-consent.html'),

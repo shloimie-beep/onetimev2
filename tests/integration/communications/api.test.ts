@@ -53,132 +53,94 @@ afterEach(async () => {
 });
 
 describe('Communications API registration hook', () => {
-  it('returns local intent rows with no-store cache headers and no raw recipient data', async () => {
-    repository.rows = [
-      {
-        id: '00000000-0000-4000-8000-000000000001',
-        accountKey: ownerSession.accountKey,
-        productKey: ownerSession.productKey,
-        contactKey: 'contact_public_test',
-        eventType: 'family_signup_email_ack.v1',
-        channel: 'email',
-        status: 'pending',
-        createdAt: '2026-07-14T10:00:00.000Z',
-        deliveredAt: null,
-        emailNormalized: 'parent.person@example.test',
-        phoneNormalized: '+12125557890',
-      },
-      {
-        id: '00000000-0000-4000-8000-000000000002',
-        accountKey: ownerSession.accountKey,
-        productKey: ownerSession.productKey,
-        contactKey: 'contact_public_test',
-        eventType: 'family_signup_whatsapp_confirmation.v1',
-        channel: 'whatsapp',
-        status: 'sink_delivered',
-        createdAt: '2026-07-14T09:00:00.000Z',
-        deliveredAt: '2026-07-14T09:01:00.000Z',
-        emailNormalized: 'parent.person@example.test',
-        phoneNormalized: '+12125557890',
-      },
-    ];
+  it('retires the direct contact-history endpoint without touching a repository', async () => {
     const response = await api(
-      '/api/v1/communications?from=2026-07-01T00:00:00.000Z&to=2026-07-15T00:00:00.000Z',
+      '/api/v1/crm/contacts/contact_public_test/communications?from=2026-07-01T00:00:00.000Z&to=2026-07-15T00:00:00.000Z',
     );
-    expect(response.status).toBe(200);
-    expect(response.headers.get('cache-control')).toBe('private, no-store');
-    expect(response.headers.get('vary')).toContain('Cookie');
-    const json = await response.json();
-    expect(json).toMatchObject({
-      success: true,
-      availability: 'available',
-      source_scope: 'canonical_communication_history',
-      mailbox_complete: false,
-    });
-    expect(json.items).toHaveLength(2);
-    expect(json.items[0]).toMatchObject({
-      direction: 'outbound',
-      local_state: 'queued',
-      state_label: 'Queued',
-      source: 'local_outbox_intent',
-      provenance: 'local_database',
-      recipient_masked: 'Email recipient',
-      transport_available: false,
-    });
-    expect(json.items[1]).toMatchObject({
-      local_state: 'draft_saved',
-      state_label: 'Processed in test mode, not delivery',
-      recipient_masked: 'WhatsApp recipient ending 7890',
-    });
-    const serialized = JSON.stringify(json);
-    expect(serialized).not.toContain('parent.person');
-    expect(serialized).not.toContain('example.test');
-    expect(serialized).not.toContain('+12125557890');
-    expect(serialized).not.toContain('delivery_key');
-    expect(serialized).not.toMatch(/\bSent\b|\bDelivered\b/);
+    expect(response.status).toBe(404);
+    expect(repository.calls).toHaveLength(0);
   });
 
-  it('returns stored webhook and provider status truth without pretending mailbox completeness', async () => {
+  it('retired contact routes remain unavailable even with broad-history filters', async () => {
+    const response = await api(
+      '/api/v1/crm/contacts/contact_public_test/communications?from=2026-07-01T00:00:00.000Z&to=2026-07-15T00:00:00.000Z&direction=inbound&source=stored_whatsapp_webhook',
+    );
+    expect(response.status).toBe(404);
+    expect(repository.calls).toHaveLength(0);
+  });
+
+  it('returns redacted account-security delivery history to Admin without secure-link leakage', async () => {
     repository.rows = [
       {
-        id: 'whatsapp-inbox:event_1',
+        id: 'lifecycle:redacted-delivery-key',
         accountKey: ownerSession.accountKey,
         productKey: ownerSession.productKey,
-        contactKey: 'contact_public_test',
-        eventType: 'whatsapp_inbound_message.v1',
-        channel: 'whatsapp',
-        direction: 'inbound',
-        status: 'received',
-        createdAt: '2026-07-14T10:00:00.000Z',
-        occurredAt: '2026-07-14T09:59:00.000Z',
-        deliveredAt: null,
-        emailNormalized: null,
-        phoneNormalized: null,
-        source: 'stored_whatsapp_webhook',
-        provenance: 'stored_webhook',
-        previewRedacted: 'Inbound WhatsApp message was stored. Body is encrypted and hidden.',
-        providerReferenceDigest: 'a'.repeat(64),
-      },
-      {
-        id: 'whatsapp-delivery:event_2',
-        accountKey: ownerSession.accountKey,
-        productKey: ownerSession.productKey,
-        contactKey: 'contact_public_test',
-        eventType: 'whatsapp_provider_delivery_event.v1',
-        channel: 'whatsapp',
+        contactKey: null,
+        eventType: 'account_password_reset.v1',
+        channel: 'email',
         direction: 'outbound',
         status: 'delivered',
         createdAt: '2026-07-14T11:00:00.000Z',
         occurredAt: '2026-07-14T11:00:00.000Z',
-        deliveredAt: '2026-07-14T11:00:00.000Z',
+        deliveredAt: '2026-07-14T11:00:02.000Z',
         emailNormalized: null,
         phoneNormalized: null,
-        source: 'stored_provider_delivery_event',
-        provenance: 'stored_provider_event',
-        previewRedacted: 'Stored WhatsApp provider status. Message body is hidden.',
-        providerReferenceDigest: 'b'.repeat(64),
+        source: 'account_lifecycle_outbox',
+        provenance: 'local_database',
+        previewRedacted: 'Password reset delivery status. Message body and secure link are hidden.',
+        providerReferenceDigest: null,
+        idempotencyKey: null,
+        participantKind: 'account',
+        participantLabel: 'Protected Admin · Admin account',
       },
     ];
     const response = await api(
-      '/api/v1/communications?from=2026-07-01T00:00:00.000Z&to=2026-07-15T00:00:00.000Z&direction=inbound&source=stored_whatsapp_webhook',
+      '/api/v1/communications?from=2026-07-01T00:00:00.000Z&to=2026-07-15T00:00:00.000Z&intent_type=password_reset&status=delivered&source=account_lifecycle_outbox',
+      'admin',
     );
     expect(response.status).toBe(200);
-    const json = await response.json();
     expect(repository.calls[0]).toMatchObject({
+      rawEventType: 'account_password_reset.v1',
       filters: {
-        direction: 'inbound',
-        source: 'stored_whatsapp_webhook',
+        intent_type: 'password_reset',
+        status: 'delivered',
+        source: 'account_lifecycle_outbox',
+        channel: 'email',
+        direction: 'outbound',
       },
     });
-    expect(json.mailbox_complete).toBe(false);
+    const json = await response.json();
+    expect(json.items).toHaveLength(1);
     expect(json.items[0]).toMatchObject({
-      intent_type: 'whatsapp_inbound_message',
-      direction: 'inbound',
-      source: 'stored_whatsapp_webhook',
-      provider_reference_digest: 'a'.repeat(64),
-      preview_redacted: 'Inbound WhatsApp message was stored. Body is encrypted and hidden.',
+      intent_type: 'password_reset',
+      event_label: 'Password reset email',
+      local_state: 'delivered',
+      state_label: 'Delivered',
+      source: 'account_lifecycle_outbox',
+      source_label: 'Account security delivery',
+      participant_kind: 'account',
+      participant_label: 'Protected Admin · Admin account',
+      recipient_masked: 'Account email (hidden)',
+      provider_reference_digest: null,
+      idempotency_key: null,
     });
-    expect(JSON.stringify(json)).not.toContain('message body');
+    expect(JSON.stringify(json)).not.toMatch(/#token=|reset-password|provider-message|secret/u);
+  });
+
+  it('keeps the global Admin surface bound to One Time account delivery history', async () => {
+    const response = await api(
+      '/api/v1/communications?source=stored_whatsapp_webhook&direction=inbound',
+      'admin',
+    );
+    expect(response.status).toBe(200);
+    expect(repository.calls[0]).toMatchObject({
+      mode: { kind: 'global' },
+      filters: {
+        channel: 'email',
+        direction: 'outbound',
+        source: 'account_lifecycle_outbox',
+      },
+    });
   });
 
   it('denies unauthenticated and unauthorized roles before repository access', async () => {
@@ -190,6 +152,19 @@ describe('Communications API registration hook', () => {
       const denied = await api('/api/v1/communications', role);
       expect(denied.status).toBe(403);
     }
+    expect(repository.calls).toHaveLength(0);
+  });
+
+  it('denies Rabbi account-email history without an explicit account-email capability', async () => {
+    const rabbi = await api('/api/v1/communications', 'rabbi');
+    expect(rabbi.status).toBe(403);
+    expect(repository.calls).toHaveLength(0);
+  });
+
+  it('returns 503 when the authoritative session resolver is unavailable', async () => {
+    const unavailable = await api('/api/v1/communications', 'unavailable');
+    expect(unavailable.status).toBe(503);
+    expect(await unavailable.json()).toMatchObject({ code: 'SESSION_UNAVAILABLE' });
     expect(repository.calls).toHaveLength(0);
   });
 
@@ -208,20 +183,22 @@ describe('Communications API registration hook', () => {
       id: `00000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
       accountKey: ownerSession.accountKey,
       productKey: ownerSession.productKey,
-      contactKey: 'contact_public_test',
-      eventType: 'family_signup_email_ack.v1',
+      contactKey: null,
+      eventType: 'account_activation.v1',
       channel: 'email',
+      direction: 'outbound',
       status: 'pending',
       createdAt: new Date(Date.UTC(2026, 6, 14, 10, 0, 0) - index * 1000).toISOString(),
       deliveredAt: null,
       emailNormalized: 'cursor@example.test',
       phoneNormalized: null,
+      source: 'account_lifecycle_outbox',
     }));
     const first = await api(
       '/api/v1/communications?from=2026-07-01T00:00:00.000Z&to=2026-07-15T00:00:00.000Z&limit=25',
     );
     const firstJson = await first.json();
-    expect(firstJson.next_cursor).toBeTruthy();
+    expect(firstJson.next_cursor).toEqual(expect.any(String));
     expect(first.url).not.toContain(String(firstJson.next_cursor));
 
     const next = await fetch(
@@ -271,22 +248,64 @@ describe('Communications API registration hook', () => {
     });
   });
 
-  it('supports contact-local mode without accepting contact identifiers in query strings', async () => {
-    await api(
+  it('does not restore contact-local mode through query strings', async () => {
+    const response = await api(
       '/api/v1/crm/contacts/contact_public_test/communications?from=2026-07-01T00:00:00.000Z&to=2026-07-15T00:00:00.000Z&contact_key=other',
     );
-    expect(repository.contactChecks).toEqual(['contact_public_test']);
-    expect(repository.calls[0]?.mode).toEqual({
-      kind: 'contact',
-      contactId: 'contact_public_test',
-    });
+    expect(response.status).toBe(404);
+    expect(repository.calls).toHaveLength(0);
   });
 
-  it('returns 404 for missing contacts before outbox projection', async () => {
-    repository.contactIds.clear();
+  it('returns a no-store, read-only workflow registry projection without speculative UI evidence', async () => {
+    const listResponse = await api('/api/v1/operations/workflow-readback');
+    expect(listResponse.status).toBe(200);
+    expect(listResponse.headers.get('cache-control')).toBe('private, no-store');
+    const listJson = await listResponse.json();
+    expect(listJson.workflows.length).toBeGreaterThan(10);
+    expect(listJson.workflows[0]).toMatchObject({
+      workflow_key: 'OT-01',
+      observed_status: 'DRAFT_SHELL',
+    });
+    expect(listJson.external_readback).toMatchObject({ result_artifact_present: false });
+
+    const response = await api('/api/v1/operations/workflow-readback/OT-01');
+    expect(response.status).toBe(200);
+    expect(response.headers.get('cache-control')).toBe('private, no-store');
+    const json = await response.json();
+    expect(json).toMatchObject({
+      success: true,
+      source_scope: 'repository_workflow_registry',
+      workflow: {
+        workflow_key: 'OT-01',
+        observed_status: 'DRAFT_SHELL',
+      },
+      external_readback: {
+        status: 'pending_external_readback',
+        result_artifact_present: false,
+        registry_reconciled_from_result: false,
+      },
+      boundaries: {
+        read_only: true,
+        provider_actions_available: false,
+        student_contacts_allowed: false,
+        live_charges_allowed: false,
+      },
+    });
+    expect(json.workflow).not.toHaveProperty('essentialValues');
+    expect(JSON.stringify(json)).not.toMatch(
+      /publication_authorized|enrollment_authorized|https?:\/\//u,
+    );
+  });
+
+  it('returns neutral workflow errors and enforces the same owner/admin boundary', async () => {
+    expect((await api('/api/v1/operations/workflow-readback/not-registered')).status).toBe(404);
+    expect((await api('/api/v1/operations/workflow-readback/OT-01', 'member')).status).toBe(403);
+    expect((await fetch(`${baseUrl}/api/v1/operations/workflow-readback/OT-01`)).status).toBe(401);
+  });
+
+  it('has no contact lookup capability behind the retired endpoint', async () => {
     const response = await api('/api/v1/crm/contacts/contact_public_test/communications');
     expect(response.status).toBe(404);
-    expect(repository.contactChecks).toEqual(['contact_public_test']);
     expect(repository.calls).toHaveLength(0);
   });
 });
@@ -298,22 +317,16 @@ function api(path: string, role = 'owner') {
 class HeaderSessionPort implements ReadOnlySessionScopePort {
   async resolve(req: express.Request) {
     const role = req.header('x-test-role');
-    if (!role) return null;
-    return { ...ownerSession, role };
+    if (!role) return { status: 'missing' } as const;
+    if (role === 'unavailable') return { status: 'unavailable' } as const;
+    return { status: 'resolved', session: { ...ownerSession, role } } as const;
   }
 }
 
 class FakeRepository implements CommunicationsReadRepository {
   rows: CommunicationIntentListResult['rows'] = [];
   calls: CommunicationIntentListInput[] = [];
-  contactIds = new Set(['contact_public_test']);
-  contactChecks: string[] = [];
   sourceAvailable = true;
-
-  async contactExists(input: { contactId: string }) {
-    this.contactChecks.push(input.contactId);
-    return this.contactIds.has(input.contactId);
-  }
 
   async list(input: CommunicationIntentListInput) {
     this.calls.push(input);

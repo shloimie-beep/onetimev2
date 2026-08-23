@@ -6,6 +6,7 @@ import type {
   ResetParentStudentCredentialCommand,
   UpdateParentStudentCommand,
 } from '../../../../../../../packages/contracts/src/portals/parent-household/index.ts';
+import type { ParentSummarySnapshot } from '../../../../../../../packages/contracts/src/portals/parent-summary/index.ts';
 
 export type ParentHouseholdBootstrap = {
   snapshot: ParentHouseholdSnapshot;
@@ -74,6 +75,16 @@ export function createParentHouseholdApi(
     async load() {
       return read<ParentHouseholdBootstrap>(
         await fetcher(`${basePath}/household`, {
+          method: 'GET',
+          credentials: 'same-origin',
+          cache: 'no-store',
+        }),
+      );
+    },
+
+    async loadSummary() {
+      return read<{ snapshot: ParentSummarySnapshot }>(
+        await fetcher(`${basePath}/summary`, {
           method: 'GET',
           credentials: 'same-origin',
           cache: 'no-store',

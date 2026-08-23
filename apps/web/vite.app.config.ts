@@ -19,6 +19,10 @@ export default defineConfig({
           process.cwd(),
           'apps/web/src/client/classroom/zoom-launch-client.ts',
         ),
+        'protected-content-player': path.resolve(
+          process.cwd(),
+          'apps/web/src/client/app/protected-content-player.ts',
+        ),
         support: path.resolve(process.cwd(), 'apps/web/src/client/app/support-entry.ts'),
       },
       output: {

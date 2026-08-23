@@ -393,3 +393,48 @@ export const termsOfUse: LegalDocument = {
     },
   ],
 };
+
+export const cancellationRefundPolicy: LegalDocument = {
+  id: 'cancellation-refund-policy',
+  title: 'Cancellation and Refund Policy',
+  version: 'cancellation-refund-v2.1-2026-08-05',
+  effectiveDate: '2026-08-05',
+  summary:
+    'The current One Time Mishnayos policy for ending renewal, paid-period access, refund exceptions, and learning records.',
+  sections: [
+    {
+      heading: 'Canceling Future Renewal',
+      paragraphs: [
+        'When a paid subscription is active, cancellation stops the next renewal. Access continues through the verified end of the current paid period.',
+        'A cancellation request does not create a new charge and does not shorten an already paid access period.',
+      ],
+    },
+    {
+      heading: 'Refund Requests',
+      paragraphs: [
+        'Cancellation does not automatically create a prorated refund. Refunds are manual exceptions that require review and approval by an authorized One Time administrator.',
+        'Any approved refund is confirmed from the payment provider before account access is updated. A request or browser confirmation alone is not proof that a refund occurred.',
+      ],
+    },
+    {
+      heading: 'Accounts And Learning Records',
+      paragraphs: [
+        'Cancellation or a refund does not by itself delete a Parent account, Student profile, attendance, progress, questions, or content history.',
+        'Account closure and data-rights requests are separate processes governed by the Privacy Notice and the protected Parent data-rights workspace.',
+      ],
+    },
+    {
+      heading: 'Billing Safety',
+      paragraphs: [
+        'The public signup form does not collect payment card details. When paid billing is enabled for an account, card and financial actions use the approved provider-hosted billing flow.',
+        'One Time grants or removes learning access only after verified signed billing events and account-scoped reconciliation.',
+      ],
+    },
+    {
+      heading: 'Questions And Requests',
+      paragraphs: [
+        'Signed-in Parents should use the protected billing or support workspace for account-specific cancellation and refund questions. Do not send payment card details through public forms or ordinary email.',
+      ],
+    },
+  ],
+};

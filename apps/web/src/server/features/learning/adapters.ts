@@ -21,6 +21,8 @@ export type LearningSessionIdentity = {
   role: string;
 };
 
+export type LearningSessionUnavailable = { unavailable: true };
+
 export type AuthenticatedLearningActor = {
   actor: LearningActor;
   sessionKey: string;
@@ -42,11 +44,16 @@ export function createPostgresLearningAdapters(pool: DbPool) {
 export function createPostgresLearningActorResolver(input: {
   pool: DbPool;
   scope: LearningScope;
-  resolveSession: (request: Request) => Promise<LearningSessionIdentity | null>;
+  resolveSession: (
+    request: Request,
+  ) => Promise<LearningSessionIdentity | LearningSessionUnavailable | null>;
 }) {
-  return async (request: Request): Promise<AuthenticatedLearningActor | null> => {
+  return async (
+    request: Request,
+  ): Promise<AuthenticatedLearningActor | LearningSessionUnavailable | null> => {
     const session = await input.resolveSession(request);
     if (!session) return null;
+    if ('unavailable' in session) return session;
 
     if (session.role === 'owner' || session.role === 'admin') {
       const classes = await input.pool.query(

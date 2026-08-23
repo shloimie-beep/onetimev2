@@ -8,6 +8,7 @@ import type {
 } from '../../../../../../packages/contracts/src/providers/v21-provider-core.ts';
 import type { CampaignAudienceCandidate } from '../../../../../../packages/domain/src/communications/workflows/campaigns/index.ts';
 import { ot16OperationId } from '../../../../../../packages/domain/src/communications/workflows/campaigns/index.ts';
+import { createPostgresCommunicationFoundationRepository } from '../../../../../../packages/db/src/communications/foundation/index.ts';
 import type { WorkerRunnerContext, WorkerRunnerResult } from '../../registry/index.ts';
 import {
   inspectDefaultOt16Authority,
@@ -20,6 +21,8 @@ import {
   type CampaignEmailPort,
   type CampaignSuppressionReadPort,
 } from './runner.ts';
+import { createPostgresOt16CampaignReadModel } from './postgres.ts';
+import { createOt16F05EmailPort } from './f05.ts';
 
 export type Ot16DueCheckpoint = {
   adultId: string;
@@ -75,15 +78,12 @@ export async function runOt16CheckpointWorker(
   if (!authority.ready) return disabled(authority.reason);
   if (!isSha256(authority.safeProviderReference)) return disabled('f06_binding_unavailable');
 
-  // The exact F05 campaign dispatch adapter and canonical F06 active-binding
-  // reader are not exposed by the integrated interfaces. The production path
-  // must remain disabled rather than guessing a provider operation.
-  if (!dependencies) return disabled('f05_dispatch_adapter_unavailable');
+  const resolved = dependencies ?? createDefaultOt16Dependencies(context);
 
   const summary = emptySummary();
-  const due = await dependencies.listDueCheckpoints(context);
+  const due = await resolved.listDueCheckpoints(context);
   for (const checkpoint of due) {
-    const preflight = await dependencies.preflight(context, checkpoint);
+    const preflight = await resolved.preflight(context, checkpoint);
     if (!preflight.ready) continue;
     if (
       preflight.identityLinkState !== 'linked' ||
@@ -107,11 +107,11 @@ export async function runOt16CheckpointWorker(
       suppression_at_approval: preflight.suppression,
       expected_version: checkpoint.expectedVersion,
       safe_provider_reference: authority.safeProviderReference,
-      signal: dependencies.signal,
-      repository: dependencies.repository,
-      suppression: dependencies.suppression,
-      eligibility: dependencies.eligibility,
-      email: dependencies.email,
+      signal: resolved.signal,
+      repository: resolved.repository,
+      suppression: resolved.suppression,
+      eligibility: resolved.eligibility,
+      email: resolved.email,
     });
     summary.claimed += result.writes > 0 ? 1 : 0;
     summary.reservations += result.reservations;
@@ -161,4 +161,46 @@ function emptySummary(): Ot16WorkerSummary {
 
 function isSha256(value: unknown): value is string {
   return typeof value === 'string' && /^[a-f0-9]{64}$/u.test(value);
+}
+
+export function createDefaultOt16ReadModel(context: WorkerRunnerContext) {
+  if (!context.config.oneTimeFreeAccessExpiresAt) return null;
+  return createPostgresOt16CampaignReadModel({
+    pool: context.pool,
+    runtimeTier: context.config.oneTimeRuntimeTier,
+    verificationEnvironmentId: context.config.oneTimeVerificationEnvironmentId,
+    canonicalExpiryAt: context.config.oneTimeFreeAccessExpiresAt,
+  });
+}
+
+export function createDefaultOt16Dependencies(
+  context: WorkerRunnerContext,
+): Ot16WorkerDependencies {
+  const readModel = createDefaultOt16ReadModel(context);
+  if (!readModel) throw new Error('ot16_canonical_expiry_missing');
+  return {
+    inspectAuthority: inspectDefaultOt16Authority,
+    async listDueCheckpoints() {
+      const due = await readModel.listDueCheckpoints();
+      const allowed =
+        context.config.oneTimeOt16TransportMode === 'canary'
+          ? due.filter((checkpoint) =>
+              context.config.oneTimeOt16CanaryOperationIds.includes(
+                ot16OperationId({
+                  adult_id: checkpoint.adultId,
+                  expiry_at: checkpoint.expiryAt,
+                  checkpoint_days: checkpoint.checkpointDays,
+                }),
+              ),
+            )
+          : due;
+      return allowed.slice(0, context.config.oneTimeOt16PerRunBudget);
+    },
+    preflight: (_context, checkpoint) => readModel.preflight(checkpoint),
+    repository: createPostgresCommunicationFoundationRepository(context.pool),
+    suppression: readModel.suppression,
+    eligibility: readModel.eligibility,
+    email: createOt16F05EmailPort(context),
+    signal: new AbortController().signal,
+  };
 }

@@ -314,7 +314,7 @@ describe('OT-52P parent and student portal services', () => {
       {
         idempotency_key: 'student-access-setup-001',
         username: 'AccessLearner1',
-        password: 'AccessPass123',
+        password: '000123',
       },
     );
     const replay = await parentService.studentAccessOperation(
@@ -325,12 +325,35 @@ describe('OT-52P parent and student portal services', () => {
       {
         idempotency_key: 'student-access-setup-001',
         username: 'AccessLearner1',
-        password: 'AccessPass123',
+        password: '000123',
       },
     );
 
     expect(state.status).toBe('setup_requested');
     expect(replay).toEqual(state);
+
+    for (const password of ['0001234', '12a456', '１２３４５６']) {
+      await expect(
+        parentService.studentAccessOperation(
+          parentActor,
+          householdKey,
+          learner.learner_key,
+          'setup',
+          {
+            idempotency_key: `student-access-invalid-${password.length}`,
+            username: 'AccessLearnerInvalid',
+            password,
+          },
+        ),
+      ).rejects.toMatchObject({ code: 'PASSWORD_POLICY_FAILED' });
+    }
+    const rejectedOperationRows = await pool.query(
+      `SELECT count(*)::int AS count
+         FROM onetime.portal_student_access_operations
+        WHERE learner_key = $1`,
+      [learner.learner_key],
+    );
+    expect(Number(rejectedOperationRows.rows[0]?.count)).toBe(1);
 
     const revoked = await parentService.studentAccessOperation(
       parentActor,
@@ -377,7 +400,7 @@ describe('OT-52P parent and student portal services', () => {
       leakyService.studentAccessOperation(parentActor, householdKey, learner.learner_key, 'setup', {
         idempotency_key: 'student-access-setup-002',
         username: 'AccessLearner2',
-        password: 'AccessPass456',
+        password: '123456',
       }),
     ).rejects.toMatchObject({ code: 'SERVER_ERROR' });
   });
@@ -400,7 +423,7 @@ describe('OT-52P parent and student portal services', () => {
       {
         idempotency_key: 'missing-state-setup-001',
         username: 'MissingState1',
-        password: 'MissingPass123',
+        password: '000123',
       },
     );
     const reset = await parentService.studentAccessOperation(

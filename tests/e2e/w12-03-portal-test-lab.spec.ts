@@ -14,36 +14,23 @@ const evidenceRoot = path.resolve(process.cwd(), 'ops/evidence/W12-03');
 const screenshotRoot = path.join(evidenceRoot, 'screenshots');
 const evidence: Array<Record<string, unknown>> = [];
 
-test('W12-03 admin lab page is owner/admin-only and secret-free', async ({ browser }) => {
+test('retired W12-03 lab route stays unavailable and secret-free', async ({ browser }) => {
   const adminContext = await browser.newContext();
   await adminContext.addCookies([...W12_E2E_ADMIN_COOKIES]);
   const adminPage = await adminContext.newPage();
   const requests = collectRequests(adminPage);
-  await adminPage.goto(W12_PORTAL_TEST_LAB_ROUTE);
-  await expect(adminPage.getByRole('heading', { name: 'W12 Portal Test Lab' })).toBeVisible();
-  await expect(adminPage.getByText(W12_PORTAL_TEST_LAB.parent.email)).toBeVisible();
-  for (const learner of W12_PORTAL_TEST_LAB.learners) {
-    await expect(adminPage.getByText(learner.email)).toBeVisible();
-    await expect(adminPage.getByText(learner.learnerKey)).toBeVisible();
-  }
+  const response = await adminPage.goto(W12_PORTAL_TEST_LAB_ROUTE);
+  expect(response?.status()).toBe(404);
+  await expect(adminPage.getByRole('heading', { name: /not found/i })).toBeVisible();
   const adminText = await adminPage.locator('body').innerText();
+  expect(adminText).not.toContain(W12_PORTAL_TEST_LAB.parent.email);
+  for (const learner of W12_PORTAL_TEST_LAB.learners) {
+    expect(adminText).not.toContain(learner.email);
+    expect(adminText).not.toContain(learner.learnerKey);
+  }
   expect(adminText).not.toMatch(/W12.*Pass|view as|impersonat|https?:\/\/|zoom|vimeo|drive|meet/i);
-
-  await captureResponsiveA11y(adminPage, 'admin-lab', W12_PORTAL_TEST_LAB_ROUTE);
   expectForbiddenRequests(requests);
   await adminContext.close();
-
-  const parentContext = await browser.newContext();
-  const parentPage = await parentContext.newPage();
-  await loginAs(parentPage, 'parent', W12_PORTAL_TEST_LAB_ROUTE, { waitForReturnTo: false });
-  await parentPage.waitForURL('**/app/parent');
-  await expect(
-    parentPage.locator('#app-main').getByRole('heading', { name: 'Parent Portal' }),
-  ).toBeVisible();
-  const forbidden = await parentPage.request.get(W12_PORTAL_TEST_LAB_ROUTE);
-  expect(forbidden.status()).toBe(403);
-  expect(await forbidden.text()).toContain('Portal Test Lab access unavailable');
-  await parentContext.close();
 });
 
 test('PROMPT-KNOWLEDGE-001 Admin reviews, saves, activates, and rolls back one section patch', async ({
@@ -54,9 +41,7 @@ test('PROMPT-KNOWLEDGE-001 Admin reviews, saves, activates, and rolls back one s
   const page = await adminContext.newPage();
   const requests = collectRequests(page);
   await page.goto('/app/content/prompts');
-  await expect(
-    page.getByRole('navigation', { name: 'Content area' }).getByRole('link', { name: 'Prompts' }),
-  ).toHaveAttribute('aria-current', 'page');
+  await expect(page.getByRole('combobox', { name: 'Prompt section' })).toBeVisible();
   await page.getByRole('combobox', { name: 'Prompt section' }).selectOption('tone_and_voice');
   await page
     .getByRole('textbox', { name: 'Natural-language instruction' })
@@ -112,12 +97,9 @@ test('W12-03 parent and three separate learners complete portal journeys', async
     parentPage.locator('#app-main').getByRole('heading', { name: 'Parent Portal' }),
   ).toBeVisible();
   await expect(parentPage.getByText('3 active learners')).toBeVisible();
-  await parentPage.getByRole('link', { name: 'Billing' }).click();
-  await expect(parentPage.getByRole('heading', { name: 'Learning access' })).toBeVisible();
-  await expect(
-    parentPage.getByText(/GHL manages billing|Complimentary pilot access/i),
-  ).toBeVisible();
-  await parentPage.getByRole('link', { name: 'Learners' }).click();
+  await expect(parentPage.getByRole('link', { name: 'Billing' })).toHaveCount(0);
+  await expect(parentPage.getByRole('heading', { name: 'Learning access' })).toHaveCount(0);
+  await parentPage.getByLabel('Primary navigation').getByRole('link', { name: 'Family' }).click();
   await parentPage.getByRole('button', { name: /W12 Learner One/i }).click();
 
   await parentPage.getByRole('button', { name: 'Reset' }).click();
@@ -135,26 +117,21 @@ test('W12-03 parent and three separate learners complete portal journeys', async
   await dialog.getByRole('button', { name: 'Restore' }).click();
   await expect(parentPage.getByText('Status: Active')).toBeVisible();
 
-  await parentPage.getByRole('link', { name: 'Classes & materials' }).click();
+  await parentPage.getByLabel('Primary navigation').getByRole('link', { name: 'Learning' }).click();
   const parentMaterials = parentPage.getByRole('region', { name: 'Classes & materials' });
   await expect(parentMaterials.getByText('W12 Fictional Recording')).toBeVisible();
   await expect(parentMaterials.getByText('W12 Fictional Review Sheet')).toBeVisible();
-  await parentMaterials
-    .getByRole('textbox', { name: 'Ask Class Helper' })
-    .fill('What should this learner review from the Mishnah lesson?');
-  await parentMaterials.getByRole('button', { name: 'Ask helper' }).click();
-  await expect(parentMaterials.locator('.ot-helper-answer')).toContainText(
-    'fictional Mishnah lesson',
-  );
-  await expect(parentMaterials.locator('.ot-helper-answer')).toContainText(
-    'Approved-source fallback is active while the model provider is off.',
-  );
-  await parentPage.getByRole('link', { name: 'Learners' }).click();
+  await parentPage.getByRole('link', { name: 'View class details' }).first().click();
+  await parentPage.waitForURL(/\/app\/parent\/classes\//u);
+  await expect(parentPage.getByText('Parent class detail')).toBeVisible();
+  await expect(parentPage.getByText('Classroom entry stays Student-only')).toBeVisible();
+  await expect(parentPage.getByRole('button', { name: /join|open class/i })).toHaveCount(0);
+  await parentPage.getByRole('link', { name: 'Back to calendar' }).click();
+  await expect(parentPage.getByRole('heading', { name: 'Upcoming classes' })).toBeVisible();
+  await parentPage.getByLabel('Primary navigation').getByRole('link', { name: 'Family' }).click();
   await parentPage.getByRole('button', { name: /W12 Learner Two/i }).click();
-  await parentPage.getByRole('link', { name: 'Classes & materials' }).click();
-  await expect(
-    parentPage.getByRole('region', { name: 'Classes & materials' }).locator('.ot-helper-answer'),
-  ).toHaveCount(0);
+  await parentPage.getByLabel('Primary navigation').getByRole('link', { name: 'Learning' }).click();
+  await expect(parentMaterials.getByText('W12 Fictional Recording')).toBeVisible();
 
   const parentLaunch = await samePagePostJson(
     parentPage,
@@ -182,7 +159,20 @@ test('W12-03 parent and three separate learners complete portal journeys', async
       await expect(studentPage.getByText(sibling.displayName)).toHaveCount(0);
       await expect(studentPage.getByText(sibling.learnerKey)).toHaveCount(0);
     }
-    await studentPage.getByRole('link', { name: 'Library' }).click();
+    await studentPage.getByRole('link', { name: 'View class details' }).first().click();
+    await studentPage.waitForURL(/\/app\/student\/classes\//u);
+    await expect(studentPage.getByText('Student class detail')).toBeVisible();
+    await expect(studentPage.getByRole('button', { name: /open class|join class/i })).toBeVisible();
+    await studentPage.getByRole('link', { name: 'Back to calendar' }).click();
+    await expect(studentPage.getByRole('heading', { name: 'Calendar' })).toBeVisible();
+    await studentPage
+      .getByLabel('Primary navigation')
+      .getByRole('link', { name: 'Learning' })
+      .click();
+    await studentPage
+      .getByLabel('Learning navigation')
+      .getByRole('link', { name: 'Library' })
+      .click();
     const studentLibrary = studentPage.getByRole('region', { name: 'Library' });
     await expect(studentLibrary.getByText('W12 Fictional Recording')).toBeVisible();
     await expect(studentLibrary.getByText('W12 Fictional Review Sheet')).toBeVisible();
@@ -195,18 +185,6 @@ test('W12-03 parent and three separate learners complete portal journeys', async
     await expect(
       studentPage.getByText(/What should I review before the next fictional class/i),
     ).toBeVisible();
-
-    await studentPage.getByRole('link', { name: 'Class Helper' }).click();
-    await studentPage
-      .getByRole('textbox', { name: 'Ask Class Helper' })
-      .fill('What should I review from the Mishnah lesson?');
-    await studentPage.getByRole('button', { name: 'Ask helper' }).click();
-    await expect(studentPage.locator('.ot-helper-answer')).toContainText(
-      'fictional Mishnah lesson',
-    );
-    await expect(studentPage.locator('.ot-helper-answer')).toContainText(
-      'Approved-source fallback is active while the model provider is off.',
-    );
 
     if (learner.learnerKey === W12_PORTAL_TEST_LAB.learners[0].learnerKey) {
       await captureResponsiveA11y(studentPage, 'student-journey', '/app/student');

@@ -1,6 +1,5 @@
 import type { DbPool } from '../../../../../packages/db/src/index.ts';
 import type {
-  CommunicationContactLookupInput,
   CommunicationIntentListInput,
   CommunicationIntentListResult,
   CommunicationIntentRow,
@@ -11,19 +10,6 @@ type SqlRow = Record<string, unknown>;
 
 export class PostgresCommunicationsReadRepository implements CommunicationsReadRepository {
   constructor(private readonly pool: DbPool) {}
-
-  async contactExists(input: CommunicationContactLookupInput): Promise<boolean> {
-    const result = await this.pool.query(
-      `SELECT 1
-         FROM onetime.contacts
-        WHERE account_key = $1
-          AND product_key = $2
-          AND contact_key = $3
-        LIMIT 1`,
-      [input.scope.accountKey, input.scope.productKey, input.contactId],
-    );
-    return result.rows.length > 0;
-  }
 
   async list(input: CommunicationIntentListInput): Promise<CommunicationIntentListResult> {
     const params: unknown[] = [
@@ -38,10 +24,6 @@ export class PostgresCommunicationsReadRepository implements CommunicationsReadR
       'history.occurred_at >= $3::timestamptz',
       'history.occurred_at < $4::timestamptz',
     ];
-    if (input.mode.kind === 'contact') {
-      params.push(input.mode.contactId);
-      where.push(`history.contact_key = $${params.length}`);
-    }
     if (input.filters.channel) {
       params.push(input.filters.channel);
       where.push(`history.channel = $${params.length}`);
@@ -166,6 +148,132 @@ export class PostgresCommunicationsReadRepository implements CommunicationsReadR
               ON contact.contact_key = outbox.contact_key
              AND contact.account_key = outbox.account_key
              AND contact.product_key = outbox.product_key
+          UNION ALL
+          SELECT 'lifecycle:' || lifecycle.delivery_key AS id,
+                 lifecycle.account_key,
+                 lifecycle.product_key,
+                 NULL::text AS contact_key,
+                 NULL::text AS household_key,
+                 'lifecycle:' || lifecycle.delivery_key AS thread_id,
+                 CASE
+                   WHEN lifecycle.purpose = 'password_reset' THEN 'Password reset delivery'
+                   WHEN lifecycle.purpose IN ('owner_admin_invitation', 'parent_activation') THEN 'Account setup delivery'
+                   WHEN lifecycle.purpose = 'student_setup' THEN 'Student PIN setup delivery'
+                   WHEN lifecycle.purpose = 'student_reset' THEN 'Student PIN reset delivery'
+                   ELSE 'Account security delivery'
+                 END AS thread_label,
+                 CASE
+                   WHEN lifecycle.purpose = 'password_reset' THEN 'account_password_reset.v1'
+                   WHEN lifecycle.purpose IN ('owner_admin_invitation', 'parent_activation') THEN 'account_activation.v1'
+                   WHEN lifecycle.purpose = 'student_setup' THEN 'student_pin_setup.v1'
+                   WHEN lifecycle.purpose = 'student_reset' THEN 'student_pin_reset.v1'
+                   ELSE 'account_activation.v1'
+                 END AS event_type,
+                 'email' AS channel,
+                 'outbound' AS direction,
+                 COALESCE(
+                   lifecycle.final_delivery_state,
+                   CASE
+                     WHEN lifecycle.state IN ('queued', 'leased') THEN 'queued'
+                     WHEN lifecycle.state = 'retry' THEN 'retrying'
+                     WHEN lifecycle.state IN ('provider_accepted', 'provider_delivered') THEN 'provider_accepted'
+                     WHEN lifecycle.state = 'sink_delivered' THEN 'sink_delivered'
+                     WHEN lifecycle.state = 'dead_letter' THEN 'failed'
+                     WHEN lifecycle.state IN (
+                       'unknown', 'provider_off', 'superseded', 'expired', 'cleared',
+                       'delivered', 'bounced', 'complained', 'failed'
+                     ) THEN lifecycle.state
+                     ELSE 'unknown'
+                   END
+                 ) AS status,
+                 COALESCE(
+                   lifecycle.final_delivery_state,
+                   CASE
+                     WHEN lifecycle.state IN ('queued', 'leased') THEN 'queued'
+                     WHEN lifecycle.state = 'retry' THEN 'retrying'
+                     WHEN lifecycle.state IN ('provider_accepted', 'provider_delivered') THEN 'provider_accepted'
+                     WHEN lifecycle.state = 'sink_delivered' THEN 'sink_delivered'
+                     WHEN lifecycle.state = 'dead_letter' THEN 'failed'
+                     WHEN lifecycle.state IN (
+                       'unknown', 'provider_off', 'superseded', 'expired', 'cleared',
+                       'delivered', 'bounced', 'complained', 'failed'
+                     ) THEN lifecycle.state
+                     ELSE 'unknown'
+                   END
+                 ) AS local_state,
+                 lifecycle.created_at AS occurred_at,
+                 lifecycle.created_at,
+                 COALESCE(
+                   lifecycle.final_state_at,
+                   lifecycle.provider_accepted_at,
+                   lifecycle.dead_lettered_at,
+                   lifecycle.cleared_at,
+                   lifecycle.updated_at
+                 ) AS delivered_at,
+                 NULL::text AS email_normalized,
+                 NULL::text AS phone_normalized,
+                 'account_lifecycle_outbox' AS source,
+                 'local_database' AS provenance,
+                 CASE
+                   WHEN lifecycle.purpose = 'password_reset'
+                     THEN 'Password reset delivery status. Message body and secure link are hidden.'
+                   WHEN lifecycle.purpose IN ('owner_admin_invitation', 'parent_activation')
+                     THEN 'Account setup delivery status. Message body and secure link are hidden.'
+                   WHEN lifecycle.purpose = 'student_setup'
+                     THEN 'Student PIN setup delivery status. Message body and secure link are hidden.'
+                   WHEN lifecycle.purpose = 'student_reset'
+                     THEN 'Student PIN reset delivery status. Message body and secure link are hidden.'
+                   ELSE 'Account security delivery status. Message body and secure link are hidden.'
+                 END AS preview_redacted,
+                 NULL::text AS provider_reference_digest,
+                 NULL::text AS import_batch_key,
+                 NULL::text AS idempotency_key,
+                 false AS draft_only,
+                 false AS transport_available,
+                 'account' AS participant_kind,
+                 COALESCE(active_user.display_name, active_adult.display_name) || ' · ' ||
+                   CASE lifecycle_token.target_role
+                     WHEN 'owner' THEN 'Owner account'
+                     WHEN 'admin' THEN 'Admin account'
+                     WHEN 'rabbi' THEN 'Rabbi account'
+                     WHEN 'parent' THEN 'Parent account'
+                     WHEN 'student' THEN 'Student account'
+                     ELSE 'One Time account'
+                   END AS participant_label
+            FROM onetime.account_lifecycle_delivery_outbox AS lifecycle
+            JOIN onetime.account_lifecycle_tokens AS lifecycle_token
+              ON lifecycle_token.token_key = lifecycle.token_key
+             AND lifecycle_token.account_key = lifecycle.account_key
+             AND lifecycle_token.product_key = lifecycle.product_key
+            LEFT JOIN onetime.account_users AS active_user
+              ON active_user.user_key = lifecycle_token.subject_user_key
+             AND active_user.account_key = lifecycle_token.account_key
+             AND active_user.product_key = lifecycle_token.product_key
+             AND active_user.role = lifecycle_token.target_role
+             AND active_user.status = 'active'
+            LEFT JOIN onetime.v21_human_accounts AS active_human
+              ON active_human.human_account_id = lifecycle_token.subject_human_account_id
+             AND active_human.product_key = lifecycle_token.product_key
+             AND active_human.state = 'active'
+            LEFT JOIN onetime.v21_adult_identities AS active_adult
+              ON active_adult.adult_id = active_human.adult_id
+             AND active_adult.product_key = active_human.product_key
+             AND active_adult.runtime_tier = active_human.runtime_tier
+             AND active_adult.verification_environment_id = active_human.verification_environment_id
+             AND active_adult.state = 'active'
+            LEFT JOIN onetime.v21_human_account_role_memberships AS active_role
+              ON active_role.human_account_id = active_human.human_account_id
+             AND active_role.product_key = active_human.product_key
+             AND active_role.runtime_tier = active_human.runtime_tier
+             AND active_role.verification_environment_id = active_human.verification_environment_id
+             AND active_role.role = lifecycle_token.target_role
+             AND active_role.revoked_at IS NULL
+           WHERE active_user.user_key IS NOT NULL
+              OR (
+                active_human.human_account_id IS NOT NULL
+                AND active_adult.adult_id IS NOT NULL
+                AND active_role.membership_id IS NOT NULL
+              )
           UNION ALL
           SELECT 'whatsapp-inbox:' || inbox.event_key AS id,
                  inbox.account_key,

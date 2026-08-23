@@ -1,4 +1,4 @@
-import { createHash, createHmac, timingSafeEqual } from 'node:crypto';
+import { createHash, timingSafeEqual } from 'node:crypto';
 import {
   ot104rPlaybackProjectionSchema,
   ot104rVimeoReadinessSchema,
@@ -22,20 +22,28 @@ export const OT104R_TRANSCRIPT_MAX_BYTES = 1_000_000;
 
 const OT104R_PROVIDER = 'vimeo';
 const DEFAULT_LEASE_MS = 5 * 60_000;
-const WEBHOOK_FRESHNESS_MS = 5 * 60_000;
 const WEBHOOK_EVENT_ALLOWLIST = new Set([
   'video.created',
-  'video.upload.complete',
-  'video.upload.completed',
   'video.transcode.complete',
-  'video.transcode.completed',
-  'video.available',
-  'video.transcode.error',
-  'video.transcode.failed',
+  'video.transcode.fully_playable',
+  'video.transcode.playable',
   'video.deleted',
-  'texttrack.created',
-  'texttrack.updated',
-  'texttrack.deleted',
+  'video.updated',
+  'video.upload.failed',
+  'transcript.status.complete',
+  'transcript.status.updated',
+]);
+
+const VIMEO_WEBHOOK_EVENT_ALIASES = new Map<string, string>([
+  ['video-created', 'video.created'],
+  ['video-deleted', 'video.deleted'],
+  ['video-transcode-complete', 'video.transcode.complete'],
+  ['video-transcode-fully-playable', 'video.transcode.fully_playable'],
+  ['video-transcode-playable', 'video.transcode.playable'],
+  ['video-updated', 'video.updated'],
+  ['video-upload-failed', 'video.upload.failed'],
+  ['transcript-status-complete', 'transcript.status.complete'],
+  ['transcript-status-updated', 'transcript.status.updated'],
 ]);
 
 export class Ot104rVimeoRuntimeError extends Error {
@@ -702,8 +710,6 @@ export async function receiveOt104rVimeoWebhook(input: {
   rawBody: Buffer | string;
   headers: {
     contentType?: string | null;
-    signature?: string | null;
-    timestamp?: string | null;
   };
   secret: string;
   expectedAccountId?: string | null;
@@ -723,21 +729,14 @@ export async function receiveOt104rVimeoWebhook(input: {
       message: 'Vimeo webhook content type must be application/json.',
     };
   }
-  const timestamp = String(input.headers.timestamp ?? '');
-  if (!timestamp || !isFreshWebhookTimestamp(timestamp, now)) {
-    return { status: 401, code: 'unauthorized', message: 'Vimeo webhook timestamp rejected.' };
-  }
-  if (
-    !verifyOt104rVimeoWebhookSignature(input.secret, timestamp, rawBody, input.headers.signature)
-  ) {
-    return { status: 401, code: 'unauthorized', message: 'Vimeo webhook signature rejected.' };
-  }
-
   let payload: Record<string, unknown>;
   try {
     payload = asRecord(JSON.parse(rawBody.toString('utf8')));
   } catch {
     return { status: 400, code: 'bad_request', message: 'Vimeo webhook JSON malformed.' };
+  }
+  if (!verifyOt104rVimeoWebhookSecret(input.secret, payload.secret)) {
+    return { status: 401, code: 'unauthorized', message: 'Vimeo webhook secret rejected.' };
   }
   const normalized = normalizeVimeoWebhookPayload(payload, rawBody);
   const rawBodySha = sha256(rawBody);
@@ -1016,20 +1015,6 @@ export async function projectOt104rPlaybackAccess(input: {
   return projection;
 }
 
-export function signOt104rVimeoWebhook(input: {
-  secret: string;
-  timestamp: string;
-  rawBody: Buffer | string;
-}) {
-  const rawBody = Buffer.isBuffer(input.rawBody)
-    ? input.rawBody
-    : Buffer.from(input.rawBody, 'utf8');
-  return `v1=${createHmac('sha256', input.secret)
-    .update(Buffer.from(`${input.timestamp}.`, 'ascii'))
-    .update(rawBody)
-    .digest('hex')}`;
-}
-
 export function sanitizeOt104rProviderError(error: unknown) {
   return String(error instanceof Error ? error.message : error)
     .replaceAll(/[A-Za-z0-9_-]{24,}/g, '[redacted-token]')
@@ -1182,26 +1167,22 @@ function resultFromSourceRow(
   });
 }
 
-function verifyOt104rVimeoWebhookSignature(
-  secret: string,
-  timestamp: string,
-  rawBody: Buffer,
-  signatureHeader?: string | null,
-) {
-  if (!secret || !signatureHeader) return false;
-  const supplied = signatureHeader.replace(/^(?:v1=|sha256=)/i, '').trim();
-  if (!/^[a-f0-9]{64}$/i.test(supplied)) return false;
-  const timestampBound = signOt104rVimeoWebhook({ secret, timestamp, rawBody }).replace(/^v1=/, '');
-  const bodyOnly = createHmac('sha256', secret).update(rawBody).digest('hex');
-  return constantTimeHex(timestampBound, supplied) || constantTimeHex(bodyOnly, supplied);
+function verifyOt104rVimeoWebhookSecret(secret: string, supplied: unknown) {
+  if (!secret || typeof supplied !== 'string') return false;
+  const expectedBytes = Buffer.from(secret, 'utf8');
+  const suppliedBytes = Buffer.from(supplied, 'utf8');
+  return (
+    expectedBytes.length === suppliedBytes.length && timingSafeEqual(expectedBytes, suppliedBytes)
+  );
 }
 
 function normalizeVimeoWebhookPayload(payload: Record<string, unknown>, rawBody: Buffer) {
-  const eventType =
+  const providerEventType =
     stringValue(payload.type) ??
     stringValue(payload.event) ??
     stringValue(payload.event_type) ??
     'unknown';
+  const eventType = VIMEO_WEBHOOK_EVENT_ALIASES.get(providerEventType) ?? providerEventType;
   const providerEventId =
     stringValue(payload.id) ??
     stringValue(payload.event_id) ??
@@ -1250,18 +1231,13 @@ function normalizeVimeoWebhookPayload(payload: Record<string, unknown>, rawBody:
 
 function stateFromWebhookEvent(eventType: string): Ot104rVimeoProcessingState {
   if (eventType === 'video.deleted') return 'retired';
-  if (eventType === 'video.transcode.error' || eventType === 'video.transcode.failed') {
-    return 'failed';
-  }
+  if (eventType === 'video.upload.failed') return 'failed';
   if (
     eventType === 'video.transcode.complete' ||
-    eventType === 'video.transcode.completed' ||
-    eventType === 'video.available'
+    eventType === 'video.transcode.fully_playable' ||
+    eventType === 'video.transcode.playable'
   ) {
     return 'available';
-  }
-  if (eventType === 'video.upload.complete' || eventType === 'video.upload.completed') {
-    return 'transcoding';
   }
   return 'transcoding';
 }
@@ -1532,18 +1508,6 @@ function normalizeContentType(value: string | null | undefined) {
       ?.trim()
       .toLowerCase() ?? ''
   );
-}
-
-function isFreshWebhookTimestamp(value: string, now: Date) {
-  const seconds = Number(value);
-  if (!Number.isFinite(seconds)) return false;
-  return Math.abs(now.getTime() - seconds * 1000) <= WEBHOOK_FRESHNESS_MS;
-}
-
-function constantTimeHex(expected: string, supplied: string) {
-  const left = Buffer.from(expected, 'hex');
-  const right = Buffer.from(supplied, 'hex');
-  return left.length === right.length && timingSafeEqual(left, right);
 }
 
 function sanitizeProviderMetadata(value: unknown): unknown {

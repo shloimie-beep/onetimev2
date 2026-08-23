@@ -8,6 +8,7 @@ import {
   FAMILY_SIGNUP_IDEMPOTENCY_KEY_MAX_LENGTH,
   FAMILY_SIGNUP_IDEMPOTENCY_KEY_MIN_LENGTH,
   FAMILY_SIGNUP_OPTIONAL_CONSENT_FIELDS,
+  FAMILY_SIGNUP_VISIBLE_CONSENT_FIELDS,
   FAMILY_SIGNUP_OPERATION,
   FAMILY_SIGNUP_SECURITY_INVARIANTS,
   FAMILY_SIGNUP_TIMEZONE_FIELD,
@@ -17,12 +18,14 @@ describe('P08 family signup contract', () => {
   it('pins the Family-only classification and date-free optional-expiry copy', () => {
     expect(FAMILY_SIGNUP_CLASSIFICATIONS).toEqual(['family']);
     expect(FAMILY_SIGNUP_COPY.before_expiry).toEqual({
-      cta: 'Create my free family account',
-      helper: 'No credit card is required during the configured free-access period.',
+      cta: 'Create your Family account',
+      helper: 'Try One Time free through September 11. No card required.',
     });
-    expect(FAMILY_SIGNUP_COPY.at_or_after_expiry.cta).toBe(
-      'Create account and continue to checkout',
-    );
+    expect(FAMILY_SIGNUP_COPY.at_or_after_expiry).toEqual({
+      cta: 'Create your Family account',
+      helper:
+        'The free period has ended. Contact info@onetimeonetime.com for paid continuation options.',
+    });
   });
 
   it('keeps the Family form cardless and local-first', () => {
@@ -51,22 +54,16 @@ describe('P08 family signup contract', () => {
       browser_prefill: 'suggestion_only',
       raw_offset_only: false,
     });
-    expect(FAMILY_SIGNUP_OPTIONAL_CONSENT_FIELDS).toEqual([
+    expect(FAMILY_SIGNUP_VISIBLE_CONSENT_FIELDS).toEqual([
       {
-        name: 'general_marketing_consent',
-        scope: 'general_marketing',
-        label: 'General marketing',
-        required: false,
-        default_checked: false,
-      },
-      {
-        name: 'parent_newsletter_consent',
-        scope: 'parent_newsletter',
-        label: 'Parent newsletter',
-        required: false,
+        name: 'terms_accepted',
+        scope: 'unified_terms',
+        label: 'I agree to the Terms of Use',
+        required: true,
         default_checked: false,
       },
     ]);
+    expect(FAMILY_SIGNUP_OPTIONAL_CONSENT_FIELDS).toEqual([]);
     expect(FAMILY_SIGNUP_FORBIDDEN_FIELDS).toContain('card');
     expect(FAMILY_SIGNUP_FORBIDDEN_FIELDS).toContain('students');
     expect(FAMILY_SIGNUP_SECURITY_INVARIANTS).toMatchObject({
@@ -83,8 +80,10 @@ describe('P08 family signup contract', () => {
       password_confirmation_must_match_exactly: true,
       timezone_must_be_iana: true,
       browser_timezone_is_editable_suggestion_only: true,
-      optional_adult_consents_are_separate: true,
-      optional_adult_consents_are_never_inferred: true,
+      visible_signup_consent_controls: 1,
+      unified_agreement_policy_version: 'one_time_family_signup_unified_v1',
+      unified_agreement_captures_adult_marketing_email: true,
+      sms_call_whatsapp_consent_from_signup: false,
       identity_review_blocks_post_expiry_checkout: true,
       unavailable_provider_evidence_is_not_identity_ambiguity: true,
       ghl_handoff_is_adult_only_and_non_effecting: true,

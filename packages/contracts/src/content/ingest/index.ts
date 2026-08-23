@@ -7,6 +7,11 @@ export const CONTENT_INGEST_DRIVE_STABILITY_SECONDS = 120;
 export const CONTENT_INGEST_INCOMPLETE_UPLOAD_HOURS = 24;
 export const CONTENT_INGEST_MAX_ATTEMPTS = 8;
 export const CONTENT_INGEST_REGION = 'eu-central-1' as const;
+export const CONTENT_INGEST_SOURCE_POLICY = {
+  primary: 'app_upload',
+  optional: ['drive'],
+  optionalSourceFailureBlocksPrimary: false,
+} as const;
 export const CONTENT_INGEST_CONTAINERS = ['mp4', 'mov', 'mkv'] as const;
 export const CONTENT_INGEST_MIME_TYPES = [
   'video/mp4',
@@ -17,7 +22,34 @@ export const CONTENT_INGEST_MIME_TYPES = [
 export type ContentIngestContainer = (typeof CONTENT_INGEST_CONTAINERS)[number];
 export type ContentIngestMimeType = (typeof CONTENT_INGEST_MIME_TYPES)[number];
 export type ContentSourceKind = 'app_upload' | 'drive';
-export type ContentCaptureMethod = 'obs';
+export type ContentCaptureMethod = 'obs' | 'existing_reviewed_recording';
+export type ExistingReviewedRecordingOrigin = 'drive' | 'recordings_collection';
+
+/**
+ * This is deliberately not an OBS substitute. It records the narrow launch
+ * exception for a pre-existing One Time/Rabbi-owned recording after the Admin
+ * has personally reviewed it for child-data safety before it can reach any
+ * processing provider or the protected library.
+ */
+export type ExistingReviewedRecordingAttestation = {
+  evidenceVersion: 'OT-EXISTING-REVIEWED-RECORDING-1';
+  origin: ExistingReviewedRecordingOrigin;
+  rightsAttestedByAdminId: string;
+  rightsAttestedAt: string;
+  rightsToProcessAndPrivatelyPublish: true;
+  humanReviewedByAdminId: string;
+  humanReviewedAt: string;
+  childDataDisposition: 'none_present' | 'redactions_complete';
+  noUnreviewedChildData: true;
+};
+
+export type ExistingReviewedRecordingIntent = {
+  origin: ExistingReviewedRecordingOrigin;
+  rightsToProcessAndPrivatelyPublish: true;
+  humanReviewCompleted: true;
+  childDataDisposition: 'none_present' | 'redactions_complete';
+  noUnreviewedChildData: true;
+};
 export type ContentLifecycleState =
   | 'received'
   | 'validating'
@@ -61,10 +93,9 @@ export type ContentIngestAdminActor = ContentIngestScope & {
   role: 'admin';
 };
 
-export type ContentSourceRecord = ContentIngestScope & {
+type ContentSourceRecordBase = ContentIngestScope & {
   id: string;
   sourceKind: ContentSourceKind;
-  captureMethod: ContentCaptureMethod;
   runtimeTier: IngestRuntimeTier;
   verificationEnvironmentId: string;
   bucketRef: string;
@@ -82,10 +113,6 @@ export type ContentSourceRecord = ContentIngestScope & {
   occurrenceId?: string;
   matchConfidence: OccurrenceMatchConfidence;
   matchedByAdminId?: string;
-  obsProfileVersion?: string;
-  obsRecordingStartedAt?: string;
-  obsRecordingStoppedAt?: string;
-  recordingAdminId?: string;
   retentionDueAt: string;
   lifecycleState: ContentLifecycleState;
   failedFrom?: 'validating' | 'processing' | 'publishing';
@@ -96,6 +123,34 @@ export type ContentSourceRecord = ContentIngestScope & {
   version: number;
   createdAt: string;
   updatedAt: string;
+};
+
+export type ObsContentSourceRecord = ContentSourceRecordBase & {
+  captureMethod: 'obs';
+  obsProfileVersion?: string;
+  obsRecordingStartedAt?: string;
+  obsRecordingStoppedAt?: string;
+  recordingAdminId?: string;
+  existingRecordingAttestation?: never;
+};
+
+export type ExistingReviewedRecordingSourceRecord = ContentSourceRecordBase & {
+  captureMethod: 'existing_reviewed_recording';
+  /** No OBS timestamp, consent roster, or capture claim is carried for this lane. */
+  existingRecordingAttestation: ExistingReviewedRecordingAttestation;
+  obsProfileVersion?: never;
+  obsRecordingStartedAt?: never;
+  obsRecordingStoppedAt?: never;
+  recordingAdminId?: never;
+};
+
+export type ContentSourceRecord = ObsContentSourceRecord | ExistingReviewedRecordingSourceRecord;
+
+export type ContentIngestOccurrenceOption = {
+  id: string;
+  localClassDate: string;
+  startsAt: string;
+  state: 'scheduled' | 'preparing' | 'ready' | 'live' | 'completed';
 };
 
 export type ContentSourceLinkRecord = ContentIngestScope & {
@@ -127,6 +182,7 @@ export type UploadSessionRecord = ContentIngestScope & {
   retryState: ContentRetryState;
   idempotencyKey: string;
   requestHash: string;
+  existingRecordingIntent?: ExistingReviewedRecordingIntent;
   expiresAt: string;
   version: number;
   createdAt: string;
@@ -169,6 +225,23 @@ export type MultipartUploadPlan = {
   expiresAt: string;
 };
 
+export type ManagedMultipartUploadBinding = {
+  uploadSessionId: string;
+  opaqueObjectKey: string;
+};
+
+export type ManagedMultipartBeginReadback =
+  | {
+      disposition: 'created' | 'recovered';
+      providerUploadIdDigest: string;
+      openUploadCount: 1;
+    }
+  | {
+      disposition: 'duplicate';
+      providerUploadIdDigests: readonly string[];
+      openUploadCount: number;
+    };
+
 export type ManagedObjectReadback = {
   runtimeTier: IngestRuntimeTier;
   verificationEnvironmentId: string;
@@ -177,8 +250,11 @@ export type ManagedObjectReadback = {
   objectKeyDigest: string;
   objectVersionId: string;
   byteCount: number;
+  durabilityEvidenceVersion?: 'OT-MANAGED-ORIGINAL-1';
+  checksumAlgorithm?: 'sha256';
   sha256: string;
   kmsKeyVersionRef: string;
+  storageClass?: string;
   blockPublicAccess: true;
   bucketOwnerEnforced: true;
 };
@@ -188,9 +264,15 @@ export type RecoveryJournalReceipt = {
   uploadSessionId: string;
   runtimeTier: IngestRuntimeTier;
   verificationEnvironmentId: string;
+  durabilityEvidenceVersion?: 'OT-MANAGED-ORIGINAL-1';
+  bucketRef?: string;
+  objectKeyDigest?: string;
   objectVersionId: string;
   byteCount: number;
+  checksumAlgorithm?: 'sha256';
   sha256: string;
+  kmsKeyVersionRef?: string;
+  storageClass?: string;
   writtenAt: string;
   readBackAt: string;
 };
@@ -202,6 +284,7 @@ export type BeginDirectUploadCommand = {
   displayFilename: string;
   mimeType: string;
   declaredByteCount: number;
+  existingRecordingIntent?: ExistingReviewedRecordingIntent;
   idempotencyKey: string;
   requestHash: string;
   occurredAt: string;

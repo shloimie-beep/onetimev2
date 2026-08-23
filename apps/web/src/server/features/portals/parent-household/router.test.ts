@@ -2,10 +2,12 @@ import type { AddressInfo } from 'node:net';
 import express, { type Express } from 'express';
 import { describe, expect, it, vi } from 'vitest';
 import type { ParentHouseholdSnapshot } from '../../../../../../../packages/contracts/src/portals/parent-household/index.ts';
+import type { ParentSummarySnapshot } from '../../../../../../../packages/contracts/src/portals/parent-summary/index.ts';
 import { ParentHouseholdError } from '../../../../../../../packages/domain/src/portals/parent-household/index.ts';
 import type { V21ParentSessionContext } from '../../auth/v21-adult-session.ts';
 import { createParentHouseholdRouter } from './router.ts';
 import type { ParentHouseholdService } from './service.ts';
+import type { ParentSummaryService } from '../parent-summary/index.ts';
 
 const snapshot: ParentHouseholdSnapshot = {
   contract_version: '1.2.0',
@@ -18,6 +20,29 @@ const snapshot: ParentHouseholdSnapshot = {
   can_manage_students: true,
   revision: 1,
   students: [],
+};
+
+const summarySnapshot: ParentSummarySnapshot = {
+  contract_version: '1.1.0',
+  household_id: 'household-router',
+  display_name: 'Router household',
+  generated_at: '2026-07-31T14:00:00.000Z',
+  students: [],
+  schedule: [],
+  progress: [],
+  updates: [],
+  featured_welcome_video: {
+    contract_version: '1.0.0',
+    status: 'unavailable',
+    reason: 'no_approved_version',
+    title: 'Welcome to One Time',
+    message: 'An approved Parent welcome video is not available yet.',
+  },
+  support: {
+    label: 'Contact support',
+    description: 'Get help with your Parent account or household.',
+    href: '/app/parent/support',
+  },
 };
 
 const sessionContext = {
@@ -54,7 +79,7 @@ function setup(input: { csrf?: boolean } = {}) {
       student_id: 'student-router',
       student_label: 'Router Student',
       username: 'router.student',
-      new_password: 'safe-password-123',
+      new_password: '000123',
       display_once: true as const,
       may_copy_or_print: true as const,
       emailed: false as const,
@@ -68,6 +93,9 @@ function setup(input: { csrf?: boolean } = {}) {
     restoreStudent: vi.fn().mockResolvedValue(mutation),
     resetStudentCredential: vi.fn().mockResolvedValue(mutation),
   } as unknown as ParentHouseholdService;
+  const summaryService = {
+    overview: vi.fn().mockResolvedValue(summarySnapshot),
+  } as unknown as ParentSummaryService;
   const sessions = {
     bootstrapCookieHeader: vi.fn().mockResolvedValue({
       status: 'resolved',
@@ -84,12 +112,13 @@ function setup(input: { csrf?: boolean } = {}) {
     '/api/app/parent',
     createParentHouseholdRouter({
       service,
+      summaryService,
       sessions,
       fingerprintPasswordForIdempotency,
       clock: () => new Date('2026-07-31T14:00:00.000Z'),
     }),
   );
-  return { app, service, sessions, fingerprintPasswordForIdempotency };
+  return { app, service, summaryService, sessions, fingerprintPasswordForIdempotency };
 }
 
 describe('P12 authenticated Parent household router', () => {
@@ -105,6 +134,22 @@ describe('P12 authenticated Parent household router', () => {
       csrf_token: 'csrf-bootstrap-token',
     });
     expect(service.overview).toHaveBeenCalledWith({
+      role: 'parent',
+      adult_id: 'adult-router',
+      household_id: 'household-router',
+      session_id: 'session-router',
+    });
+  });
+
+  it('returns only the server-derived Parent summary without mutation credentials', async () => {
+    const { app, summaryService } = setup();
+    const response = await send(app, '/api/app/parent/summary', {
+      headers: { cookie: 'ot_v21_parent=opaque' },
+    });
+    expect(response.status).toBe(200);
+    expect(response.headers.get('cache-control')).toBe('no-store');
+    expect((await response.json()).data).toEqual({ snapshot: summarySnapshot });
+    expect(summaryService.overview).toHaveBeenCalledWith({
       role: 'parent',
       adult_id: 'adult-router',
       household_id: 'household-router',
@@ -140,6 +185,12 @@ describe('P12 authenticated Parent household router', () => {
       body: { ...createBody(), grade_label: 'Grade 4' },
     });
     expect(legacy.status).toBe(400);
+    const selfStudent = await send(app, '/api/app/parent/students', {
+      method: 'POST',
+      headers: validHeaders('parent-router-0004'),
+      body: { ...createBody(), relationship: 'self' },
+    });
+    expect(selfStudent.status).toBe(400);
     expect(service.createStudent).not.toHaveBeenCalled();
   });
 
@@ -155,12 +206,12 @@ describe('P12 authenticated Parent household router', () => {
           password_confirmation: password,
         },
       });
-    const first = await call('safe-password-123');
-    const second = await call('another-safe-password');
+    const first = await call('000123');
+    const second = await call('123456');
     expect(first.status).toBe(201);
     expect(second.status).toBe(201);
     const firstBody = await first.json();
-    expect(firstBody.data.credential_handoff.new_password).toBe('safe-password-123');
+    expect(firstBody.data.credential_handoff.new_password).toBe('000123');
     expect(firstBody.data).not.toHaveProperty('audit');
     expect(firstBody.data).not.toHaveProperty('revoke_student_sessions');
     const calls = vi.mocked(service.createStudent).mock.calls;
@@ -172,8 +223,8 @@ describe('P12 authenticated Parent household router', () => {
     expect(calls[0]?.[2].canonical_request_hash).toMatch(/^[0-9a-f]{64}$/u);
     expect(calls[1]?.[2].canonical_request_hash).toBe(calls[0]?.[2].canonical_request_hash);
     expect(fingerprintPasswordForIdempotency).toHaveBeenCalledTimes(2);
-    expect(fingerprintPasswordForIdempotency).toHaveBeenCalledWith('safe-password-123');
-    expect(fingerprintPasswordForIdempotency).toHaveBeenCalledWith('another-safe-password');
+    expect(fingerprintPasswordForIdempotency).toHaveBeenCalledWith('000123');
+    expect(fingerprintPasswordForIdempotency).toHaveBeenCalledWith('123456');
   });
 
   it('conceals a wrong-household Student as unavailable', async () => {
@@ -203,8 +254,8 @@ function createBody() {
     display_name: null,
     username: 'router.student',
     relationship: 'dependent',
-    new_password: 'safe-password-123',
-    password_confirmation: 'safe-password-123',
+    new_password: '000123',
+    password_confirmation: '000123',
   };
 }
 

@@ -3263,27 +3263,27 @@
       "key": "one_time_enrollment_and_conversion",
       "canonicalName": "One Time Enrollment and Conversion",
       "status": "pending_creation",
-      "purpose": "Adult lead, nurture, signup, and conversion opportunity state.",
+      "purpose": "Canonical adult acquisition/member state. Funnel identity remains in source metadata fields, not stages.",
       "owner": "Shloimie",
       "stages": [
         {
-          "name": "Warm Lead",
+          "name": "Warm Leads",
           "position": 0
         },
         {
-          "name": "Contacted",
+          "name": "Free Event / Tisha B’Av Signups",
           "position": 1
         },
         {
-          "name": "Engaged",
+          "name": "Old App — Active",
           "position": 2
         },
         {
-          "name": "Signup Started",
+          "name": "Old App — Inactive",
           "position": 3
         },
         {
-          "name": "Signed Up",
+          "name": "New Funnel / Pre-Registered",
           "position": 4
         },
         {
@@ -3291,12 +3291,8 @@
           "position": 5
         },
         {
-          "name": "Not Now",
+          "name": "Canceled / Lost",
           "position": 6
-        },
-        {
-          "name": "Unqualified",
-          "position": 7
         }
       ],
       "aliases": ["One Time Business"],
@@ -3478,8 +3474,8 @@
   "business_workflows": [
     {
       "key": "OT-01",
-      "canonicalName": "OT-01 New Lead Intake",
-      "normalizedName": "ot_01_new_lead_intake",
+      "canonicalName": "OT-01 Family Account Confirmation",
+      "normalizedName": "ot_01_family_account_confirmation",
       "ghlId": "95a6f461-1a04-4260-b379-246fdcc45af7",
       "ghlKey": "ot_01_new_lead_intake",
       "objectType": "business_workflow",
@@ -3494,7 +3490,7 @@
       "oneTimeAllowedToWrite": false,
       "humansMayEdit": true,
       "dependencies": [],
-      "aliases": [],
+      "aliases": ["OT-01 New Lead Intake", "ot_01_new_lead_intake"],
       "assetLifecycle": "canonical",
       "createdDate": "2026-07-21",
       "lastVerifiedDate": "2026-07-23",
@@ -3531,6 +3527,8 @@
         "Keep School inquiries separate and manual; never enroll them in OT-01 or automatic nurture."
       ],
       "essentialValues": {
+        "legacy_provider_key": "ot_01_new_lead_intake",
+        "business_purpose": "Family-account confirmation after a real application event; not generic new-lead intake",
         "canonical_copy_ids": ["ghl.signup_confirmation.v1"],
         "cta_custom_value": "One Time Member Login URL",
         "school_handling": "separate manual path; no OT-01 entry and no automatic nurture",
@@ -3575,7 +3573,7 @@
       "asset_kind": "workflow",
       "category": "business_workflow",
       "folder": "10 - Enrollment & Nurture",
-      "purpose": "Three-email existing-subscriber migration sequence.",
+      "purpose": "Historical three-email migration sequence; superseded for the current launch by one direct Work-owned API email.",
       "sourceOfTruth": "Shared",
       "allowedValues": [],
       "workflowsAllowedToWrite": [],
@@ -3595,24 +3593,22 @@
       "exactTrigger": "registered existing subscriber migration audience entry",
       "companionDelivery": "",
       "displayOrder": 2,
-      "desiredStatus": "DRAFT_WAITING_EXTERNAL",
+      "desiredStatus": "BLOCKED",
       "observedStatus": "DRAFT_SHELL",
       "exactOrderedTriggers": [
-        "Enter only an explicitly approved 2026 existing-subscriber migration audience.",
-        "Require service/marketing eligibility and no suppression before each message."
+        "Do not enroll any contact in OT-02A for the current launch.",
+        "Work independently authorizes the direct adult recipient set and verifies suppression before the one-time API send."
       ],
       "exactOrderedActions": [
-        "Mark the registered migration sequence/version active.",
-        "Send migration email one with the registered rabbi_campaign sender.",
-        "Wait the approved cadence, then recheck activation and suppression.",
-        "Send migration email two only while still eligible.",
-        "Wait the approved cadence, recheck, and send migration email three only while still eligible.",
-        "Exit immediately on activation, opt-out, or suppression."
+        "Keep OT-02A inactive and unenrolled.",
+        "Preserve the historical three-email copy as evidence only.",
+        "Work sends one direct one-time migration email outside this workflow."
       ],
       "observedTriggers": [],
       "observedActions": [],
       "essentialValues": {
         "configured_state": "draft_waiting_external",
+        "current_launch_disposition": "superseded_by_one_direct_work_owned_api_email",
         "audience_scope": "explicitly approved 2026 existing-subscriber migration segment only",
         "audience_authority": "operator-selected adult migration list only; historic payment, attendance, event registration, portal state, deliverability, and legacy tags never grant authority",
         "sequence_length": 3,
@@ -3645,11 +3641,11 @@
         "reference": "integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json"
       },
       "canary": {
-        "result": "not_run",
+        "result": "not_applicable",
         "reference": "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json",
-        "detail": "Draft preserved; no contact enrolled and no send authorized."
+        "detail": "Current-launch workflow canary is obsolete because OT-02A must remain inactive; Work owns the single direct API email and its recipient/suppression proof."
       },
-      "blocker": "Approved migration audience, cadence, and separately authorized test are absent.",
+      "blocker": "SUPERSEDED_CURRENT_LAUNCH: do not activate OT-02A merely to deliver the one-time migration email.",
       "evidence": [
         "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json"
       ]
@@ -4728,7 +4724,7 @@
       "asset_kind": "email_marketing_campaign",
       "category": "email_marketing_campaign",
       "folder": "Marketing / Email Campaigns / Home",
-      "purpose": "Registered Tisha B'Av 2026 Rabbi-authored warm invitation campaign.",
+      "purpose": "Historical Tisha B'Av 2026 invitation campaign; superseded for the current launch by one direct Work-owned API email.",
       "sourceOfTruth": "Shared",
       "allowedValues": [],
       "workflowsAllowedToWrite": [],
@@ -4748,7 +4744,7 @@
       "exactTrigger": "approved Tisha B'Av 2026 warm invitation audience enters the registered campaign",
       "companionDelivery": "",
       "displayOrder": 14,
-      "desiredStatus": "SAVED_REOPENED",
+      "desiredStatus": "BLOCKED",
       "observedStatus": "SAVED_REOPENED",
       "exactOrderedTriggers": [
         "Keep exact existing OT-C01 in Draft while the independently permissioned invitation audience is classified read-only.",
@@ -4764,6 +4760,7 @@
       "observedTriggers": [],
       "observedActions": [],
       "essentialValues": {
+        "current_launch_disposition": "historical_only_one_direct_work_owned_api_email",
         "channel": "email_only",
         "public_cta": "https://join.onetimeonetime.com/tisha-bav",
         "sender_registry_key": "rabbi_campaign",
@@ -4784,11 +4781,11 @@
         "reference": "integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json"
       },
       "canary": {
-        "result": "not_run",
+        "result": "not_applicable",
         "reference": "integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json",
-        "detail": "Draft preserved; exact saved all-AND selector returned zero eligible contacts and was never selected, tested, scheduled, seeded, or sent."
+        "detail": "No current-launch campaign canary is needed. Preserve this asset as historical evidence; Work owns the one direct API email and its recipient/suppression proof."
       },
-      "blocker": "No nonzero independently permissioned invitation audience is proven; the exact saved all-AND selector count is zero and send authority is withdrawn. Observed state remains DRAFT_NOT_SENT with zero sends.",
+      "blocker": "SUPERSEDED_CURRENT_LAUNCH: do not schedule, reuse, repair, or maintain this Tisha campaign.",
       "audienceReadback": {
         "status": "DRAFT_NOT_SENT",
         "audienceConfigured": false,
@@ -4813,7 +4810,7 @@
       "asset_kind": "workflow",
       "category": "business_workflow",
       "folder": "One Time / 45 - Events / 2026 / Tisha B'Av 2026",
-      "purpose": "Registered Tisha B'Av 2026 registration and reminder workflow.",
+      "purpose": "Historical Tisha B'Av 2026 registration/reminder workflow; superseded and not to be repaired, reused, or maintained.",
       "sourceOfTruth": "Shared",
       "allowedValues": [],
       "workflowsAllowedToWrite": [],
@@ -4833,7 +4830,7 @@
       "exactTrigger": "Contact Tag added — OT | Event | Tisha B'Av 2026 | Registered",
       "companionDelivery": "",
       "displayOrder": 13,
-      "desiredStatus": "ACTIVE_TESTED",
+      "desiredStatus": "BLOCKED",
       "observedStatus": "DRIFTED",
       "exactOrderedTriggers": [
         "Contact Tag added — OT | Event | Tisha B'Av 2026 | Registered.",
@@ -4860,6 +4857,7 @@
         "The repair subphase opened the disabled action, but the GHL editor did not render its subject, sender, body, or link controls; no action/workflow save was performed and a fresh reopen still showed the action disabled."
       ],
       "essentialValues": {
+        "current_launch_disposition": "historical_only_no_follow_up_workflow",
         "registration_trigger_tag": "OT | Event | Tisha B'Av 2026 | Registered",
         "immediate_confirmation_count": 1,
         "immediate_email_subject": "You're registered — let's strengthen ourselves together",
@@ -4900,9 +4898,9 @@
       "canary": {
         "result": "passed",
         "reference": "GHL-E01-operator-fab156df2719852d",
-        "detail": "Historical bounded GHL-only execution/replay proof passed, but current live readback is DRIFTED because Email A is disabled; the repair subphase could not reverify action identity and made no mutation."
+        "detail": "Historical bounded GHL-only execution/replay proof passed. It is retained as evidence only and creates no repair or reuse requirement."
       },
-      "blocker": "DRIFTED_BLOCKED_ACTION_IDENTITY_UNVERIFIED: GHL did not render the disabled action subject, sender, body, or link controls, so identity against the accepted configuration could not be proven and the action was not re-enabled or saved.",
+      "blocker": "SUPERSEDED_CURRENT_LAUNCH: no OT-02C and no Tisha follow-up workflow may be created, repaired, reused, or maintained.",
       "evidence": [
         "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json",
         "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json",
@@ -5493,7 +5491,7 @@
       "status": "active",
       "title": "OT-01 New Lead Intake",
       "file_path": "integrations/highlevel/ai-workflow-prompts/OT-01-new-lead-intake.md",
-      "sha256": "25d2a5e75179a3d53e470fc388ceafbe18b0d1ebf1e8c87bffee16780444ee7f",
+      "sha256": "4f19090249945d3147be4ffd92e10c8b0cf473498147c5690153bb8fe46e6ce2",
       "source": "Canonical workflow prompt generated from registry",
       "created_date": "2026-07-21",
       "approved_date": "",
@@ -6460,7 +6458,7 @@
   },
   "workflow_projection": {
     "generated_from": "integrations/highlevel/registry/workflow-registry.yaml",
-    "source_sha256": "08fa35058d351e79aa56a8bddcb6752ba2f356c4fde35c0a26b13338c1f53573",
+    "source_sha256": "4f85cc05db8c83424b98e8bba3c9cabe07378e95f0224d34a7a7b88f4e584577",
     "editable": false
   },
   "workflow_control": {

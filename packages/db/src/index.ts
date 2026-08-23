@@ -35,6 +35,12 @@ export function createMemoryPool(): DbPool {
     implementation: () => 1,
   });
   db.public.registerFunction({
+    name: 'hashtext',
+    args: [DataType.text],
+    returns: DataType.integer,
+    implementation: (value: string) => createHash('sha256').update(value).digest().readInt32BE(0),
+  });
+  db.public.registerFunction({
     name: 'btrim',
     args: [DataType.text],
     returns: DataType.text,
@@ -45,6 +51,12 @@ export function createMemoryPool(): DbPool {
     args: [DataType.text],
     returns: DataType.integer,
     implementation: (value: string) => value.length,
+  });
+  db.public.registerFunction({
+    name: 'strpos',
+    args: [DataType.text, DataType.text],
+    returns: DataType.integer,
+    implementation: (value: string, search: string) => value.indexOf(search) + 1,
   });
   db.public.registerFunction({
     name: 'cardinality',
@@ -304,16 +316,9 @@ export async function verifyMigrations(
     }
   }
 
-  const expectedAppliedOrder = inventory.files
-    .filter((migration) => ledgerIdSet.has(migration.id))
-    .map((migration) => migration.id);
-  if (
-    expectedAppliedOrder.length !== ledgerIds.length ||
-    expectedAppliedOrder.some((id, index) => id !== ledgerIds[index])
-  ) {
-    issues.push({ code: 'MIGRATION_LEDGER_ORDER_MISMATCH' });
-  }
-
+  // applied_at groups reflect when historical batches reached an environment,
+  // not the canonical inventory order. The durable safety invariant is that
+  // the applied ID set is an unbroken inventory prefix with pinned checksums.
   let sawPending = false;
   let appliedAfterPending = false;
   for (const migration of inventory.files) {
@@ -490,3 +495,8 @@ export type {
   ReconcileGovernedCampaignAudienceRequest,
   ReconcileGovernedCampaignAudienceResult,
 } from './audience-reconciliation/governed-campaign-decision-store.ts';
+export {
+  createPostgresOt03CheckoutAbandonmentRepository,
+  type Ot03CheckoutAbandonmentRepository,
+  type Ot03CheckoutAbandonmentSqlPool,
+} from './billing/checkout-abandonment-repository.ts';

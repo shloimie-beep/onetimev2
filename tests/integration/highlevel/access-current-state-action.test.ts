@@ -116,6 +116,66 @@ describe('HighLevel current-access action', () => {
     }).toEqual({ nonces: 0, receipts: 0, projections: 0 });
   });
 
+  it('fails closed for invalid signatures, stale timestamps, replayed nonces, and wrong scope', async () => {
+    const contactKey = await seedAdultContact();
+    await seedExactParentHousehold('household_access_primary');
+    const invalidSignaturePayload = accessPayload(
+      contactKey,
+      'household_access_primary',
+      1,
+      'invalid-signature-0001',
+    );
+    await expect(
+      invoke(invalidSignaturePayload, undefined, { signature: `v1=${'0'.repeat(64)}` }),
+    ).resolves.toMatchObject({
+      status: 401,
+      body: { ok: false, code: 'HIGHLEVEL_ACTION_AUTH_FAILED' },
+    });
+
+    const staleTimestamp = String(Math.floor((now.getTime() - 10 * 60_000) / 1000));
+    await expect(
+      invoke(
+        accessPayload(contactKey, 'household_access_primary', 1, 'stale-signature-0001'),
+        undefined,
+        { timestamp: staleTimestamp },
+      ),
+    ).resolves.toMatchObject({
+      status: 401,
+      body: { ok: false, code: 'HIGHLEVEL_ACTION_AUTH_FAILED' },
+    });
+
+    const replayPayload = accessPayload(
+      contactKey,
+      'household_access_primary',
+      1,
+      'nonce-replay-0001',
+    );
+    const nonce = 'highlevel-access-fixed-nonce-0001';
+    await expect(invoke(replayPayload, undefined, { nonce })).resolves.toMatchObject({
+      status: 200,
+    });
+    await expect(invoke(replayPayload, undefined, { nonce })).resolves.toMatchObject({
+      status: 409,
+      body: { ok: false, code: 'HIGHLEVEL_ACTION_REPLAYED' },
+    });
+
+    const wrongScopePayload = accessPayload(
+      contactKey,
+      'household_access_primary',
+      2,
+      'wrong-scope-0001',
+    );
+    await expect(
+      invoke({
+        ...wrongScopePayload,
+        scope: { ...wrongScopePayload.scope, location_id: 'different-location' },
+      }),
+    ).resolves.toMatchObject({
+      status: 403,
+      body: { ok: false, code: 'HIGHLEVEL_SCOPE_MISMATCH' },
+    });
+  });
+
   it('applies and replays exact current access without consulting consent or writing payment history', async () => {
     const contactKey = await seedAdultContact();
     await seedExactParentHousehold('household_access_primary');
@@ -163,9 +223,54 @@ describe('HighLevel current-access action', () => {
       `SELECT count(*)::int AS count FROM onetime.billing_entitlement_projections`,
     );
     expect(Number(legacyBilling.rows[0]?.count ?? 0)).toBe(0);
+    const evidence = await pool.query(
+      `SELECT
+         (SELECT count(*)::int FROM onetime.billing_access_episode_authority) AS authorities,
+         (SELECT count(*)::int FROM onetime.billing_access_episode_events) AS events,
+         (SELECT count(*)::int FROM onetime.account_access_events) AS access_events,
+         (SELECT count(*)::int FROM onetime.audit_events
+           WHERE event_type = 'highlevel_action_succeeded') AS audits`,
+    );
+    expect({
+      authorities: scalarCount(evidence.rows[0]?.authorities),
+      events: scalarCount(evidence.rows[0]?.events),
+      accessEvents: scalarCount(evidence.rows[0]?.access_events),
+      audits: scalarCount(evidence.rows[0]?.audits),
+    }).toEqual({ authorities: 1, events: 1, accessEvents: 1, audits: 1 });
     expect(JSON.stringify([applied.body, replayed.body])).not.toMatch(
       /access\.parent|household_access_primary|provider-state-reference|amount|invoice|card|subscription/i,
     );
+  });
+
+  it('rejects a billing episode already claimed by direct Stripe ingestion', async () => {
+    const contactKey = await seedAdultContact();
+    await seedExactParentHousehold('household_access_primary');
+    await pool.query(
+      `INSERT INTO onetime.billing_access_episode_authority
+         (authority_key, account_key, product_key, household_key, billing_episode,
+          source_kind, first_event_id, latest_event_id, provider_customer_ref_hash)
+       VALUES ($1,$2,$3,$4,$5,'stripe_direct',$6,$6,$7)`,
+      [
+        'c'.repeat(64),
+        config.accountKey,
+        config.productKey,
+        'household_access_primary',
+        'billing-episode-access-primary-0001',
+        'stripe-disabled-proof-event-0001',
+        'a'.repeat(64),
+      ],
+    );
+
+    await expect(
+      invoke(accessPayload(contactKey, 'household_access_primary', 1, 'source-conflict-0001')),
+    ).resolves.toMatchObject({
+      status: 409,
+      body: { ok: false, code: 'HIGHLEVEL_ACCESS_SOURCE_PRECEDENCE', retryable: false },
+    });
+    const projection = await pool.query(
+      `SELECT count(*)::int AS count FROM onetime.account_access_projections`,
+    );
+    expect(scalarCount(projection.rows[0]?.count)).toBe(0);
   });
 
   it('fails closed for missing and mismatched durable adult-household identity', async () => {
@@ -327,6 +432,7 @@ describe('HighLevel current-access action', () => {
       data: {
         ...conflictPayload.data,
         state: 'revoked',
+        verified_state: 'inactive',
         revocation_reason: 'provider_state_revoked',
       },
     });
@@ -356,8 +462,15 @@ describe('HighLevel current-access action', () => {
       actorKind: 'admin',
       idempotencyKey: 'access-precedence-admin-0001',
       command: {
-        ...payload.data,
+        household_key: payload.data.household_key,
+        state: payload.data.state,
+        effective_at: payload.data.effective_at,
+        expires_at: payload.data.expires_at,
         opaque_source_reference: 'admin-access-reference-0001',
+        source_revision: payload.data.source_revision,
+        source_updated_at: payload.data.source_updated_at,
+        policy_version: payload.data.policy_version,
+        revocation_reason: payload.data.revocation_reason,
       },
       now,
     });
@@ -427,6 +540,7 @@ describe('HighLevel current-access action', () => {
         data: {
           ...gracePayload.data,
           state: 'grace',
+          verified_state: 'grace',
           expires_at: '2026-08-23T10:00:00.000Z',
         },
       }),
@@ -435,10 +549,38 @@ describe('HighLevel current-access action', () => {
       body: { ok: true, result: { access_state: 'grace', sessions_revoked: 0 } },
     });
 
+    await expect(
+      invoke(accessPayload(contactKey, 'household_access_primary', 3, 'access-recovered-0001')),
+    ).resolves.toMatchObject({
+      status: 200,
+      body: { ok: true, result: { access_state: 'active', sessions_revoked: 0 } },
+    });
+
+    const scheduledEndPayload = accessPayload(
+      contactKey,
+      'household_access_primary',
+      4,
+      'access-scheduled-end-0001',
+    );
+    await expect(
+      invoke({
+        ...scheduledEndPayload,
+        data: {
+          ...scheduledEndPayload.data,
+          state: 'scheduled_end',
+          verified_state: 'canceled',
+          expires_at: '2026-08-23T10:00:00.000Z',
+        },
+      }),
+    ).resolves.toMatchObject({
+      status: 200,
+      body: { ok: true, result: { access_state: 'scheduled_end', sessions_revoked: 0 } },
+    });
+
     const revokedPayload = accessPayload(
       contactKey,
       'household_access_primary',
-      3,
+      5,
       'access-revoked-0001',
     );
     await expect(
@@ -447,6 +589,7 @@ describe('HighLevel current-access action', () => {
         data: {
           ...revokedPayload.data,
           state: 'revoked',
+          verified_state: 'canceled',
           revocation_reason: 'provider_state_revoked',
         },
       }),
@@ -597,7 +740,7 @@ function accessPayload(
   return {
     contract_version: HIGHLEVEL_CONTRACT_VERSION,
     action_name: 'access.apply_current_state' as const,
-    request_id: `request-${idempotencyKey}`,
+    request_id: `event-${idempotencyKey}`,
     idempotency_key: idempotencyKey,
     requested_at: now.toISOString(),
     actor: { kind: 'highlevel_system' as const, integration_key: 'OT-ACCESS' as const },
@@ -617,6 +760,11 @@ function accessPayload(
       source_updated_at: now.toISOString(),
       policy_version: 'access-current-state-2026-07-23.1',
       revocation_reason: null,
+      event_id: `event-${idempotencyKey}`,
+      billing_episode: 'billing-episode-access-primary-0001',
+      verified_state: 'active' as const,
+      provider_customer_ref_hash: 'a'.repeat(64),
+      provider_subscription_ref_hash: 'b'.repeat(64),
     },
   };
 }
@@ -627,10 +775,12 @@ async function invoke(
     keyId: accessActionKeyId,
     secret: accessActionSecret,
   },
+  options: { timestamp?: string; nonce?: string; signature?: string } = {},
 ) {
   const rawBody = Buffer.from(JSON.stringify(payload));
-  const timestamp = String(Math.floor(now.getTime() / 1000));
-  const nonce = `highlevel-access-nonce-${String(++nonceSequence).padStart(6, '0')}`;
+  const timestamp = options.timestamp ?? String(Math.floor(now.getTime() / 1000));
+  const nonce =
+    options.nonce ?? `highlevel-access-nonce-${String(++nonceSequence).padStart(6, '0')}`;
   const keyId = credential.keyId;
   const idempotencyKey = String((payload as { idempotency_key?: unknown }).idempotency_key ?? '');
   return handleHighLevelAction({
@@ -642,14 +792,16 @@ async function invoke(
       timestamp,
       nonce,
       idempotencyKey,
-      signature: signHighLevelActionRequest({
-        secret: credential.secret,
-        keyId,
-        timestamp,
-        nonce,
-        idempotencyKey,
-        rawBody,
-      }),
+      signature:
+        options.signature ??
+        signHighLevelActionRequest({
+          secret: credential.secret,
+          keyId,
+          timestamp,
+          nonce,
+          idempotencyKey,
+          rawBody,
+        }),
     },
     rawBody,
   });

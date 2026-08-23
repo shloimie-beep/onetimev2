@@ -1,3 +1,5 @@
+export { isStudentPin, STUDENT_PIN_LENGTH } from '../../identity/auth/index.ts';
+
 export const PARENT_HOUSEHOLD_CONTRACT_VERSION = '1.2.0' as const;
 export const STANDARD_FAMILY_STUDENT_ALLOWANCE = 3 as const;
 
@@ -64,8 +66,9 @@ export type StudentCredentialInput = {
   password_confirmation: string;
 };
 
-export type CreateParentStudentCommand = StudentProfileInput &
+export type CreateParentStudentCommand = Omit<StudentProfileInput, 'relationship'> &
   StudentCredentialInput & {
+    relationship: 'dependent';
     expected_revision: number;
   };
 

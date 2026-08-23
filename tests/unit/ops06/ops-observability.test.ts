@@ -108,6 +108,50 @@ describe('OPS-06 observability contracts', () => {
       external_notifications_sent: false,
     });
   });
+
+  it('does not block on a stale predecessor when an active replacement is ready', async () => {
+    const oldNow = new Date('2026-07-17T00:00:00.000Z');
+    const now = new Date('2026-07-17T00:03:00.000Z');
+    await upsertOpsWorkerHeartbeat({
+      pool,
+      config,
+      workerType: 'delivery_outbox',
+      workerInstanceKey: 'delivery_outbox:replaced-worker',
+      state: 'ready',
+      now: oldNow,
+      readiness: { mode: 'continuous' },
+    });
+    await upsertOpsWorkerHeartbeat({
+      pool,
+      config,
+      workerType: 'delivery_outbox',
+      workerInstanceKey: 'delivery_outbox:active-worker',
+      state: 'ready',
+      now,
+      readiness: { mode: 'continuous' },
+    });
+
+    const snapshot = await collectOpsHealthSnapshot({ pool, config, now });
+
+    expect(snapshot.workers).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          worker_instance_key: 'delivery_outbox:replaced-worker',
+          state: 'stale',
+        }),
+        expect.objectContaining({
+          worker_instance_key: 'delivery_outbox:active-worker',
+          state: 'ready',
+        }),
+      ]),
+    );
+    expect(snapshot.blockers).not.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ code: 'delivery_outbox_heartbeat_stale' }),
+      ]),
+    );
+    expect(snapshot.ok).toBe(true);
+  });
 });
 
 async function seedDeliveryOutbox(now: Date) {

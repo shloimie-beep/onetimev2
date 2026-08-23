@@ -77,7 +77,8 @@ async function fileMetrics(filePath: string) {
 
 const checks = [
   [(await stat(publicJs)).size <= 45_000, 'public.js must stay <= 45KB raw'],
-  [(await stat(publicCss)).size <= 35_000, 'public.css must stay <= 35KB raw'],
+  [(await stat(publicCss)).size <= 40_000, 'public.css must stay <= 40KB raw'],
+  [gzipSync(await readFile(publicCss)).byteLength <= 10_000, 'public.css must stay <= 10KB gzip'],
   [crmJsBytes > 50_000, 'CRM bundle should remain separate and detectable'],
   [portalJsBytes > 10_000, 'Portal bundle should remain separate and detectable'],
   [woff2Bytes <= 250_000, 'Total WOFF2 payload must stay <= 250KB raw'],

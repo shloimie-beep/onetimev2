@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import type {
   LearnerProfile,
@@ -19,10 +19,37 @@ import {
 } from '../features/portals/PortalFeatures.js';
 import { ParentClientRoot, StudentClientRoot, resolveCurrentClientRoute } from './router/index.js';
 import { ParentHouseholdWorkspace, type ParentHouseholdView } from './parent/household/index.js';
+import {
+  ParentLearningWorkspace,
+  parentClassroomDocumentNavigationRequired,
+  type ParentLearningView,
+} from './parent/learning/index.js';
+import { ParentSummaryWorkspace, type ParentSummaryView } from './parent/summary/index.js';
+import { ParentBillingContainer } from './parent/billing/index.js';
+import { ParentPreferencesWorkspace } from './parent/preferences/index.js';
+import { ParentPrivacyWorkspace } from './parent/privacy/index.js';
+import { shouldUseV21ParentChrome } from './parent/parent-shell-state.js';
+import { StudentCalendar } from './student/calendar/index.js';
+import { StudentLibraryWorkspace } from './student/library/index.js';
 import { StudentLearningOverview } from './student/learning/StudentLearningOverview.js';
 import { StudentClassroomWorkspace } from './student/classroom/StudentClassroomWorkspace.js';
+import { StudentPrivacyWorkspace } from './student/privacy/index.js';
+import {
+  StudentNotificationCenter,
+  loadStudentNotifications,
+  markAllStudentNotificationsRead,
+  markStudentNotificationRead,
+  openStudentNotificationAction,
+  setStudentNotificationSoundPreference,
+  type ForegroundCueCandidate,
+} from './student/notifications/index.js';
+import type {
+  StudentNotificationCenterSnapshot,
+  StudentNotificationFilter,
+} from '../../../../../packages/contracts/src/notifications/student/index.ts';
 import { SupportFeature } from './support/SupportFeature.js';
 import { AppShell, type ShellNavItem, type ShellUser } from './shell/AppShell.js';
+import { SectionTabs } from '@onetime/brand-system/react';
 import {
   PortalApiError,
   changeOwnPassword,
@@ -91,11 +118,37 @@ type PortalDialog =
     };
 
 function PortalApp() {
-  const portalRole = portalRoleFromLocation(location.pathname);
-  const classroomRoute = location.pathname === '/app/classroom';
-  const supportRoute = location.pathname.match(/^\/app\/student\/support(?:\/([^/]+))?$/u);
+  const [routeLocation, setRouteLocation] = useState(readPortalLocation);
+  const portalRole = portalRoleFromLocation(routeLocation.pathname);
+  const classroomOccurrenceId = studentClassroomOccurrenceFromLocation(routeLocation.pathname);
+  const classroomRoute = classroomOccurrenceId !== undefined;
+  const supportRoute = routeLocation.pathname.match(
+    portalRole === 'parent'
+      ? /^\/app\/parent\/support(?:\/([^/]+))?$/u
+      : /^\/app\/student\/support(?:\/([^/]+))?$/u,
+  );
+  const studentCalendarRoute =
+    portalRole === 'student' && routeLocation.pathname === '/app/student/calendar';
+  const studentNotificationsRoute =
+    portalRole === 'student' && routeLocation.pathname === '/app/student/notifications';
+  const studentAccountRoute =
+    portalRole === 'student' && routeLocation.pathname === '/app/student/account';
+  const accountTab = new URLSearchParams(routeLocation.search).get('tab') ?? 'profile';
+  const studentPrivacyView =
+    portalRole !== 'student'
+      ? null
+      : routeLocation.pathname === '/app/student/privacy'
+        ? ('privacy' as const)
+        : routeLocation.pathname === '/app/student/data-rights'
+          ? ('data-rights' as const)
+          : null;
+  const selectedClassKey = portalClassKeyFromLocation(routeLocation.pathname, portalRole);
+  const selectedStudentLibraryContentId = studentLibraryContentIdFromLocation(
+    routeLocation.pathname,
+  );
+  const v21ParentView = v21ParentRouteViewFromLocation(routeLocation.pathname);
   const [activeSection, setActiveSection] = useState<ParentPortalSection | StudentPortalSection>(
-    () => portalSectionFromLocation(portalRole),
+    () => portalSectionFromLocation(portalRole, routeLocation),
   );
   const [session, setSession] = useState<Awaited<ReturnType<typeof getSession>> | null>(null);
   const [v21ParentSession, setV21ParentSession] = useState<V21ApiSession | null>(null);
@@ -107,6 +160,13 @@ function PortalApp() {
   > | null>(null);
   const [studentDashboard, setStudentDashboard] = useState<StudentPortalDashboard | null>(null);
   const [studentLearning, setStudentLearning] = useState<StudentLearningSnapshot | null>(null);
+  const [studentNotifications, setStudentNotifications] =
+    useState<StudentNotificationCenterSnapshot | null>(null);
+  const [studentNotificationError, setStudentNotificationError] = useState('');
+  const [newNotificationCue, setNewNotificationCue] = useState<ForegroundCueCandidate | null>(null);
+  const seenNotificationIds = useRef(new Set<string>());
+  const notificationCenterInitialized = useRef(false);
+  const notificationAudioPermitted = useRef(false);
   const [liveClassQuestions, setLiveClassQuestions] = useState<LiveClassQuestion[]>([]);
   const [selectedLearnerKey, setSelectedLearnerKey] = useState<string | null>(null);
   const [parentMaterials, setParentMaterials] = useState<Record<string, ParentLearnerMaterials>>(
@@ -121,22 +181,32 @@ function PortalApp() {
     parentDashboard?.learners.find((learner) => learner.learner_key === selectedLearnerKey) ??
     parentDashboard?.learners[0] ??
     null;
+  const v21ParentChrome = shouldUseV21ParentChrome({
+    role: portalRole,
+    sessionModel: session?.session_model ?? null,
+    viewState,
+  });
+  const parentShellBooting = portalRole === 'parent' && session === null && viewState === 'loading';
 
   useEffect(() => {
-    if (classroomRoute && (location.search || location.hash)) {
-      history.replaceState({}, '', '/app/classroom');
+    if (classroomRoute && (routeLocation.search || routeLocation.hash)) {
+      history.replaceState({}, '', routeLocation.pathname);
+      setRouteLocation(readPortalLocation());
     }
     void load();
   }, []);
 
   useEffect(() => {
     const onPopState = () => {
-      setActiveSection(portalSectionFromLocation(portalRole));
+      const nextLocation = readPortalLocation();
+      const nextRole = portalRoleFromLocation(nextLocation.pathname);
+      setRouteLocation(nextLocation);
+      setActiveSection(portalSectionFromLocation(nextRole, nextLocation));
       document.getElementById('app-main')?.focus();
     };
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
-  }, [portalRole]);
+  }, []);
 
   useEffect(() => {
     if (!parentDashboard || !selectedLearner) return;
@@ -148,9 +218,21 @@ function PortalApp() {
     if (!session || portalRole !== 'student' || !studentDashboard?.upcoming_classes[0]) {
       return undefined;
     }
-    const interval = window.setInterval(() => void loadLiveQuestions(studentDashboard), 4000);
+    const interval = window.setInterval(() => {
+      void loadLiveQuestions(studentDashboard);
+      void refreshStudentClassState();
+    }, 4000);
     return () => window.clearInterval(interval);
   }, [session?.expires_at, portalRole, studentDashboard?.upcoming_classes[0]?.class_key]);
+
+  useEffect(() => {
+    if (!studentNotificationsRoute || !session || portalRole !== 'student') return undefined;
+    const interval = window.setInterval(() => {
+      const filter = studentNotifications?.filter ?? 'unread';
+      if (filter !== 'read') void refreshStudentNotifications(filter, true);
+    }, 30_000);
+    return () => window.clearInterval(interval);
+  }, [portalRole, session?.expires_at, studentNotifications?.filter, studentNotificationsRoute]);
 
   async function load() {
     setViewState('loading');
@@ -189,10 +271,19 @@ function PortalApp() {
         if (shell.mode === 'active') {
           const dashboard = await getParentDashboard();
           setParentDashboard(dashboard);
+          const routeLearnerKey = selectedClassKey
+            ? dashboard.learners.find((learner) =>
+                dashboard.upcoming_classes[learner.learner_key]?.some(
+                  ({ class_key }) => class_key === selectedClassKey,
+                ),
+              )?.learner_key
+            : undefined;
           setSelectedLearnerKey((current) =>
-            current && dashboard.learners.some((learner) => learner.learner_key === current)
-              ? current
-              : (dashboard.learners[0]?.learner_key ?? null),
+            routeLearnerKey
+              ? routeLearnerKey
+              : current && dashboard.learners.some((learner) => learner.learner_key === current)
+                ? current
+                : (dashboard.learners[0]?.learner_key ?? null),
           );
         } else {
           setParentDashboard(null);
@@ -206,6 +297,12 @@ function PortalApp() {
           setStudentLearning(await getStudentLearningSnapshot());
         } catch {
           setStudentLearning(null);
+        }
+        if (routeLocation.pathname === '/app/student/notifications') {
+          await refreshStudentNotifications('unread', false);
+        } else {
+          setStudentNotifications(null);
+          setStudentNotificationError('');
         }
       }
       setViewState('ready');
@@ -234,6 +331,99 @@ function PortalApp() {
       setLiveClassQuestions(await getLiveClassQuestions(occurrenceKey));
     } catch {
       setLiveClassQuestions([]);
+    }
+  }
+
+  async function refreshStudentClassState() {
+    try {
+      setStudentDashboard(await getStudentDashboard());
+    } catch (error) {
+      handleAuthError(error);
+    }
+  }
+
+  async function refreshStudentNotifications(
+    filter: StudentNotificationFilter,
+    detectNew: boolean,
+  ) {
+    try {
+      const next = await loadStudentNotifications(filter);
+      const newUnread =
+        detectNew && notificationCenterInitialized.current
+          ? next.notifications.find(
+              ({ notification, lifecycle }) =>
+                lifecycle === 'unread' && !seenNotificationIds.current.has(notification.id),
+            )
+          : undefined;
+      seenNotificationIds.current = new Set(
+        next.notifications.map(({ notification }) => notification.id),
+      );
+      notificationCenterInitialized.current = true;
+      setStudentNotifications(next);
+      setStudentNotificationError('');
+      if (newUnread) {
+        setNewNotificationCue({
+          notificationId: newUnread.notification.id,
+          disposition: 'created',
+          portalVisibility: document.visibilityState === 'visible' ? 'foreground' : 'background',
+          browserInteractionPermitsAudio: notificationAudioPermitted.current,
+        });
+      }
+    } catch (error) {
+      if (handleAuthError(error)) return;
+      setStudentNotificationError(errorMessage(error, 'Notifications could not load.'));
+    }
+  }
+
+  async function markNotificationRead(notificationId: string) {
+    if (!session) return;
+    try {
+      await markStudentNotificationRead(session.csrf_token, notificationId);
+      await refreshStudentNotifications(studentNotifications?.filter ?? 'unread', false);
+    } catch (error) {
+      setNotice({ kind: 'error', message: errorMessage(error, 'Notification was not updated.') });
+    }
+  }
+
+  async function markAllNotificationsRead() {
+    if (!session) return;
+    try {
+      await markAllStudentNotificationsRead(session.csrf_token);
+      await refreshStudentNotifications(studentNotifications?.filter ?? 'unread', false);
+    } catch (error) {
+      setNotice({ kind: 'error', message: errorMessage(error, 'Notifications were not updated.') });
+    }
+  }
+
+  async function changeNotificationSoundPreference(enabled: boolean) {
+    if (!session) return;
+    notificationAudioPermitted.current = enabled;
+    try {
+      await setStudentNotificationSoundPreference(session.csrf_token, enabled);
+      setStudentNotifications((current) =>
+        current ? { ...current, soundEnabled: enabled } : null,
+      );
+    } catch (error) {
+      setNotice({ kind: 'error', message: errorMessage(error, 'Sound preference was not saved.') });
+    }
+  }
+
+  async function openNotificationAction(notificationId: string) {
+    if (!session) return;
+    notificationAudioPermitted.current = true;
+    try {
+      const decision = await openStudentNotificationAction(session.csrf_token, notificationId);
+      if (decision.status === 'allowed' && decision.route) {
+        window.location.assign(decision.route);
+        return;
+      }
+      setNotice({ kind: 'info', message: decision.message ?? 'No longer available' });
+      await refreshStudentNotifications(studentNotifications?.filter ?? 'unread', false);
+    } catch (error) {
+      setNotice({
+        kind: 'error',
+        message: errorMessage(error, 'Notification action unavailable.'),
+      });
     }
   }
 
@@ -492,6 +682,11 @@ function PortalApp() {
         currentPassword: input.currentPassword,
         newPassword: input.newPassword,
       });
+      if (session.session_model === 'v21' && result.csrf_token) {
+        const rotatedSession = { ...session, csrf_token: result.csrf_token };
+        setSession(rotatedSession);
+        setV21ParentSession(rotatedSession);
+      }
       setNotice({ kind: 'success', message: 'Password changed securely.' });
       return result;
     } catch (error) {
@@ -549,124 +744,64 @@ function PortalApp() {
     }
   }
 
-  const navItems = useMemo<ShellNavItem[]>(() => {
-    if (classroomRoute) {
-      return [
-        {
-          id: 'student-portal',
-          label: 'Student Portal',
-          href: '/app/student',
-          current: false,
-        },
-        {
-          id: 'student-classroom',
-          label: 'Classroom',
-          href: '/app/classroom',
-          current: true,
-        },
-      ];
-    }
-    if (v21ParentSession) {
-      return [
-        {
-          id: 'v21-parent-students',
-          label: 'Students',
-          href: '/app/parent/students',
-          current: location.pathname.startsWith('/app/parent/students'),
-        },
-        {
-          id: 'v21-parent-schedule',
-          label: 'Schedule',
-          href: '#parent-program-schedule',
-          current: false,
-        },
-      ];
-    }
-    if (portalRole === 'parent') {
-      return [
-        {
-          id: 'parent-students',
-          label: 'Students',
-          href: '/app/parent/students',
-          current: activeSection === 'learners',
-        },
-        {
-          id: 'parent-classes',
-          label: 'Classes & materials',
-          href: '/app/parent?section=classes',
-          current: activeSection === 'classes',
-        },
-        {
-          id: 'parent-progress',
-          label: 'Progress & rewards',
-          href: '/app/parent?section=progress',
-          current: activeSection === 'progress',
-        },
-        {
-          id: 'parent-billing',
-          label: 'Billing',
-          href: '/app/parent?section=billing',
-          current: activeSection === 'billing',
-        },
-        {
-          id: 'parent-updates',
-          label: 'Updates',
-          href: '/app/parent?section=updates',
-          current: activeSection === 'updates',
-        },
-      ];
-    }
-    return [
-      {
-        id: 'student-today',
-        label: 'Today',
-        href: '/app/student',
-        current: activeSection === 'today',
-      },
-      {
-        id: 'student-library',
-        label: 'Library',
-        href: '/app/student/library',
-        current: activeSection === 'library',
-      },
-      {
-        id: 'student-progress',
-        label: 'Progress',
-        href: '/app/student/progress',
-        current: activeSection === 'progress',
-      },
-      {
-        id: 'student-questions',
-        label: 'Questions',
-        href: '/app/student/questions',
-        current: activeSection === 'questions',
-      },
-      {
-        id: 'student-updates',
-        label: 'Updates',
-        href: '/app/student/updates',
-        current: activeSection === 'updates',
-      },
-      {
-        id: 'student-support',
-        label: 'Support',
-        href: '/app/student/support',
-        current: location.pathname.startsWith('/app/student/support'),
-      },
-    ];
-  }, [activeSection, classroomRoute, portalRole, v21ParentSession]);
-  const title = classroomRoute
-    ? 'Classroom'
-    : portalRole === 'parent'
-      ? 'Parent Portal'
-      : 'Student Portal';
+  const navigation = useMemo(
+    () =>
+      portalNavigationFor({
+        role: portalRole,
+        pathname: routeLocation.pathname,
+        search: routeLocation.search,
+        billingEnabled: parentDashboard?.billing.enabled === true,
+      }),
+    [parentDashboard?.billing.enabled, portalRole, routeLocation.pathname, routeLocation.search],
+  );
+  const navItems = navigation.primary;
+  const title = portalRole === 'parent' ? 'Parent Portal' : 'Student Portal';
   const description = classroomRoute
     ? 'Protected Student classroom'
     : portalRole === 'parent'
       ? (v21ParentSession?.parent_context.household.display_name ??
         parentDashboard?.household.display_name ??
-        'Household')
+        (v21ParentChrome ? 'Family learning' : 'Household'))
       : (studentDashboard?.learner.display_name ?? 'Learner');
+
+  function navigatePortal(href: string) {
+    if (href.startsWith('#')) {
+      history.pushState({}, '', href);
+      setRouteLocation(readPortalLocation());
+      document.querySelector(href)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+    const target = new URL(href, location.origin);
+    if (
+      v21ParentSession &&
+      target.origin === location.origin &&
+      parentClassroomDocumentNavigationRequired(routeLocation.pathname, target.pathname)
+    ) {
+      window.location.assign(target.href);
+      return;
+    }
+    const section = target.searchParams.get('section');
+    if (
+      target.pathname === routeLocation.pathname &&
+      section &&
+      isPortalSection(portalRole, section)
+    ) {
+      history.pushState({}, '', target);
+      setRouteLocation(readPortalLocation());
+      setActiveSection(section);
+      return;
+    }
+    history.pushState({}, '', href);
+    const nextLocation = readPortalLocation();
+    const nextRole = portalRoleFromLocation(nextLocation.pathname);
+    setRouteLocation(nextLocation);
+    setActiveSection(portalSectionFromLocation(nextRole, nextLocation));
+    if (v21ParentSession) {
+      window.setTimeout(() => document.getElementById('app-main')?.focus(), 0);
+      return;
+    }
+    void load();
+  }
 
   return (
     <AppShell
@@ -674,29 +809,21 @@ function PortalApp() {
       navItems={navItems}
       title={title}
       description={description}
+      toolbar={
+        navigation.subcategories.length > 0 ? (
+          <SectionTabs
+            tabs={navigation.subcategories}
+            currentId={navigation.activeSubcategory}
+            label={`${navigation.activePrimary} navigation`}
+            onSelect={(tab) => {
+              if (tab.href) navigatePortal(tab.href);
+            }}
+          />
+        ) : undefined
+      }
       workspaceClassName="app-workspace--portal"
       notice={notice ? <NoticeBanner notice={notice} /> : undefined}
-      onNavigate={(href) => {
-        if (href.startsWith('#')) {
-          history.pushState({}, '', href);
-          document.querySelector(href)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          return;
-        }
-        const target = new URL(href, location.origin);
-        const section = target.searchParams.get('section');
-        if (
-          target.pathname === location.pathname &&
-          section &&
-          isPortalSection(portalRole, section)
-        ) {
-          history.pushState({}, '', target);
-          setActiveSection(section);
-          return;
-        }
-        history.pushState({}, '', href);
-        setActiveSection(portalSectionFromLocation(portalRole));
-        void load();
-      }}
+      onNavigate={navigatePortal}
       onLogout={() => void logout()}
       sessionExpired={sessionExpired}
       onSignIn={signIn}
@@ -710,18 +837,62 @@ function PortalApp() {
           : undefined
       }
     >
-      {supportRoute ? (
-        <SupportFeature
-          receiptId={supportRoute[1] ? decodeURIComponent(supportRoute[1]) : undefined}
-          basePath="/app/student/support"
-          onProtectedStateCleared={() => {
-            setSessionExpired(true);
-            setSession(null);
-          }}
-        />
+      {parentShellBooting ? (
+        <ParentPortalLoadingSkeleton title={v21ParentPageTitle(v21ParentView)} />
+      ) : supportRoute ? (
+        portalRole === 'student' ? (
+          <StudentParentSupportBoundary />
+        ) : (
+          <SupportFeature
+            receiptId={supportRoute[1] ? decodeURIComponent(supportRoute[1]) : undefined}
+            basePath="/app/parent/support"
+            onProtectedStateCleared={() => {
+              setSessionExpired(true);
+              setSession(null);
+            }}
+          />
+        )
       ) : portalRole === 'parent' ? (
         v21ParentSession ? (
-          <ParentHouseholdWorkspace view={parentHouseholdViewFromLocation(location.pathname)} />
+          v21ParentView.kind === 'learning' ? (
+            <ParentLearningWorkspace view={v21ParentView.view} />
+          ) : v21ParentView.kind === 'summary' ? (
+            <ParentSummaryWorkspace view={v21ParentView.view} />
+          ) : v21ParentView.kind === 'billing' ? (
+            <ParentBillingContainer />
+          ) : v21ParentView.kind === 'preferences' ? (
+            <ParentPreferencesWorkspace />
+          ) : v21ParentView.kind === 'privacy' ? (
+            <ParentPrivacyWorkspace initialView={v21ParentView.view} />
+          ) : v21ParentView.kind === 'account' ? (
+            <section className="ot-portal-feature" aria-labelledby="v21-parent-account-heading">
+              <div className="ot-panel">
+                <p className="ot-eyebrow">Parent account</p>
+                <h2 id="v21-parent-account-heading">Account and security</h2>
+                {session ? (
+                  <AccountSecurityPanel
+                    identifier={session.user.email}
+                    role={session.user.role}
+                    roleLabel={session.user.role_label}
+                    onChangePassword={handlePasswordChange}
+                  />
+                ) : null}
+                <p>
+                  <a href="/forgot-password">Use secure account recovery</a> if you cannot change
+                  your password while signed in.
+                </p>
+              </div>
+            </section>
+          ) : (
+            <ParentHouseholdWorkspace view={v21ParentView.view} />
+          )
+        ) : routeLocation.pathname === '/app/parent/account' ? (
+          <PortalAccountPanel
+            role="parent"
+            tab={accountTab}
+            user={session?.user ?? null}
+            onChangePassword={handlePasswordChange}
+          />
         ) : parentAccessShell?.mode === 'paused' ? (
           <ParentPausedShell
             displayName={parentAccessShell.display_name}
@@ -761,6 +932,7 @@ function PortalApp() {
             viewState={viewState}
             dashboard={parentDashboard}
             selectedLearnerKey={selectedLearner?.learner_key ?? null}
+            selectedClassKey={selectedClassKey}
             activeSection={activeSection as ParentPortalSection}
             navigationMode="shell"
             learnerMaterials={parentMaterials}
@@ -797,15 +969,54 @@ function PortalApp() {
       ) : classroomRoute ? (
         session ? (
           <StudentClassroomWorkspace
+            occurrenceId={classroomOccurrenceId ?? null}
             csrfToken={session.csrf_token}
             actorFingerprint={actorFingerprint}
             onProtectedStateCleared={() => void load()}
           />
         ) : null
+      ) : studentCalendarRoute ? (
+        studentDashboard ? (
+          <StudentCalendar
+            classes={studentDashboard.upcoming_classes}
+            onLaunch={(action) => void handleProtectedAction(action)}
+          />
+        ) : (
+          <p role="status">Loading Student calendar...</p>
+        )
+      ) : studentNotificationsRoute ? (
+        studentNotifications ? (
+          <StudentNotificationCenter
+            snapshot={studentNotifications}
+            studentTimeZone="Asia/Jerusalem"
+            newlyRenderedNotice={newNotificationCue}
+            onFilterChange={(filter) => void refreshStudentNotifications(filter, false)}
+            onMarkRead={(notificationId) => void markNotificationRead(notificationId)}
+            onMarkAllRead={() => void markAllNotificationsRead()}
+            onOpenAction={(notificationId) => void openNotificationAction(notificationId)}
+            onSoundPreferenceChange={(enabled) => void changeNotificationSoundPreference(enabled)}
+            onPlayForegroundCue={playStudentNotificationCue}
+          />
+        ) : (
+          <section aria-live="polite">
+            <h2>Notifications</h2>
+            <p>{studentNotificationError || 'Loading notifications...'}</p>
+          </section>
+        )
+      ) : studentPrivacyView ? (
+        <StudentPrivacyWorkspace initialView={studentPrivacyView} />
+      ) : studentAccountRoute ? (
+        <PortalAccountPanel
+          role="student"
+          tab={accountTab}
+          user={session?.user ?? null}
+          onChangePassword={handlePasswordChange}
+        />
       ) : (
         <StudentClientRoot
           viewState={viewState}
           dashboard={studentDashboard}
+          selectedClassKey={selectedClassKey}
           activeSection={activeSection as StudentPortalSection}
           navigationMode="shell"
           actorFingerprint={actorFingerprint}
@@ -833,6 +1044,17 @@ function PortalApp() {
           }
           onPreviewSupport={() => window.location.assign('/app/student/support')}
           onRetry={() => void load()}
+          libraryWorkspace={
+            session ? (
+              <StudentLibraryWorkspace
+                csrfToken={session.csrf_token}
+                actorFingerprint={actorFingerprint}
+                onProtectedStateCleared={() => void load()}
+                selectedContentId={selectedStudentLibraryContentId}
+              />
+            ) : undefined
+          }
+          libraryDetailMode={selectedStudentLibraryContentId !== undefined}
           accountSecurity={
             session ? (
               <AccountSecurityPanel
@@ -941,6 +1163,13 @@ function ParentPausedShell({
           Send reset link
         </button>
       </div>
+      <div className="ot-panel" id="support">
+        <h3>Support</h3>
+        <p>Open private Parent support for help restoring learning access.</p>
+        <a className="ot-button ot-button--secondary" href="/app/parent/support">
+          Open Support
+        </a>
+      </div>
       <div id="account-security">{accountSecurity}</div>
     </section>
   );
@@ -969,8 +1198,7 @@ function AccountSecurityPanel({
   const [confirmPassword, setConfirmPassword] = useState('');
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<{ kind: 'success' | 'error'; message: string } | null>(null);
-  const passwordReady =
-    newPassword.length >= 10 && /[A-Za-z]/u.test(newPassword) && /[0-9]/u.test(newPassword);
+  const passwordReady = newPassword.length >= 6 && newPassword.length <= 128;
   const canSubmit =
     !saving &&
     currentPassword.length > 0 &&
@@ -999,8 +1227,8 @@ function AccountSecurityPanel({
           </div>
         </dl>
         <p className="ot-muted">
-          Student passwords are managed by a Parent or Administrator. Ask them to send a secure
-          reset.
+          Student PINs and legacy credentials are managed by a Parent or Administrator. Ask them to
+          reset your Student PIN.
         </p>
       </section>
     );
@@ -1066,7 +1294,7 @@ function AccountSecurityPanel({
             value={currentPassword}
             autoComplete="current-password"
             required
-            maxLength={256}
+            maxLength={128}
             onChange={(event) => setCurrentPassword(event.currentTarget.value)}
           />
         </label>
@@ -1077,14 +1305,14 @@ function AccountSecurityPanel({
             value={newPassword}
             autoComplete="new-password"
             required
-            minLength={10}
-            maxLength={256}
+            minLength={6}
+            maxLength={128}
             aria-describedby="new-password-help"
             onChange={(event) => setNewPassword(event.currentTarget.value)}
           />
         </label>
         <p id="new-password-help" className="ot-muted">
-          Use at least 10 characters with at least one letter and one number.
+          At least 6 characters.
         </p>
         <label className="ot-field">
           <span>Confirm new password</span>
@@ -1093,8 +1321,8 @@ function AccountSecurityPanel({
             value={confirmPassword}
             autoComplete="new-password"
             required
-            minLength={10}
-            maxLength={256}
+            minLength={6}
+            maxLength={128}
             onChange={(event) => setConfirmPassword(event.currentTarget.value)}
           />
         </label>
@@ -1292,8 +1520,7 @@ function StudentAccessFormDialog({
   const [password, setPassword] = useState('');
   const usernameRequired = action === 'setup';
   const usernameReady = !usernameRequired || username.trim().length >= 3;
-  const passwordReady =
-    password.length >= 10 && /[A-Za-z]/.test(password) && /[0-9]/.test(password);
+  const passwordReady = /^[0-9]{6}$/u.test(password);
   const canSave = !saving && usernameReady && passwordReady;
   return (
     <DialogFrame
@@ -1324,20 +1551,22 @@ function StudentAccessFormDialog({
           />
         </label>
         <label className="ot-field">
-          <span>Student password</span>
+          <span>Six-digit Student PIN</span>
           <input
             type="password"
             value={password}
             required
-            minLength={10}
-            maxLength={128}
+            minLength={6}
+            maxLength={6}
+            inputMode="numeric"
+            pattern="[0-9]{6}"
             autoComplete="new-password"
             onChange={(event) => setPassword(event.currentTarget.value)}
           />
         </label>
         <p className="ot-muted">
-          These parent-managed credentials are stored for student access. No student email is used
-          in this setup.
+          This six-digit PIN is parent-managed for Student access. No Student email is used in this
+          setup.
         </p>
         <DialogActions
           saving={saving}
@@ -1514,6 +1743,22 @@ function isProtectedActionDescriptor(value: unknown): value is ProtectedActionDe
   );
 }
 
+function playStudentNotificationCue() {
+  const AudioContextConstructor = window.AudioContext;
+  if (!AudioContextConstructor) return;
+  const context = new AudioContextConstructor();
+  const oscillator = context.createOscillator();
+  const gain = context.createGain();
+  oscillator.frequency.value = 880;
+  gain.gain.setValueAtTime(0.04, context.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 0.12);
+  oscillator.connect(gain);
+  gain.connect(context.destination);
+  oscillator.start();
+  oscillator.stop(context.currentTime + 0.12);
+  oscillator.addEventListener('ended', () => void context.close(), { once: true });
+}
+
 function studentAccessLabel(action: StudentAccessOperationType) {
   if (action === 'setup') return 'Setup';
   if (action === 'reset') return 'Reset';
@@ -1526,22 +1771,81 @@ function label(value: string) {
   return value.replaceAll('_', ' ').replace(/^\w/, (letter) => letter.toUpperCase());
 }
 
+type PortalLocation = {
+  pathname: string;
+  search: string;
+  hash: string;
+};
+
+function readPortalLocation(): PortalLocation {
+  return {
+    pathname: location.pathname,
+    search: location.search,
+    hash: location.hash,
+  };
+}
+
 function portalSectionFromLocation(
   role: 'parent' | 'student',
+  current: Pick<PortalLocation, 'pathname' | 'search'> = readPortalLocation(),
 ): ParentPortalSection | StudentPortalSection {
-  const requested = new URLSearchParams(location.search).get('section');
+  const requested = new URLSearchParams(current.search).get('section');
   if (requested && isPortalSection(role, requested)) return requested;
   if (role === 'student') {
-    if (location.pathname === '/app/student/library') return 'library';
-    if (location.pathname === '/app/student/progress') return 'progress';
-    if (location.pathname.startsWith('/app/student/questions')) return 'questions';
-    if (location.pathname === '/app/student/updates') return 'updates';
+    if (current.pathname.startsWith('/app/student/classes/')) return 'today';
+    if (
+      current.pathname === '/app/student/library' ||
+      current.pathname.startsWith('/app/student/library/')
+    )
+      return 'library';
+    if (current.pathname === '/app/student/progress') return 'progress';
+    if (current.pathname.startsWith('/app/student/questions')) return 'questions';
+    if (current.pathname === '/app/student/updates') return 'updates';
   }
+  if (
+    current.pathname === '/app/parent/calendar' ||
+    current.pathname.startsWith('/app/parent/classes/') ||
+    current.pathname === '/app/parent/classroom' ||
+    current.pathname === '/app/parent/library'
+  )
+    return 'classes';
+  if (current.pathname === '/app/parent/progress') return 'progress';
+  if (current.pathname === '/app/parent/updates' || current.pathname === '/app/parent/newsletter') {
+    return 'updates';
+  }
+  if (current.pathname === '/app/parent/billing') return 'billing';
   return role === 'parent' ? 'learners' : 'today';
 }
 
+export function studentLibraryContentIdFromLocation(pathname: string): string | null | undefined {
+  if (pathname === '/app/student/library') return undefined;
+  if (!pathname.startsWith('/app/student/library/')) return undefined;
+  const match = /^\/app\/student\/library\/([^/]+)$/u.exec(pathname);
+  if (!match?.[1]) return null;
+  try {
+    const contentId = decodeURIComponent(match[1]);
+    return contentId && !contentId.includes('/') ? contentId : null;
+  } catch {
+    return null;
+  }
+}
+
+export function studentClassroomOccurrenceFromLocation(
+  pathname: string,
+): string | null | undefined {
+  const match = /^\/app\/student\/class\/([^/]+)$/u.exec(pathname);
+  if (!match?.[1]) return undefined;
+  try {
+    const occurrenceId = decodeURIComponent(match[1]);
+    return occurrenceId && occurrenceId.length <= 256 && !occurrenceId.includes('/')
+      ? occurrenceId
+      : null;
+  } catch {
+    return null;
+  }
+}
+
 function portalRoleFromLocation(pathname: string): 'parent' | 'student' {
-  if (pathname === '/app/classroom') return 'student';
   const route = resolveCurrentClientRoute(pathname);
   if (route?.shell === 'parent') return 'parent';
   if (route?.shell === 'student') return 'student';
@@ -1557,6 +1861,104 @@ function parentHouseholdViewFromLocation(pathname: string): ParentHouseholdView 
   return { kind: 'overview' };
 }
 
+type V21ParentRouteView =
+  | { kind: 'learning'; view: ParentLearningView }
+  | { kind: 'household'; view: ParentHouseholdView }
+  | { kind: 'summary'; view: ParentSummaryView }
+  | { kind: 'billing' }
+  | { kind: 'preferences' }
+  | { kind: 'privacy'; view: 'privacy' | 'data-rights' }
+  | { kind: 'account' };
+
+function v21ParentRouteViewFromLocation(pathname: string): V21ParentRouteView {
+  if (pathname === '/app/parent') return { kind: 'learning', view: 'today' };
+  if (pathname === '/app/parent/classroom') return { kind: 'learning', view: 'classroom' };
+  if (pathname === '/app/parent/library') return { kind: 'learning', view: 'library' };
+  if (pathname === '/app/parent/questions') return { kind: 'learning', view: 'questions' };
+  const classMatch = /^\/app\/parent\/classes\/([^/]+)$/u.exec(pathname);
+  if (classMatch?.[1]) {
+    return {
+      kind: 'summary',
+      view: { kind: 'class', occurrence_id: decodeURIComponent(classMatch[1]) },
+    };
+  }
+  if (pathname === '/app/parent/calendar') {
+    return { kind: 'summary', view: { kind: 'calendar' } };
+  }
+  if (pathname === '/app/parent/progress') {
+    return { kind: 'summary', view: { kind: 'progress' } };
+  }
+  const progressMatch = /^\/app\/parent\/progress\/([^/]+)$/u.exec(pathname);
+  if (progressMatch?.[1]) {
+    return {
+      kind: 'summary',
+      view: { kind: 'progress', student_id: decodeURIComponent(progressMatch[1]) },
+    };
+  }
+  if (pathname === '/app/parent/newsletter') {
+    return { kind: 'summary', view: { kind: 'updates', newsletterOnly: true } };
+  }
+  if (pathname === '/app/parent/updates') {
+    return { kind: 'summary', view: { kind: 'updates' } };
+  }
+  if (pathname === '/app/parent/billing') return { kind: 'billing' };
+  if (pathname === '/app/parent/preferences') return { kind: 'preferences' };
+  if (pathname === '/app/parent/privacy') return { kind: 'privacy', view: 'privacy' };
+  if (pathname === '/app/parent/data-rights') return { kind: 'privacy', view: 'data-rights' };
+  if (pathname === '/app/parent/account') return { kind: 'account' };
+  return { kind: 'household', view: parentHouseholdViewFromLocation(pathname) };
+}
+
+function v21ParentPageTitle(view: V21ParentRouteView) {
+  if (view.kind === 'learning') {
+    if (view.view === 'today') return 'Today';
+    if (view.view === 'classroom') return 'Classroom';
+    if (view.view === 'library') return 'Library';
+    return 'Questions';
+  }
+  if (view.kind === 'household') {
+    if (view.view.kind === 'create') return 'Add Student';
+    if (view.view.kind === 'student') return 'Student details';
+    return 'Students';
+  }
+  if (view.kind === 'summary') {
+    if (view.view.kind === 'calendar' || view.view.kind === 'class') return 'Calendar';
+    if (view.view.kind === 'progress') return 'Progress';
+    return 'Updates';
+  }
+  if (view.kind === 'billing') return 'Billing';
+  if (view.kind === 'preferences') return 'Preferences';
+  if (view.kind === 'privacy' || view.kind === 'account') return 'Account';
+  return 'Parent Portal';
+}
+
+function ParentPortalLoadingSkeleton({ title }: { title: string }) {
+  return (
+    <section
+      className="parent-portal-loading-skeleton"
+      aria-label={`Loading ${title}`}
+      aria-busy="true"
+      role="status"
+    >
+      <p>Loading {title}...</p>
+      <div className="parent-portal-loading-skeleton__panel" aria-hidden="true">
+        <span />
+        <span />
+        <span />
+      </div>
+      <div className="parent-portal-loading-skeleton__cards" aria-hidden="true">
+        <span />
+        <span />
+      </div>
+    </section>
+  );
+}
+
+function portalClassKeyFromLocation(pathname: string, role: 'parent' | 'student'): string | null {
+  const match = new RegExp(`^/app/${role}/classes/([^/]+)$`, 'u').exec(pathname);
+  return match?.[1] ? decodeURIComponent(match[1]) : null;
+}
+
 function isPortalSection(
   role: 'parent' | 'student',
   value: string,
@@ -1565,7 +1967,248 @@ function isPortalSection(
   return sections.some((section) => section.id === value);
 }
 
-const root = document.getElementById('portal-root');
-if (root) {
-  createRoot(root).render(<PortalApp />);
+function StudentParentSupportBoundary() {
+  return (
+    <section className="ot-portal-feature" aria-labelledby="student-parent-support-title">
+      <div className="ot-panel">
+        <p className="ot-eyebrow">Technical help</p>
+        <h2 id="student-parent-support-title">Ask your Parent for help</h2>
+        <p>
+          Technical help is handled by your Parent. Ask them to open Parent Portal and contact
+          support; this Student account cannot send technical-support requests.
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function PortalAccountPanel({
+  role,
+  tab,
+  user,
+  onChangePassword,
+}: {
+  role: 'parent' | 'student';
+  tab: string;
+  user: SessionUser | null;
+  onChangePassword: (input: {
+    currentPassword: string;
+    newPassword: string;
+  }) => Promise<{ sessions_invalidated: number }>;
+}) {
+  const security = tab === 'security';
+  return (
+    <section className="ot-portal-feature" aria-labelledby={`${role}-account-heading`}>
+      <div className="ot-panel">
+        <p className="ot-eyebrow">{role === 'parent' ? 'Parent' : 'Student'} account</p>
+        <h2 id={`${role}-account-heading`}>{security ? 'Sign-in & Security' : 'Profile'}</h2>
+        {security && user ? (
+          <AccountSecurityPanel
+            identifier={user.email}
+            role={user.role}
+            roleLabel={user.role_label}
+            onChangePassword={onChangePassword}
+          />
+        ) : (
+          <dl className="ot-stats">
+            <div>
+              <dt>Name</dt>
+              <dd>{user?.display_name ?? 'Protected account'}</dd>
+            </div>
+            <div>
+              <dt>Account</dt>
+              <dd>{user?.email ?? 'Loading profile'}</dd>
+            </div>
+          </dl>
+        )}
+      </div>
+    </section>
+  );
+}
+
+type PortalPrimaryCategory = 'Today' | 'Learning' | 'Family' | 'Updates' | 'Account';
+
+type PortalNavigation = {
+  primary: ShellNavItem[];
+  activePrimary: PortalPrimaryCategory;
+  activeSubcategory: string;
+  subcategories: Array<{ id: string; label: string; href: string }>;
+};
+
+export function portalNavigationFor({
+  role,
+  pathname,
+  search,
+  billingEnabled,
+}: {
+  role: 'parent' | 'student';
+  pathname: string;
+  search: string;
+  billingEnabled: boolean;
+}): PortalNavigation {
+  const querySelection =
+    new URLSearchParams(search).get('tab') ?? new URLSearchParams(search).get('scope');
+  const isParent = role === 'parent';
+  const category: PortalPrimaryCategory = isParent
+    ? parentCategoryForPath(pathname, search)
+    : studentCategoryForPath(pathname);
+  const primaryLabels: PortalPrimaryCategory[] = isParent
+    ? ['Today', 'Learning', 'Family', 'Updates', 'Account']
+    : ['Today', 'Learning', 'Updates', 'Account'];
+  const primary = primaryLabels.map((label) => ({
+    id: `${role}-${label.toLowerCase()}`,
+    label,
+    href: primaryHref(role, label),
+    current: category === label,
+  }));
+  const subcategories = subcategoriesFor({ role, category, billingEnabled });
+  const activeSubcategory =
+    subcategories.find((item) => subcategoryMatches(item.id, pathname, querySelection))?.id ??
+    subcategories[0]?.id ??
+    '';
+  return { primary, activePrimary: category, activeSubcategory, subcategories };
+}
+
+function primaryHref(role: 'parent' | 'student', category: PortalPrimaryCategory): string {
+  if (category === 'Today') return `/app/${role}`;
+  if (category === 'Learning')
+    return role === 'parent' ? '/app/parent/classroom' : '/app/student/calendar';
+  if (category === 'Family') return '/app/parent/students';
+  if (category === 'Updates') return `/app/${role}/updates`;
+  return `/app/${role}/account?tab=profile`;
+}
+
+function parentCategoryForPath(pathname: string, search: string): PortalPrimaryCategory {
+  if (
+    pathname === '/app/parent/progress' &&
+    new URLSearchParams(search).get('scope') === 'students'
+  ) {
+    return 'Family';
+  }
+  if (pathname.startsWith('/app/parent/students') || pathname.startsWith('/app/parent/progress/')) {
+    return 'Family';
+  }
+  if (
+    pathname === '/app/parent/classroom' ||
+    pathname === '/app/parent/library' ||
+    pathname === '/app/parent/questions' ||
+    pathname === '/app/parent/progress' ||
+    pathname === '/app/parent/calendar' ||
+    pathname.startsWith('/app/parent/classes/')
+  ) {
+    return 'Learning';
+  }
+  if (pathname === '/app/parent/updates' || pathname === '/app/parent/newsletter') return 'Updates';
+  if (
+    pathname === '/app/parent/account' ||
+    pathname === '/app/parent/privacy' ||
+    pathname === '/app/parent/data-rights' ||
+    pathname === '/app/parent/billing' ||
+    pathname === '/app/parent/preferences' ||
+    pathname.startsWith('/app/parent/support')
+  ) {
+    return 'Account';
+  }
+  return 'Today';
+}
+
+function studentCategoryForPath(pathname: string): PortalPrimaryCategory {
+  if (
+    pathname === '/app/student/calendar' ||
+    pathname.startsWith('/app/student/classes/') ||
+    pathname.startsWith('/app/student/class/') ||
+    pathname === '/app/student/library' ||
+    pathname.startsWith('/app/student/library/') ||
+    pathname === '/app/student/progress' ||
+    pathname.startsWith('/app/student/questions')
+  ) {
+    return 'Learning';
+  }
+  if (pathname === '/app/student/updates' || pathname === '/app/student/notifications')
+    return 'Updates';
+  if (
+    pathname === '/app/student/account' ||
+    pathname === '/app/student/privacy' ||
+    pathname === '/app/student/data-rights' ||
+    pathname.startsWith('/app/student/support')
+  ) {
+    return 'Account';
+  }
+  return 'Today';
+}
+
+function subcategoriesFor({
+  role,
+  category,
+  billingEnabled,
+}: {
+  role: 'parent' | 'student';
+  category: PortalPrimaryCategory;
+  billingEnabled: boolean;
+}): Array<{ id: string; label: string; href: string }> {
+  if (category === 'Learning') {
+    return role === 'parent'
+      ? [
+          { id: 'classroom', label: 'Classroom', href: '/app/parent/classroom' },
+          { id: 'library', label: 'Library', href: '/app/parent/library' },
+          { id: 'progress', label: 'Progress', href: '/app/parent/progress' },
+          { id: 'questions', label: 'Questions', href: '/app/parent/questions' },
+        ]
+      : [
+          { id: 'classroom', label: 'Classroom', href: '/app/student/calendar' },
+          { id: 'library', label: 'Library', href: '/app/student/library' },
+          { id: 'progress', label: 'Progress', href: '/app/student/progress' },
+          { id: 'questions', label: 'Questions', href: '/app/student/questions' },
+        ];
+  }
+  if (role === 'parent' && category === 'Family') {
+    return [
+      { id: 'students', label: 'Students', href: '/app/parent/students' },
+      {
+        id: 'student-progress',
+        label: 'Student Progress',
+        href: '/app/parent/progress?scope=students',
+      },
+    ];
+  }
+  if (category === 'Account') {
+    const account = [
+      { id: 'profile', label: 'Profile', href: `/app/${role}/account?tab=profile` },
+      { id: 'security', label: 'Sign-in & Security', href: `/app/${role}/account?tab=security` },
+      { id: 'privacy', label: 'Privacy', href: `/app/${role}/privacy` },
+    ];
+    if (role === 'parent') {
+      if (billingEnabled)
+        account.push({ id: 'billing', label: 'Billing', href: '/app/parent/billing' });
+      account.push({ id: 'preferences', label: 'Preferences', href: '/app/parent/preferences' });
+    }
+    return account;
+  }
+  return [];
+}
+
+function subcategoryMatches(id: string, pathname: string, accountTab: string | null): boolean {
+  if (id === 'classroom')
+    return /\/app\/(?:parent|student)\/(?:classroom|calendar|classes\/|class\/)/u.test(pathname);
+  if (id === 'library') return pathname.includes('/library');
+  if (id === 'progress')
+    return pathname === '/app/parent/progress' || pathname === '/app/student/progress';
+  if (id === 'student-progress')
+    return pathname === '/app/parent/progress' && accountTab === 'students';
+  if (id === 'questions') return pathname.includes('/questions');
+  if (id === 'students') return pathname.startsWith('/app/parent/students');
+  if (id === 'privacy')
+    return (
+      pathname === '/app/parent/privacy' ||
+      pathname === '/app/student/privacy' ||
+      pathname.includes('/data-rights')
+    );
+  if (id === 'billing') return pathname === '/app/parent/billing';
+  if (id === 'preferences') return pathname === '/app/parent/preferences';
+  return accountTab === id || (id === 'profile' && accountTab === null);
+}
+
+if (typeof document !== 'undefined') {
+  const root = document.getElementById('portal-root');
+  if (root) createRoot(root).render(<PortalApp />);
 }

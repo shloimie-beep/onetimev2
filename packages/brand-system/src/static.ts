@@ -35,7 +35,7 @@ export function renderPublicHeader(navLinks: readonly StaticLink[]) {
   ${renderLogo()}
   <nav class="header-actions" aria-label="Primary">
     <a class="text-link" href="/login">Member Login</a>
-    <a class="button button-primary" href="/signup" data-ot-primitive="Button">Pre-register</a>
+    <a class="button button-primary" href="/signup" data-ot-primitive="Button">Create your Family account</a>
     <button class="icon-button" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="site-drawer" data-drawer-toggle data-ot-primitive="DrawerTrigger"><span></span><span></span><span></span></button>
   </nav>
 </header>
@@ -123,6 +123,18 @@ export function renderPageShell({
   const iconMetadata = `${icon ? `\n  <link rel="icon" type="image/png" href="${escapeHtml(icon)}">` : ''}${
     appleTouchIcon ? `\n  <link rel="apple-touch-icon" href="${escapeHtml(appleTouchIcon)}">` : ''
   }`;
+  const protectedAppInstallMetadata =
+    app && (appEntry === 'crm' || appEntry === 'live')
+      ? `
+  <link rel="manifest" href="/admin.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/pwa/one-time-admin-192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/pwa/one-time-admin-180.png">
+  <meta name="application-name" content="One Time Admin">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="One Time Admin">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">`
+      : '';
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -139,6 +151,7 @@ export function renderPageShell({
   ${imageMetadata}
   <meta name="theme-color" content="#050505">
   ${iconMetadata}
+  ${protectedAppInstallMetadata}
   <link rel="preload" href="/assets/fonts/dm-serif-display-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="${stylesheet}">
 </head>

@@ -171,6 +171,20 @@ describe('One Time to HighLevel transactional journey', () => {
       'OT | Portal Invited',
       'OT | Recording Available',
     ]);
+    expect(adapter.projectionForEvent('adult.signup.submitted')?.customFields).toEqual(
+      expect.arrayContaining([
+        { id: 'olSxPkya7mkkB61vSXHx', value: 'opted_in' },
+        { id: 'XhBuFbkwtbpD9gyVNDdG', value: 'unknown' },
+        { id: 'rdWsApvquRfHwkzvp5mS', value: 'active' },
+      ]),
+    );
+    expect(
+      adapter.projectionForEvent('parent.portal.invitation_requested')?.customFields,
+    ).toContainEqual({ id: 'hxancKIMgrEWUeVSSUYF', value: 'Invited' });
+    expect(adapter.projectionForEvent('parent.portal.activated')?.customFields).toContainEqual({
+      id: 'hxancKIMgrEWUeVSSUYF',
+      value: 'Active',
+    });
   });
 
   it('fails closed for missing consent, suppression, DND, unconfirmed classes, and unapproved content', async () => {
@@ -297,6 +311,13 @@ describe('One Time to HighLevel transactional journey', () => {
         tagsToAdd: ['OT | Parent'],
       }),
     ]);
+    expect(adapter.projectionForEvent('parent.household.sync_requested')?.customFields).toEqual(
+      expect.arrayContaining([
+        { id: 'olSxPkya7mkkB61vSXHx', value: 'suppressed' },
+        { id: 'XhBuFbkwtbpD9gyVNDdG', value: 'suppressed' },
+        { id: 'rdWsApvquRfHwkzvp5mS', value: 'all_marketing_suppressed' },
+      ]),
+    );
   });
 
   it('allows only one of two concurrent dispatchers to claim the same intent', async () => {

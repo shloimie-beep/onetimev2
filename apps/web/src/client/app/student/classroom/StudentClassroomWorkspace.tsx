@@ -7,8 +7,13 @@ import {
 } from '../../../../../../../packages/contracts/src/classroom/embedded/index.ts';
 import {
   joinZoomMeetingParticipant,
+  joinZoomMeetingStudentProductionBasic,
   type ZoomParticipantJoinInput,
 } from '../../zoom-meeting-sdk-client.ts';
+import {
+  readStudentProductionBasicReadiness,
+  requestStudentProductionBasicLaunch,
+} from '../../../classroom/production-basic-launch-client.ts';
 import {
   StudentClassroomApiError,
   createStudentClassroomApi,
@@ -20,6 +25,7 @@ import { createStudentClassroomViewModel, type StudentClassroomViewModel } from 
 type TimerHandle = ReturnType<typeof setTimeout>;
 
 export type StudentClassroomWorkspaceProps = {
+  occurrenceId: string | null;
   csrfToken: string;
   actorFingerprint: string;
   onProtectedStateCleared: () => void;
@@ -38,6 +44,7 @@ const DEFAULT_CLEAR_TIMER = (handle: TimerHandle) => globalThis.clearTimeout(han
 const DEFAULT_NAVIGATE = (path: '/app/student') => window.location.assign(path);
 
 export function StudentClassroomWorkspace({
+  occurrenceId,
   csrfToken,
   actorFingerprint,
   onProtectedStateCleared,
@@ -49,10 +56,15 @@ export function StudentClassroomWorkspace({
   navigate = DEFAULT_NAVIGATE,
 }: StudentClassroomWorkspaceProps) {
   const classroomApi = useMemo(() => api ?? createStudentClassroomApi({ now }), [api, now]);
-  const [status, setStatus] = useState<StudentClassroomViewModel['status']>('ready');
+  const [status, setStatus] = useState<StudentClassroomViewModel['status']>(
+    occurrenceId ? 'ready' : 'unavailable',
+  );
   const [denialCode, setDenialCode] = useState<EmbeddedJoinDenialCode | null>(null);
   const [recordingCaptureActive, setRecordingCaptureActive] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [productionBasicReady, setProductionBasicReady] = useState(false);
+  const productionBasicActive = useRef(false);
+  const lastJoinMode = useRef<'legacy' | 'production_basic'>('legacy');
   const generationRef = useRef(0);
   const requestRef = useRef<AbortController | null>(null);
   const timerRef = useRef<TimerHandle | null>(null);
@@ -68,15 +80,20 @@ export function StudentClassroomWorkspace({
   useEffect(() => {
     generationRef.current += 1;
     stopRuntime();
-    setStatus('ready');
+    setStatus(occurrenceId ? 'ready' : 'unavailable');
     setDenialCode(null);
     setRecordingCaptureActive(false);
     setBusy(false);
+    productionBasicActive.current = false;
+    lastJoinMode.current = 'legacy';
+    void readStudentProductionBasicReadiness(csrfToken)
+      .then(setProductionBasicReady)
+      .catch(() => setProductionBasicReady(false));
     return () => {
       generationRef.current += 1;
       stopRuntime();
     };
-  }, [actorFingerprint]);
+  }, [actorFingerprint, occurrenceId]);
 
   function stopRuntime(): void {
     requestRef.current?.abort();
@@ -130,18 +147,28 @@ export function StudentClassroomWorkspace({
   }
 
   async function join(): Promise<void> {
+    void requestStudentClassroomFullscreen();
+    lastJoinMode.current = 'legacy';
+    if (!occurrenceId) {
+      setStatus('unavailable');
+      setDenialCode(null);
+      return;
+    }
     const { generation, controller } = beginRuntime();
     setStatus('joining');
     setDenialCode(null);
     setRecordingCaptureActive(false);
     setBusy(true);
     try {
-      const result = await classroomApi.bootstrap(csrfToken, controller.signal);
+      const result = await classroomApi.bootstrap(occurrenceId, csrfToken, controller.signal);
       if (!isCurrent(generation)) return;
       leaseRef.current = result.lease;
       setRecordingCaptureActive(result.recording_capture_active);
       scheduleHeartbeat(generation);
-      await joinMeeting(toZoomParticipantJoinInput(result.bootstrap));
+      await joinMeeting({
+        ...toZoomParticipantJoinInput(result.bootstrap),
+        studentFocusMode: true,
+      });
       if (!isCurrent(generation)) return;
       await classroomApi.recordAttendance(csrfToken, 'joined', controller.signal);
       if (!isCurrent(generation)) return;
@@ -158,7 +185,9 @@ export function StudentClassroomWorkspace({
     setBusy(true);
     const controller = new AbortController();
     try {
-      await classroomApi.recordAttendance(csrfToken, 'left', controller.signal);
+      if (!productionBasicActive.current) {
+        await classroomApi.recordAttendance(csrfToken, 'left', controller.signal);
+      }
     } catch (error) {
       if (error instanceof StudentClassroomApiError && error.status === 401) {
         onProtectedStateCleared();
@@ -167,6 +196,39 @@ export function StudentClassroomWorkspace({
       controller.abort();
       navigate('/app/student');
     }
+  }
+
+  async function joinProductionBasic(): Promise<void> {
+    void requestStudentClassroomFullscreen();
+    lastJoinMode.current = 'production_basic';
+    const { generation } = beginRuntime();
+    setStatus('joining');
+    setBusy(true);
+    try {
+      const artifact = await requestStudentProductionBasicLaunch(csrfToken);
+      await joinZoomMeetingStudentProductionBasic({
+        sdkWebVersion: artifact.sdk_web_version,
+        meetingNumber: artifact.meeting_number,
+        signature: artifact.signature,
+        meetingPassword: artifact.meeting_password,
+        userName: artifact.user_name,
+        leaveUrl: artifact.leave_path,
+      });
+      if (!isCurrent(generation)) return;
+      productionBasicActive.current = true;
+      setStatus('connected');
+      setBusy(false);
+    } catch (error) {
+      handleFailure(error, generation);
+    }
+  }
+
+  function retry(): void {
+    if (lastJoinMode.current === 'production_basic') {
+      void joinProductionBasic();
+      return;
+    }
+    void join();
   }
 
   function handleFailure(error: unknown, generation: number): void {
@@ -196,7 +258,9 @@ export function StudentClassroomWorkspace({
       view={view}
       busy={busy}
       onJoin={() => void join()}
-      onRetry={() => void join()}
+      productionBasicReady={productionBasicReady}
+      onJoinProductionBasic={() => void joinProductionBasic()}
+      onRetry={retry}
       onLeave={() => void leave()}
     />
   );
@@ -206,12 +270,16 @@ export function StudentClassroomSurface({
   view,
   busy,
   onJoin,
+  productionBasicReady,
+  onJoinProductionBasic,
   onRetry,
   onLeave,
 }: {
   view: StudentClassroomViewModel;
   busy: boolean;
   onJoin: () => void;
+  productionBasicReady: boolean;
+  onJoinProductionBasic: () => void;
   onRetry: () => void;
   onLeave: () => void;
 }) {
@@ -245,18 +313,29 @@ export function StudentClassroomSurface({
         </span>
       </Card>
 
-      <div id="zmmtg-root" aria-label="Protected Meeting SDK classroom" aria-live="polite" />
+      <div
+        id="zmmtg-root"
+        className="student-classroom-sdk"
+        aria-label="Protected Meeting SDK classroom"
+        aria-live="polite"
+      />
 
       <div className="ot-action-row">
         {view.status === 'ready' ? (
-          <Button
-            type="button"
-            variant="primary"
-            disabled={busy || !view.join_enabled}
-            onClick={onJoin}
-          >
-            Join classroom
-          </Button>
+          productionBasicReady ? (
+            <Button type="button" variant="primary" disabled={busy} onClick={onJoinProductionBasic}>
+              Join class
+            </Button>
+          ) : (
+            <Button
+              type="button"
+              variant="primary"
+              disabled={busy || !view.join_enabled}
+              onClick={onJoin}
+            >
+              Join classroom
+            </Button>
+          )
         ) : null}
         {view.status === 'joining' ? (
           <Button type="button" variant="primary" disabled>
@@ -285,6 +364,36 @@ export function classroomHeartbeatDelay(nextHeartbeatAt: string, now: Date): num
     throw new Error('Classroom heartbeat timing is invalid.');
   }
   return Math.min(CLASSROOM_HEARTBEAT_INTERVAL_MS, Math.max(0, next - current));
+}
+
+type StudentClassroomFullscreenDocument = {
+  fullscreenElement: Element | null;
+  documentElement: {
+    requestFullscreen?: (options?: FullscreenOptions) => Promise<void>;
+  };
+};
+
+type StudentClassroomFullscreenWindow = {
+  matchMedia?: (query: string) => { matches: boolean };
+};
+
+export async function requestStudentClassroomFullscreen(
+  fullscreenDocument: StudentClassroomFullscreenDocument = document,
+  browserWindow: StudentClassroomFullscreenWindow = window,
+): Promise<'active' | 'unavailable'> {
+  const mobileViewport =
+    browserWindow.matchMedia?.('(max-width: 1024px) and (pointer: coarse)').matches ?? false;
+  if (!mobileViewport) return 'unavailable';
+  if (fullscreenDocument.fullscreenElement) return 'active';
+  const requestFullscreen = fullscreenDocument.documentElement.requestFullscreen;
+  if (!requestFullscreen) return 'unavailable';
+  try {
+    await requestFullscreen.call(fullscreenDocument.documentElement, { navigationUI: 'hide' });
+    return 'active';
+  } catch {
+    // Fullscreen is a browser-controlled enhancement. A denied request must not block class entry.
+    return 'unavailable';
+  }
 }
 
 export function toZoomParticipantJoinInput(

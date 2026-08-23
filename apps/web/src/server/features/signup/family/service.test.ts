@@ -19,7 +19,7 @@ const scope: FamilySignupScope = {
   verification_environment_id: 'ci',
 };
 const idempotencyKey = '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg';
-const freeAccessExpiresAt = '2026-09-13T16:24:00.000Z';
+const freeAccessExpiresAt = '2026-09-11T15:00:00.000Z';
 const command = (): FamilySignupCommand => ({
   classification: 'family',
   idempotency_key: idempotencyKey,
@@ -31,7 +31,7 @@ const command = (): FamilySignupCommand => ({
   timezone: 'Asia/Jerusalem',
   terms_accepted: true,
   privacy_accepted: true,
-  general_marketing_consent: false,
+  general_marketing_consent: true,
   parent_newsletter_consent: true,
 });
 const ghlEvidence = () => ({
@@ -81,7 +81,7 @@ describe('P08 family signup service', () => {
     const result = await service.submit({
       scope,
       command: command(),
-      now: new Date('2026-09-13T16:23:59.000Z'),
+      now: new Date('2026-09-11T14:59:59.000Z'),
     });
     expect(result.next_action).toBe('signed_in');
     expect(calls.map(({ kind }) => kind)).toEqual(['request', 'identity', 'ghl', 'commit']);
@@ -100,7 +100,7 @@ describe('P08 family signup service', () => {
       password_hash: 'argon2id-safe-hash',
       request: {
         timezone: 'Asia/Jerusalem',
-        general_marketing_consent: false,
+        general_marketing_consent: true,
         parent_newsletter_consent: true,
       },
       request_binding: {
@@ -122,7 +122,7 @@ describe('P08 family signup service', () => {
             operation: FAMILY_SIGNUP_OPERATION,
           },
           adult_consent_choices: {
-            general_marketing: false,
+            general_marketing: true,
             parent_newsletter: true,
           },
           dispatch_state: 'ready',
@@ -146,11 +146,82 @@ describe('P08 family signup service', () => {
         checkout: null,
       },
       ghl_evidence_status: 'available',
-      committed_at: '2026-09-13T16:23:59.000Z',
+      committed_at: '2026-09-11T14:59:59.000Z',
     });
     expect(JSON.stringify(calls[3]?.value)).not.toContain('correct horse');
     expect(JSON.stringify(calls[3]?.value)).not.toContain('password_confirmation');
     expect(result.provider_effects_completed_inline).toBe(0);
+  });
+
+  it('rolls back every staged Family write when exact Parent session establishment fails', async () => {
+    const events: string[] = [];
+    const stagedWrites = new Set<string>();
+    const repository: FamilySignupRepository = {
+      transaction: async (run) => {
+        events.push('begin');
+        try {
+          const result = await run({
+            findRequest: async () => null,
+            readLocalState: async () => ({ identity: null, household: null }),
+            readGhlEvidence: async () => ghlEvidence(),
+            commit: async () => {
+              events.push('family_writes');
+              for (const aggregate of [
+                'identity',
+                'account',
+                'household',
+                'participant',
+                'entitlement',
+                'credential',
+                'request',
+              ]) {
+                stagedWrites.add(aggregate);
+              }
+            },
+            establishParentSession: async (sessionInput) => {
+              events.push('session_write_and_readback');
+              expect(sessionInput).toEqual({
+                scope,
+                adult_id: 'adult_1',
+                human_account_id: 'account_1',
+                household_id: 'household_1',
+                active_role: 'parent',
+                security_version: 1,
+                now: new Date('2026-09-11T14:59:59.000Z'),
+              });
+              return { established: false, safe_reason: 'session_creation_failed' };
+            },
+          });
+          events.push('commit');
+          return result;
+        } catch (error) {
+          stagedWrites.clear();
+          events.push('rollback');
+          throw error;
+        }
+      },
+    };
+    const service = createFamilySignupService({
+      repository,
+      freeAccessExpiresAt,
+      hashPassword: async () => 'argon2id-safe-hash',
+      fingerprintPasswordForIdempotency: async () => h('a'),
+      allocateIds: () => ({
+        adult_id: 'adult_1',
+        human_account_id: 'account_1',
+        household_id: 'household_1',
+      }),
+    });
+
+    await expect(
+      service.submitWithSession({
+        scope,
+        command: command(),
+        now: new Date('2026-09-11T14:59:59.000Z'),
+      }),
+    ).rejects.toThrow('family_signup_session_creation_failed');
+    expect(events).toEqual(['begin', 'family_writes', 'session_write_and_readback', 'rollback']);
+    expect(stagedWrites.size).toBe(0);
   });
 
   it('performs no household, access, credential, outbox, or session write for any account state', async () => {
@@ -291,8 +362,6 @@ describe('P08 family signup service', () => {
           password_confirmation: 'different secure password phrase',
         },
       },
-      { scope, command: { ...original, general_marketing_consent: true } },
-      { scope, command: { ...original, parent_newsletter_consent: false } },
       {
         scope: {
           product: 'one_time_mishnayos',
@@ -313,6 +382,50 @@ describe('P08 family signup service', () => {
       expect(String(thrown)).not.toContain('private_');
       expect(String(thrown)).not.toContain('private@example.com');
     }
+    await expect(
+      service.submit({
+        scope,
+        command: { ...original, general_marketing_consent: false },
+        now: new Date(),
+      }),
+    ).rejects.toThrow('invalid_family_signup');
+  });
+
+  it('provides a support path after expiry when no approved GHL payment link is configured', async () => {
+    const commits: unknown[] = [];
+    const service = createFamilySignupService({
+      repository: repositoryFor({
+        commit: async (value) => {
+          commits.push(value);
+        },
+      }),
+      freeAccessExpiresAt,
+      hashPassword: async () => 'argon2id-safe-hash',
+      fingerprintPasswordForIdempotency: async () => h('a'),
+      allocateIds: () => ({
+        adult_id: 'adult_1',
+        human_account_id: 'account_1',
+        household_id: 'household_1',
+      }),
+    });
+    const result = await service.submit({
+      scope,
+      command: command(),
+      now: new Date('2026-09-11T15:00:00.000Z'),
+    });
+
+    expect(result).toMatchObject({
+      next_action: 'support',
+      projection: {
+        access_branch: 'inactive_support',
+        access_state: 'inactive',
+        checkout_required: false,
+        checkout_blocked_by_identity_review: false,
+      },
+      checkout_handoff_state: 'not_configured',
+      safe_message: expect.stringContaining('info@onetimeonetime.com'),
+    });
+    expect(commits[0]).toMatchObject({ commercial_billing: { checkout: null } });
   });
 
   it('commits an inactive account but blocks post-expiry Checkout during identity review', async () => {
@@ -339,7 +452,7 @@ describe('P08 family signup service', () => {
     const result = await service.submit({
       scope,
       command: command(),
-      now: new Date('2026-09-13T16:24:00.000Z'),
+      now: new Date('2026-09-11T15:00:00.000Z'),
     });
     expect(result).toMatchObject({
       next_action: 'identity_review',
@@ -384,7 +497,7 @@ describe('P08 family signup service', () => {
     const result = await service.submit({
       scope,
       command: command(),
-      now: new Date('2026-09-13T16:23:59.000Z'),
+      now: new Date('2026-09-11T14:59:59.000Z'),
     });
     expect(result).toMatchObject({
       next_action: 'signed_in',

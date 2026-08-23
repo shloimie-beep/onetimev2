@@ -12,11 +12,17 @@ import type {
   CheckoutSessionResult,
   VerifiedProviderEventEnvelope,
 } from '../../../contracts/src/billing/index.ts';
+import type { BillingGhlLifecycleEvent } from '../../../domain/src/billing/highlevel-lifecycle.ts';
 
 export type RecordVerifiedEventResult =
   | { status: 'inserted'; eventKey: string }
   | { status: 'duplicate'; eventKey: string }
   | { status: 'digest_mismatch'; eventKey: string };
+
+export type ClaimVerifiedEventProcessingResult =
+  | { status: 'claimed'; eventKey: string; claimKey: string }
+  | { status: 'completed'; eventKey: string }
+  | { status: 'busy'; eventKey: string };
 
 export type StartCheckoutResult =
   | { status: 'started'; checkoutRequestKey: string }
@@ -332,6 +338,32 @@ export function createPostgresBillingRepositories(pool: DbPool) {
     async recordVerifiedEvent(
       envelope: VerifiedProviderEventEnvelope,
     ): Promise<RecordVerifiedEventResult> {
+      const inserted = await pool.query(
+        `INSERT INTO onetime.billing_verified_events
+         (event_key, provider, mode, provider_account_ref, provider_event_id,
+          event_type, provider_created_at, livemode, raw_body_digest, payload_digest,
+          object_refs, minimized_payload)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,false,$8,$9,$10::jsonb,$11::jsonb)
+         ON CONFLICT (provider, mode, provider_account_ref, provider_event_id) DO NOTHING
+         RETURNING event_key`,
+        [
+          envelope.event_key,
+          envelope.provider,
+          envelope.mode,
+          envelope.provider_account_ref,
+          envelope.provider_event_id,
+          envelope.event_type,
+          envelope.provider_created_at,
+          envelope.raw_body_digest,
+          envelope.payload_digest,
+          JSON.stringify(envelope.object_refs),
+          JSON.stringify(envelope.minimized_payload),
+        ],
+      );
+      if (inserted.rowCount === 1) {
+        return { status: 'inserted', eventKey: String(inserted.rows[0].event_key) };
+      }
+
       const existing = await pool.query(
         `SELECT event_key, payload_digest
            FROM onetime.billing_verified_events
@@ -347,49 +379,89 @@ export function createPostgresBillingRepositories(pool: DbPool) {
           envelope.provider_event_id,
         ],
       );
-      if (existing.rowCount) {
-        return existing.rows[0].payload_digest === envelope.payload_digest
-          ? { status: 'duplicate', eventKey: String(existing.rows[0].event_key) }
-          : { status: 'digest_mismatch', eventKey: String(existing.rows[0].event_key) };
-      }
-      await pool.query(
-        `INSERT INTO onetime.billing_verified_events
-         (event_key, provider, mode, provider_account_ref, provider_event_id,
-          event_type, provider_created_at, livemode, raw_body_digest, payload_digest,
-          object_refs, minimized_payload)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,false,$8,$9,$10::jsonb,$11::jsonb)`,
-        [
-          envelope.event_key,
-          envelope.provider,
-          envelope.mode,
-          envelope.provider_account_ref,
-          envelope.provider_event_id,
-          envelope.event_type,
-          envelope.provider_created_at,
-          envelope.raw_body_digest,
-          envelope.payload_digest,
-          JSON.stringify(envelope.object_refs),
-          JSON.stringify(envelope.minimized_payload),
-        ],
+      if (!existing.rowCount) throw new Error('billing_verified_event_conflict_readback_missing');
+      return existing.rows[0].payload_digest === envelope.payload_digest
+        ? { status: 'duplicate', eventKey: String(existing.rows[0].event_key) }
+        : { status: 'digest_mismatch', eventKey: String(existing.rows[0].event_key) };
+    },
+    async claimVerifiedEventProcessing(
+      eventKey: string,
+    ): Promise<ClaimVerifiedEventProcessingResult> {
+      const claimKey = stableKey('billing_processing_claim', [eventKey, randomUUID()]);
+      const claimed = await pool.query(
+        `UPDATE onetime.billing_verified_events
+            SET processing_state = 'processing',
+                processing_claim_key = $2,
+                processing_lease_until = now() + interval '5 minutes',
+                processed_at = NULL
+          WHERE event_key = $1
+            AND (
+              processing_state = 'pending'
+              OR (
+                processing_state = 'processing'
+                AND processing_lease_until <= now()
+              )
+            )
+        RETURNING event_key`,
+        [eventKey, claimKey],
       );
-      return { status: 'inserted', eventKey: envelope.event_key };
+      if (claimed.rowCount === 1) return { status: 'claimed', eventKey, claimKey };
+
+      const state = await pool.query(
+        `SELECT processing_state
+           FROM onetime.billing_verified_events
+          WHERE event_key = $1
+          LIMIT 1`,
+        [eventKey],
+      );
+      if (!state.rowCount) throw new Error('billing_verified_event_processing_state_missing');
+      return String(state.rows[0].processing_state) === 'completed'
+        ? { status: 'completed', eventKey }
+        : { status: 'busy', eventKey };
+    },
+    async completeVerifiedEventProcessing(input: {
+      event_key: string;
+      claim_key: string;
+      disposition: BillingDisposition;
+      reason: string;
+    }) {
+      await inTransaction(pool, async (client) => {
+        const completed = await client.query(
+          `UPDATE onetime.billing_verified_events
+              SET processing_state = 'completed',
+                  processing_claim_key = NULL,
+                  processing_lease_until = NULL,
+                  processed_at = now()
+            WHERE event_key = $1
+              AND processing_state = 'processing'
+              AND processing_claim_key = $2`,
+          [input.event_key, input.claim_key],
+        );
+        if (completed.rowCount !== 1) {
+          throw new Error('billing_verified_event_processing_claim_lost');
+        }
+        await insertProcessingAttempt(client, input);
+      });
+    },
+    async abandonVerifiedEventProcessing(input: { event_key: string; claim_key: string }) {
+      await pool.query(
+        `UPDATE onetime.billing_verified_events
+            SET processing_state = 'pending',
+                processing_claim_key = NULL,
+                processing_lease_until = NULL,
+                processed_at = NULL
+          WHERE event_key = $1
+            AND processing_state = 'processing'
+            AND processing_claim_key = $2`,
+        [input.event_key, input.claim_key],
+      );
     },
     async recordAttempt(input: {
       event_key: string;
       disposition: BillingDisposition;
       reason: string;
     }) {
-      await pool.query(
-        `INSERT INTO onetime.billing_event_processing_attempts
-         (attempt_key, event_key, disposition, reason)
-         VALUES ($1,$2,$3,$4)`,
-        [
-          stableKey('billing_attempt', [input.event_key, randomUUID()]),
-          input.event_key,
-          input.disposition,
-          input.reason,
-        ],
-      );
+      await insertProcessingAttempt(pool, input);
     },
     async upsertSubscriptionProjection(input: BillingSubscriptionProjection) {
       const existing = await pool.query(
@@ -525,36 +597,117 @@ export function createPostgresBillingRepositories(pool: DbPool) {
         ],
       );
     },
-    async upsertEntitlementProjection(input: BillingEntitlementProjection) {
-      await pool.query(
-        `INSERT INTO onetime.billing_entitlement_projections
-         (entitlement_key, account_key, product_key, principal_key, principal_type,
-          status, policy_version, source, reason, effective_at, evaluated_at, grants_access)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
-         ON CONFLICT (entitlement_key)
-         DO UPDATE SET
-           status = EXCLUDED.status,
-           policy_version = EXCLUDED.policy_version,
-           source = EXCLUDED.source,
-           reason = EXCLUDED.reason,
-           effective_at = EXCLUDED.effective_at,
-           evaluated_at = EXCLUDED.evaluated_at,
-           grants_access = EXCLUDED.grants_access`,
-        [
-          input.entitlement_key,
-          input.account_key,
-          input.product_key,
-          input.principal_key,
-          input.principal_type,
-          input.status,
-          input.policy_version,
-          input.source,
-          input.reason,
-          input.effective_at,
-          input.evaluated_at,
-          input.grants_access,
-        ],
-      );
+    async upsertEntitlementProjection(
+      input: BillingEntitlementProjection,
+      lifecycleEvent: BillingGhlLifecycleEvent | null = null,
+    ) {
+      return inTransaction(pool, async (client) => {
+        if (lifecycleEvent) {
+          assertLifecycleMatchesEntitlement(input, lifecycleEvent);
+          await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [input.entitlement_key]);
+        }
+
+        await client.query(
+          `INSERT INTO onetime.billing_entitlement_projections
+           (entitlement_key, account_key, product_key, principal_key, principal_type,
+            status, policy_version, source, reason, effective_at, evaluated_at, grants_access)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
+           ON CONFLICT (entitlement_key)
+           DO UPDATE SET
+             status = EXCLUDED.status,
+             policy_version = EXCLUDED.policy_version,
+             source = EXCLUDED.source,
+             reason = EXCLUDED.reason,
+             effective_at = EXCLUDED.effective_at,
+             evaluated_at = EXCLUDED.evaluated_at,
+             grants_access = EXCLUDED.grants_access,
+             updated_at = now()`,
+          [
+            input.entitlement_key,
+            input.account_key,
+            input.product_key,
+            input.principal_key,
+            input.principal_type,
+            input.status,
+            input.policy_version,
+            input.source,
+            input.reason,
+            input.effective_at,
+            input.evaluated_at,
+            input.grants_access,
+          ],
+        );
+
+        if (!lifecycleEvent) {
+          return { projection: 'updated' as const, lifecycle_intent: 'not_applicable' as const };
+        }
+
+        const latest = await client.query(
+          `SELECT episode_discriminator
+             FROM onetime.billing_ghl_lifecycle_intents
+            WHERE entitlement_key = $1
+            ORDER BY transition_sequence DESC
+            LIMIT 1`,
+          [input.entitlement_key],
+        );
+        if (
+          latest.rows[0] &&
+          String(latest.rows[0].episode_discriminator) === lifecycleEvent.episode_discriminator
+        ) {
+          return { projection: 'updated' as const, lifecycle_intent: 'unchanged' as const };
+        }
+
+        const inserted = await client.query(
+          `INSERT INTO onetime.billing_ghl_lifecycle_intents
+           (transition_key, entitlement_key, account_key, product_key, household_key,
+            subject_kind, workflow_key, event_type, trigger, source_event_id,
+            source_event_digest, episode_key, episode_discriminator, projection_status,
+            projection_reason, projection_grants_access, policy_version, effective_at,
+            signed_billing_projection, local_commit_readback, student_contact_allowed,
+            provider_financial_mutation, provider_access_mutation, binding_state)
+           SELECT $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18::timestamptz,
+                  $19,$20,$21,$22,$23,$24
+             FROM onetime.portal_households AS household
+             JOIN onetime.billing_verified_events AS verified
+               ON verified.event_key = $10
+            WHERE household.account_key = $3
+              AND household.product_key = $4
+              AND household.household_key = $5`,
+          [
+            lifecycleEvent.transition_key,
+            lifecycleEvent.entitlement_key,
+            lifecycleEvent.account_key,
+            lifecycleEvent.product_key,
+            lifecycleEvent.household_key,
+            lifecycleEvent.subject_kind,
+            lifecycleEvent.workflow_key,
+            lifecycleEvent.event_type,
+            lifecycleEvent.trigger,
+            lifecycleEvent.source_event_id,
+            lifecycleEvent.source_event_digest,
+            lifecycleEvent.episode_key,
+            lifecycleEvent.episode_discriminator,
+            lifecycleEvent.projection_status,
+            lifecycleEvent.projection_reason,
+            lifecycleEvent.projection_grants_access,
+            lifecycleEvent.policy_version,
+            lifecycleEvent.effective_at,
+            lifecycleEvent.signed_billing_projection,
+            lifecycleEvent.local_commit_readback,
+            lifecycleEvent.student_contact_allowed,
+            lifecycleEvent.provider_financial_mutation,
+            lifecycleEvent.provider_access_mutation,
+            lifecycleEvent.workflow_key ? 'pending_external_binding' : 'not_applicable',
+          ],
+        );
+        if (inserted.rowCount !== 1) {
+          return {
+            projection: 'updated' as const,
+            lifecycle_intent: 'provenance_missing' as const,
+          };
+        }
+        return { projection: 'updated' as const, lifecycle_intent: 'inserted' as const };
+      });
     },
     async createReconciliation(input: {
       principal: BillingPrincipalRef;
@@ -881,6 +1034,51 @@ function asIso(value: unknown) {
 
 function stableKey(prefix: string, parts: string[]) {
   return `${prefix}_${createHash('sha256').update(parts.join('\0')).digest('hex').slice(0, 24)}`;
+}
+
+async function insertProcessingAttempt(
+  client: Pick<DbPool, 'query'>,
+  input: {
+    event_key: string;
+    disposition: BillingDisposition;
+    reason: string;
+  },
+) {
+  await client.query(
+    `INSERT INTO onetime.billing_event_processing_attempts
+     (attempt_key, event_key, disposition, reason)
+     VALUES ($1,$2,$3,$4)`,
+    [
+      stableKey('billing_attempt', [input.event_key, randomUUID()]),
+      input.event_key,
+      input.disposition,
+      input.reason,
+    ],
+  );
+}
+
+function assertLifecycleMatchesEntitlement(
+  entitlement: BillingEntitlementProjection,
+  lifecycle: BillingGhlLifecycleEvent,
+) {
+  const mismatch =
+    lifecycle.entitlement_key !== entitlement.entitlement_key ||
+    lifecycle.account_key !== entitlement.account_key ||
+    lifecycle.product_key !== entitlement.product_key ||
+    lifecycle.household_key !== entitlement.principal_key ||
+    lifecycle.source_event_id !== entitlement.source ||
+    lifecycle.projection_status !== entitlement.status ||
+    lifecycle.projection_reason !== entitlement.reason ||
+    lifecycle.projection_grants_access !== entitlement.grants_access ||
+    lifecycle.policy_version !== entitlement.policy_version ||
+    lifecycle.effective_at !== entitlement.effective_at ||
+    lifecycle.subject_kind !== 'adult_household' ||
+    lifecycle.signed_billing_projection !== true ||
+    lifecycle.local_commit_readback !== true ||
+    lifecycle.student_contact_allowed !== false ||
+    lifecycle.provider_financial_mutation !== false ||
+    lifecycle.provider_access_mutation !== false;
+  if (mismatch) throw new Error('billing_ghl_lifecycle_projection_mismatch');
 }
 
 function redactMetadata(metadata: Record<string, unknown>) {

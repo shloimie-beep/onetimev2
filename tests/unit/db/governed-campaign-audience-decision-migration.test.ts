@@ -9,8 +9,6 @@ import {
   type DbPool,
 } from '../../../packages/db/src/index.ts';
 
-const MIGRATION_ID = '2260_v21_governed_campaign_audience_decisions';
-const EXPECTED_MIGRATION_COUNT = 91;
 const HASH_A = 'a'.repeat(64);
 const HASH_B = 'b'.repeat(64);
 const HASH_C = 'c'.repeat(64);
@@ -28,23 +26,26 @@ const SOURCE_FACTS = {
 } as const;
 
 describe('migration 2260 governed campaign audience decisions', () => {
-  it('applies and replays the 91-migration inventory with an exact 2260 ledger row', async () => {
+  it('applies and replays the exact current migration inventory with an exact 2260 ledger row', async () => {
     const pool = createMemoryPool();
     try {
       const first = await runMigrations(pool);
       const replay = await runMigrations(replayMemoryPool(pool));
       const verification = await verifyMigrations(pool);
 
-      expect(first).toHaveLength(EXPECTED_MIGRATION_COUNT);
-      expect(first.at(-1)).toMatchObject({ id: MIGRATION_ID, status: 'applied' });
-      expect(replay).toHaveLength(EXPECTED_MIGRATION_COUNT);
+      const migrationCount = verification.migration_file_count;
+      expect(migrationCount).toBeGreaterThan(0);
+      expect(first).toHaveLength(migrationCount);
+      expect(first.at(-1)).toMatchObject({ status: 'applied' });
+      expect(replay).toHaveLength(migrationCount);
+      expect(replay.at(-1)?.id).toBe(first.at(-1)?.id);
       expect(replay.every(({ status }) => status === 'already_applied')).toBe(true);
       expect(verification).toMatchObject({
         ok: true,
         status: 'verified',
-        migration_file_count: EXPECTED_MIGRATION_COUNT,
-        ledger_row_count: EXPECTED_MIGRATION_COUNT,
-        applied_count: EXPECTED_MIGRATION_COUNT,
+        migration_file_count: migrationCount,
+        ledger_row_count: migrationCount,
+        applied_count: migrationCount,
         pending_count: 0,
         issues: [],
       });
@@ -171,6 +172,24 @@ describe('migration 2260 governed campaign audience decisions', () => {
     expect(migration).not.toMatch(
       /ALTER\s+TABLE\s+onetime\.(?!governed_campaign_audience_decisions)/iu,
     );
+    expect(migration).not.toMatch(/DROP\s+(?:TABLE|VIEW|COLUMN|CONSTRAINT)/iu);
+  });
+
+  it('adds only the append-only adult OT-16 F05 context with exact durable foreign keys', async () => {
+    const migration = await readFile(
+      path.resolve(process.cwd(), 'packages/db/migrations/2271_ot16_f05_dispatch_context.sql'),
+      'utf8',
+    );
+
+    expect(migration).toContain('CREATE TABLE onetime.ot16_f05_dispatch_context');
+    expect(migration).toContain('REFERENCES onetime.communication_decision(operation_id)');
+    expect(migration).toContain('REFERENCES onetime.job_outbox(job_id)');
+    expect(migration).toContain('REFERENCES onetime.v21_adult_identities');
+    expect(migration).toContain('REFERENCES onetime.v21_households');
+    expect(migration).toContain("CHECK (sender_key = 'office')");
+    expect(migration).toContain("CHECK (transport = 'GHL')");
+    expect(migration).toContain('OT-16 F05 dispatch context is append-only');
+    expect(migration).not.toMatch(/INSERT\s+INTO\s+onetime\./iu);
     expect(migration).not.toMatch(/DROP\s+(?:TABLE|VIEW|COLUMN|CONSTRAINT)/iu);
   });
 

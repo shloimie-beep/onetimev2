@@ -23,6 +23,6 @@ test('paused Parent gets only identity, recovery, and Support', async ({ page })
   ).toBeVisible();
 
   await page.getByRole('link', { name: 'Open Support' }).click();
-  await page.waitForURL('**/app/support');
+  await page.waitForURL('**/app/parent/support');
   await expect(page.getByRole('heading', { name: 'Member Support' })).toBeVisible();
 });

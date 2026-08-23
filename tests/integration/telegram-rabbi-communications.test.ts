@@ -35,7 +35,7 @@ const providerUserRef = asProviderUserRef('rabbi-provider-user-fixture');
 const chatRef = asChatRef('rabbi-private-chat-fixture');
 const codec = new DeterministicTestPayloadCodec();
 const accountKey = 'one_time';
-const productKey = 'one_time_mishnah_class';
+const productKey = 'one_time_mishnayos';
 const exactStudentAnswer = `${RABBI_TELEGRAM_SYNTHETIC_STUDENT_ANSWER} Learner 1.`;
 
 let pool: DbPool;

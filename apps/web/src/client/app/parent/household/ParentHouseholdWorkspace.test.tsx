@@ -5,7 +5,13 @@ import {
   STUDENT_ACTUAL_NAME_INSTRUCTIONS,
   type ParentHouseholdSnapshot,
 } from '../../../../../../../packages/contracts/src/portals/parent-household/index.ts';
-import { ParentHouseholdWorkspace } from './ParentHouseholdWorkspace.tsx';
+import {
+  credentialLengthErrorCopy,
+  credentialMismatchErrorCopy,
+  ParentHouseholdWorkspace,
+  studentCredentialState,
+  submitStudentCredentials,
+} from './ParentHouseholdWorkspace.tsx';
 import { createParentHouseholdApi } from './api.ts';
 
 const snapshot: ParentHouseholdSnapshot = {
@@ -34,12 +40,88 @@ const snapshot: ParentHouseholdSnapshot = {
 };
 
 describe('P12 persisted Parent household client workspace', () => {
+  it('guards mounted Create and Reset interactions before either API handler can run', () => {
+    for (const [password, confirmation, expectedFocus] of [
+      ['000123', '123456', 'confirmation'],
+      ['12345', '12345', 'password'],
+      ['1234567', '1234567', 'password'],
+      ['12a456', '12a456', 'password'],
+    ] as const) {
+      const focusPassword = vi.fn();
+      const focusConfirmation = vi.fn();
+      const dispatch = vi.fn();
+      if (
+        submitStudentCredentials({
+          password,
+          passwordConfirmation: confirmation,
+          focusPassword,
+          focusConfirmation,
+        })
+      ) {
+        dispatch();
+      }
+      expect(dispatch).not.toHaveBeenCalled();
+      expect(
+        expectedFocus === 'password' ? focusPassword : focusConfirmation,
+      ).toHaveBeenCalledOnce();
+      expect(
+        expectedFocus === 'password' ? focusConfirmation : focusPassword,
+      ).not.toHaveBeenCalled();
+    }
+
+    for (const password of ['000123', '123456']) {
+      const focusPassword = vi.fn();
+      const focusConfirmation = vi.fn();
+      const createDispatch = vi.fn();
+      const resetDispatch = vi.fn();
+      if (
+        submitStudentCredentials({
+          password,
+          passwordConfirmation: password,
+          focusPassword,
+          focusConfirmation,
+        })
+      ) {
+        createDispatch();
+      }
+      if (
+        submitStudentCredentials({
+          password,
+          passwordConfirmation: password,
+          focusPassword,
+          focusConfirmation,
+        })
+      ) {
+        resetDispatch();
+      }
+      expect(createDispatch).toHaveBeenCalledOnce();
+      expect(resetDispatch).toHaveBeenCalledOnce();
+      expect(focusPassword).not.toHaveBeenCalled();
+      expect(focusConfirmation).not.toHaveBeenCalled();
+    }
+
+    expect(studentCredentialState('12345', '12345')).toMatchObject({
+      passwordLengthInvalid: true,
+      confirmationLengthInvalid: true,
+      hasPasswordMismatch: false,
+      ready: false,
+    });
+    expect(studentCredentialState('000123', '123456')).toMatchObject({
+      passwordLengthInvalid: false,
+      confirmationLengthInvalid: false,
+      hasPasswordMismatch: true,
+      ready: false,
+    });
+    expect(credentialLengthErrorCopy('create')).toContain('creating this Student');
+    expect(credentialLengthErrorCopy('reset')).toContain('resetting this Student PIN');
+    expect(credentialMismatchErrorCopy('create')).toContain('creating this Student');
+    expect(credentialMismatchErrorCopy('reset')).toContain('resetting this Student PIN');
+  });
+
   it('shows owned-seat state and exact actual-name guidance without a stored password', () => {
-    const html = renderToStaticMarkup(
-      <ParentHouseholdWorkspace snapshot={snapshot} relationship="dependent" />,
-    );
-    expect(html).toContain('1 of 3 active Student seats used');
-    expect(html).toContain('Live classes run Sundayâ€“Thursday');
+    const html = renderToStaticMarkup(<ParentHouseholdWorkspace snapshot={snapshot} />);
+    expect(html).toContain('Parent learner + 1 of 3 child learners');
+    expect(html).toContain('Live classes run Sunday–Thursday');
     expect(html).toContain('href="/forgot-password"');
     expect(html).toContain(STUDENT_ACTUAL_NAME_INSTRUCTIONS.dependent);
     expect(html).toContain('/app/parent/students/student-1');
@@ -56,17 +138,26 @@ describe('P12 persisted Parent household client workspace', () => {
     );
     expect(html).toContain('name="actual_name"');
     expect(html).toContain('name="display_name"');
-    expect(html).toContain('name="relationship"');
     expect(html).toContain('name="username"');
     expect(html).toContain('name="new_password"');
-    expect(html).toContain('minLength="12"');
+    expect(html).toContain('minLength="6"');
+    expect(html).toContain('maxLength="6"');
+    expect(html).toContain('inputMode="numeric"');
+    expect(html).toContain('pattern="[0-9]{6}"');
     expect(html).toContain('Someone I manage');
-    expect(html).toContain('Myself');
+    expect(html).not.toContain('Myself');
+    expect(html).not.toContain('name="relationship"');
     expect(html).toContain(STUDENT_ACTUAL_NAME_INSTRUCTIONS.dependent);
+    expect(html).toContain('Creating a Student adds them to the recurring 7:00 PM class.');
+    expect(html).toContain('noValidate=""');
+    expect(html).toContain('<button type="submit" class="button-primary">Create Student</button>');
+    expect(html).not.toContain('Program schedule');
+    expect(html).not.toContain('Parent account access');
+    expect(html).not.toContain('<h1');
     expect(html).not.toMatch(/name="(?:hebrew_name|grade_label|date_of_birth|age|email)"/u);
   });
 
-  it('renders edit, archive and reset flows without disclosing the existing password', () => {
+  it('renders edit, archive and reset flows without disclosing the existing credential', () => {
     const html = renderToStaticMarkup(
       <ParentHouseholdWorkspace
         snapshot={snapshot}
@@ -76,16 +167,16 @@ describe('P12 persisted Parent household client workspace', () => {
     );
     expect(html).toContain('Save Student');
     expect(html).toContain('Archive Student');
-    expect(html).toContain('Reset Student password');
-    expect(html).toContain('existing password is never displayed');
-    expect(html).not.toContain('value="safe-password');
+    expect(html).toContain('Reset Student PIN');
+    expect(html).toContain('Student access and PIN controls');
+    expect(html).toContain('existing credential is never displayed');
+    expect(html).not.toContain('value="000123');
   });
 
-  it('shows a new password only in the immediate copy/print handoff', () => {
+  it('shows a new PIN only in the immediate copy/print handoff', () => {
     const html = renderToStaticMarkup(
       <ParentHouseholdWorkspace
         snapshot={snapshot}
-        relationship="self"
         credentialHandoff={{
           student_id: 'student-1',
           student_label: 'Student One',
@@ -97,21 +188,62 @@ describe('P12 persisted Parent household client workspace', () => {
         }}
       />,
     );
-    expect(html).toContain(STUDENT_ACTUAL_NAME_INSTRUCTIONS.self);
     expect(html).toContain('one-time-visible');
     expect(html).toContain('shown only now');
     expect(html).toContain('Credentials are not emailed');
+  });
+
+  it('keeps an existing self Student manageable without offering another fake Myself profile', () => {
+    const sourceStudent = snapshot.students[0]!;
+    const legacySelf = {
+      ...sourceStudent,
+      student_id: 'student-self-legacy',
+      actual_name: 'Ari Levi',
+      username: 'ari.legacy',
+      relationship: 'self' as const,
+    };
+    const overview = renderToStaticMarkup(
+      <ParentHouseholdWorkspace
+        snapshot={{
+          ...snapshot,
+          active_student_count: 1,
+          available_student_seats: 2,
+          students: [sourceStudent, legacySelf],
+        }}
+      />,
+    );
+    expect(overview).toContain('Parent learner + 1 of 3 child learners');
+    expect(overview).toContain('Child learners');
+    expect(overview).toContain('Legacy self-managed profile');
+    expect(overview).toContain('does not use a child learner seat');
+
+    const management = renderToStaticMarkup(
+      <ParentHouseholdWorkspace
+        snapshot={{
+          ...snapshot,
+          active_student_count: 0,
+          available_student_seats: 3,
+          students: [legacySelf],
+        }}
+        csrfToken="csrf-token"
+        view={{ kind: 'student', student_id: legacySelf.student_id }}
+      />,
+    );
+
+    expect(management).toContain('Manage Ari Levi');
+    expect(management).toContain('ari.legacy');
+    expect(management).not.toContain('Myself');
+    expect(management).not.toMatch(/convert|delete.*profile/i);
   });
 
   it('retains only the status overview for inactive access and removes fourth-seat creation', () => {
     const inactive = renderToStaticMarkup(
       <ParentHouseholdWorkspace
         snapshot={{ ...snapshot, access_state: 'inactive', can_manage_students: false }}
-        relationship="dependent"
         view={{ kind: 'create' }}
       />,
     );
-    expect(inactive).toContain('Our household');
+    expect(inactive).toContain('Parent learner + 1 of 3 child learners');
     expect(inactive).not.toContain('/app/parent/students/new');
     expect(inactive).toContain('management is unavailable');
     expect(inactive).not.toContain('name="actual_name"');
@@ -121,10 +253,12 @@ describe('P12 persisted Parent household client workspace', () => {
     const full = renderToStaticMarkup(
       <ParentHouseholdWorkspace
         snapshot={{ ...snapshot, active_student_count: 3, available_student_seats: 0 }}
-        relationship="dependent"
       />,
     );
-    expect(full).toContain('aria-disabled="true"');
+    expect(full).toContain(
+      '<button type="button" class="button-secondary" disabled="" aria-describedby="student-seat-capacity">',
+    );
+    expect(full).toContain('All 3 child learner seats are in use.');
     expect(full).not.toContain('href="/app/parent/students/new"');
   });
 
@@ -146,8 +280,8 @@ describe('P12 persisted Parent household client workspace', () => {
         display_name: null,
         username: 'student.two',
         relationship: 'dependent',
-        new_password: 'safe-password-123',
-        password_confirmation: 'safe-password-123',
+        new_password: '000123',
+        password_confirmation: '000123',
       },
       'csrf-token',
       'parent-browser-replay-0001',

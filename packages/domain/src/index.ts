@@ -1,6 +1,17 @@
 export { campaignTicker } from './landing/campaign.ts';
 export { campaign, landingContent, sharedNav } from './landing/content.ts';
 export {
+  adoptExistingPrivateVimeo,
+  createExistingVimeoProtectionReader,
+  ExistingVimeoAdoptionError,
+  getExistingPrivateVimeoPlayback,
+  ONE_TIME_VIMEO_ALLOWED_EMBED_DOMAINS,
+  unpublishExistingPrivateVimeo,
+  type ExistingVimeoProtectionReadback,
+  type ExistingVimeoProtectionReader,
+} from './content/existing-vimeo-adoption.ts';
+export {
+  cancellationRefundPolicy,
   communicationConsentNotice,
   legalPolicyMetadata,
   parentGuardianStudentDataNotice,
@@ -208,7 +219,6 @@ export {
   registerOt104rVimeoSource,
   retryOt104rVimeoSource,
   sanitizeOt104rProviderError,
-  signOt104rVimeoWebhook,
   type Ot104rVimeoAdapter,
   type Ot104rVimeoTextTrackDownload,
   type Ot104rVimeoTextTrackSummary,
@@ -543,6 +553,22 @@ export {
   type Ot87CommercialPolicy,
 } from './billing/commercial-policy.ts';
 export { createBillingServices } from './billing/service.ts';
+export {
+  BILLING_GHL_WORKFLOW_KEYS,
+  deriveBillingGhlLifecycleEvent,
+  type BillingGhlLifecycleEvent,
+  type BillingGhlLifecycleEventType,
+  type BillingGhlWorkflowKey,
+} from './billing/highlevel-lifecycle.ts';
+export {
+  OT03_CHECKOUT_ABANDONMENT_CHECKPOINTS,
+  OT03_CHECKOUT_ABANDONMENT_EVENT_TYPE,
+  OT03_CHECKOUT_ABANDONMENT_TRIGGER,
+  deriveOt03CheckoutAbandonmentIntents,
+  type Ot03CheckoutAbandonmentCheckpoint,
+  type Ot03CheckoutAbandonmentIntent,
+  type Ot03CheckoutCandidate,
+} from './billing/checkout-abandonment.ts';
 export { createOfficialStripeTestClient } from './billing/stripe-official-client.ts';
 export {
   createStripeTestBillingProviderAdapter,
@@ -627,12 +653,10 @@ export {
   listAdminHouseholds,
   listAdminLearners,
   listAdminUsers,
-  requestAdminStudentSetup,
   requestAdminUserPasswordReset,
   setAdminHouseholdStatus,
   setAdminLearnerStatus,
   setAdminUserStatus,
-  studentSetupPayloadSchema as adminStudentSetupPayloadSchema,
   updateAdminHousehold,
   updateAdminLearner,
   updateAdminUser,
@@ -649,4 +673,6 @@ export {
 export * from './learning/engagement.ts';
 export * from './classroom/embedded/index.ts';
 export * from './portals/parent-household/index.ts';
+export * from './portals/parent-welcome/index.ts';
+export * from './portals/parent-learning/index.ts';
 export * from './signup/school/index.ts';

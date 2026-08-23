@@ -14,7 +14,6 @@ import type {
   ContentAdminPromptTemplate,
   ContentAdminPromptVersion,
   ContentAdminProviderPortStatus,
-  ContentAdminSocialWorkspaceResponse,
   ContentAdminSourceDetail,
   ContentAdminSourceDetailResponse,
   ContentAdminSourceSummary,
@@ -36,19 +35,22 @@ import {
 } from '@onetime/brand-system/react';
 import { CONTENT_SECTIONS, contentSectionFromPath } from '../admin-ia.js';
 import { PublicationWorkspace } from '../admin/content/publication/index.js';
+import { ContentIngestWorkspace } from '../admin/content/ingest/ContentIngestWorkspace.js';
+import { createContentIngestApi } from '../admin/content/ingest/api.js';
 import { WorkspaceTabs } from '../shell/WorkspaceTabs.js';
 import './content-workspace.css';
 
 type RouteKind =
   | 'overview'
   | 'publication'
+  | 'ingest'
   | 'processing'
   | 'factory'
   | 'create'
-  | 'social'
   | 'knowledge'
   | 'prompts'
   | 'activity'
+  | 'review'
   | 'detail';
 
 type RouteState = {
@@ -70,10 +72,7 @@ type FilterState = {
   sort: string;
 };
 
-const studioViews = [
-  { id: 'create', label: 'Create', href: '/app/content/studio' },
-  { id: 'social', label: 'Social', href: '/app/content/studio/social' },
-] as const;
+const studioViews = [{ id: 'create', label: 'Create', href: '/app/content/studio' }] as const;
 
 const artifactKinds: ContentAdminArtifactKind[] = [
   'lesson_summary',
@@ -112,6 +111,10 @@ export function ContentWorkspace({
   onProtectedStateCleared,
 }: ContentWorkspaceProps) {
   const route = routeFromPath(path);
+  const ingestApi = useMemo(
+    () => createContentIngestApi({ csrfToken, onProtectedStateCleared }),
+    [csrfToken, onProtectedStateCleared],
+  );
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
   const [appliedFilters, setAppliedFilters] = useState<FilterState>(defaultFilters);
   const [loading, setLoading] = useState(false);
@@ -121,7 +124,6 @@ export function ContentWorkspace({
   const [processing, setProcessing] = useState<ContentAdminProcessingResponse | null>(null);
   const [factory, setFactory] = useState<ContentFactoryWorkspaceResponse | null>(null);
   const [createData, setCreateData] = useState<ContentAdminCreateWorkspaceResponse | null>(null);
-  const [social, setSocial] = useState<ContentAdminSocialWorkspaceResponse | null>(null);
   const [knowledge, setKnowledge] = useState<ContentAdminKnowledgeResponse | null>(null);
   const [prompts, setPrompts] = useState<ContentAdminPromptListResponse | null>(null);
   const [activity, setActivity] = useState<ContentAdminActivityResponse | null>(null);
@@ -166,13 +168,6 @@ export function ContentWorkspace({
         setCreateData(
           await apiGet<ContentAdminCreateWorkspaceResponse>(
             '/api/v1/admin/content/create',
-            onProtectedStateCleared,
-          ),
-        );
-      } else if (route.kind === 'social') {
-        setSocial(
-          await apiGet<ContentAdminSocialWorkspaceResponse>(
-            '/api/v1/admin/content/social',
             onProtectedStateCleared,
           ),
         );
@@ -257,6 +252,7 @@ export function ContentWorkspace({
             onFiltersChange={setFilters}
             onApplyFilters={() => setAppliedFilters(filters)}
             onOpen={(sourceKey) => onNavigate(`/app/content/${encodeURIComponent(sourceKey)}`)}
+            onStartVideoIntake={() => onNavigate('/app/content/upload')}
           />
         </>
       )}
@@ -266,6 +262,7 @@ export function ContentWorkspace({
           onProtectedStateCleared={onProtectedStateCleared}
         />
       )}
+      {!loading && !error && route.kind === 'ingest' && <ContentIngestWorkspace {...ingestApi} />}
       {!loading && !error && route.kind === 'processing' && processing && (
         <>
           <LibraryViewSelector currentId="processing" onNavigate={onNavigate} />
@@ -305,17 +302,6 @@ export function ContentWorkspace({
           />
         </>
       )}
-      {!loading && !error && route.kind === 'social' && social && (
-        <>
-          <WorkspaceTabs
-            tabs={studioViews}
-            currentId="social"
-            label="Studio view"
-            onNavigate={onNavigate}
-          />
-          <SocialView data={social} />
-        </>
-      )}
       {!loading && !error && route.kind === 'knowledge' && knowledge && (
         <KnowledgeView data={knowledge} />
       )}
@@ -341,10 +327,20 @@ export function ContentWorkspace({
           }
         />
       )}
-      {!loading && !error && route.kind === 'detail' && detail && (
+      {!loading && !error && (route.kind === 'detail' || route.kind === 'review') && detail && (
         <SourceDetailView
           source={detail}
-          onBack={() => onNavigate('/app/content')}
+          reviewMode={route.kind === 'review'}
+          onBack={() =>
+            onNavigate(
+              route.kind === 'review'
+                ? `/app/content/${encodeURIComponent(detail.source_key)}`
+                : '/app/content',
+            )
+          }
+          onReview={() =>
+            onNavigate(`/app/content/${encodeURIComponent(detail.source_key)}/review`)
+          }
           onAction={(action, reason) => postSourceAction(detail.source_key, action, reason)}
         />
       )}
@@ -383,18 +379,24 @@ function OverviewView({
   onFiltersChange,
   onApplyFilters,
   onOpen,
+  onStartVideoIntake,
 }: {
   data: ContentAdminOverviewResponse;
   filters: FilterState;
   onFiltersChange: (filters: FilterState) => void;
   onApplyFilters: () => void;
   onOpen: (sourceKey: string) => void;
+  onStartVideoIntake: () => void;
 }) {
+  const launchProviderPorts = data.provider_ports.filter((port) => port.port !== 'buffer');
+  const launchCounts = Object.entries(data.counts).filter(
+    ([key]) => key !== 'social_pending' && key !== 'buffer_pending',
+  );
   return (
     <>
-      <ProviderPorts ports={data.provider_ports} />
+      <ProviderPorts ports={launchProviderPorts} />
       <section className="content-counts" aria-label="Content counts">
-        {Object.entries(data.counts).map(([key, value]) => (
+        {launchCounts.map(([key, value]) => (
           <Card key={key} className="content-stat-card">
             <span>{readable(key)}</span>
             <strong>{value}</strong>
@@ -460,7 +462,12 @@ function OverviewView({
           </Button>
         </FilterStrip>
       </form>
-      <SourceList sources={data.sources} onOpen={onOpen} />
+      <SourceList
+        sources={data.sources}
+        hasActiveFilters={Object.values(filters).some((value) => value.length > 0)}
+        onOpen={onOpen}
+        onStartVideoIntake={onStartVideoIntake}
+      />
     </>
   );
 }
@@ -1157,30 +1164,6 @@ function CreateView({
   );
 }
 
-function SocialView({ data }: { data: ContentAdminSocialWorkspaceResponse }) {
-  return (
-    <>
-      <ProviderPorts ports={data.provider_ports} />
-      {data.drafts.length === 0 ? (
-        <EmptyState title="No social drafts" body="No exact-revision social draft is pending." />
-      ) : (
-        <section className="content-stack">
-          {data.drafts.map((draft) => (
-            <Card key={draft.draft_id} className="content-row-card">
-              <div>
-                <h2>{draft.platform.toUpperCase()}</h2>
-                <p>{draft.source_key}</p>
-              </div>
-              <Badge>{draft.workflow_state}</Badge>
-              <span>{draft.buffer_command_state ?? 'buffer provider off'}</span>
-            </Card>
-          ))}
-        </section>
-      )}
-    </>
-  );
-}
-
 function KnowledgeView({ data }: { data: ContentAdminKnowledgeResponse }) {
   return (
     <>
@@ -1458,11 +1441,15 @@ function ActivityView({ events }: { events: ContentAdminActivityEvent[] }) {
 
 function SourceDetailView({
   source,
+  reviewMode,
   onBack,
+  onReview,
   onAction,
 }: {
   source: ContentAdminSourceDetail;
+  reviewMode: boolean;
   onBack: () => void;
+  onReview: () => void;
   onAction: (action: string, reason: string) => Promise<void>;
 }) {
   const [reason, setReason] = useState('Reviewed in OT-110A workspace.');
@@ -1473,10 +1460,16 @@ function SourceDetailView({
           Back
         </Button>
         <div>
+          {reviewMode && <p className="content-factory-kicker">Content review</p>}
           <h2>{source.title}</h2>
           <p>{source.source_key}</p>
         </div>
         <Badge>{readable(source.lifecycle_stage)}</Badge>
+        {!reviewMode && (
+          <Button type="button" variant="primary" onClick={onReview}>
+            Open content review
+          </Button>
+        )}
       </div>
       <ProviderPorts ports={source.provider_ports} />
       <VerticalSlicePanel slice={source.vertical_slice} />
@@ -1532,41 +1525,6 @@ function SourceDetailView({
               onClick={() => void onAction('artifacts/publish', reason)}
             >
               Publish Artifact
-            </Button>
-          </div>
-        </Card>
-        <Card className="content-panel">
-          <h3>Social And Buffer</h3>
-          {source.social_drafts.length === 0 ? (
-            <p>No social draft is pending.</p>
-          ) : (
-            source.social_drafts.map((draft) => (
-              <p key={draft.draft_id}>
-                {draft.platform}: {draft.workflow_state}
-              </p>
-            ))
-          )}
-          <div className="content-action-row">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => void onAction('social/approve', reason)}
-            >
-              Approve Social
-            </Button>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => void onAction('social/schedule', reason)}
-            >
-              Schedule
-            </Button>
-            <Button
-              type="button"
-              variant="danger"
-              onClick={() => void onAction('social/retract', reason)}
-            >
-              Retract
             </Button>
           </div>
         </Card>
@@ -1655,40 +1613,38 @@ function VerticalSlicePanel({ slice }: { slice: ContentAdminSourceDetail['vertic
         </dl>
         <p>{slice.provider_setup.owner_action}</p>
       </Card>
-      <Card className="content-panel content-slice-card">
-        <h3>Social Handoff</h3>
-        <dl>
-          <div>
-            <dt>State</dt>
-            <dd>{readable(slice.social_handoff.state)}</dd>
-          </div>
-          <div>
-            <dt>Drafts</dt>
-            <dd>{slice.social_handoff.draft_count}</dd>
-          </div>
-          <div>
-            <dt>Live Publish</dt>
-            <dd>{slice.social_handoff.buffer_live_publish_allowed ? 'Allowed' : 'Disabled'}</dd>
-          </div>
-          <div>
-            <dt>Revision Lock</dt>
-            <dd>{slice.social_handoff.exact_revision_required ? 'Exact' : 'Open'}</dd>
-          </div>
-        </dl>
-      </Card>
     </section>
   );
 }
 
-function SourceList({
+export function SourceList({
   sources,
+  hasActiveFilters,
   onOpen,
+  onStartVideoIntake,
 }: {
   sources: ContentAdminSourceSummary[];
+  hasActiveFilters: boolean;
   onOpen: (sourceKey: string) => void;
+  onStartVideoIntake: () => void;
 }) {
   if (sources.length === 0) {
-    return <EmptyState title="No content sources" body="No source matched the current filters." />;
+    return hasActiveFilters ? (
+      <EmptyState
+        title="No content source matches these filters"
+        body="Change or clear the filters to see other uploaded video candidates."
+      />
+    ) : (
+      <EmptyState
+        title="No video candidate yet"
+        body="Open Recording intake to add an already-reviewed class recording, then review its stage here before publishing it to Students."
+        action={
+          <Button type="button" variant="primary" onClick={onStartVideoIntake}>
+            Open Recording intake
+          </Button>
+        }
+      />
+    );
   }
   return (
     <section className="source-list">
@@ -1699,7 +1655,6 @@ function SourceList({
               <th scope="col">Source</th>
               <th scope="col">Stage</th>
               <th scope="col">Artifacts</th>
-              <th scope="col">Social</th>
               <th scope="col">Updated</th>
             </tr>
           </thead>
@@ -1726,7 +1681,6 @@ function SourceList({
                   {source.artifact_counts.published} published /{' '}
                   {source.artifact_counts.review_needed} review
                 </td>
-                <td>{source.social_state}</td>
                 <td>{formatDate(source.updated_at)}</td>
               </tr>
             ))}
@@ -1767,7 +1721,7 @@ function ProviderPorts({ ports }: { ports: ContentAdminProviderPortStatus[] }) {
   );
 }
 
-function routeFromPath(path: string): RouteState {
+export function contentWorkspaceRouteFromPath(path: string): RouteState {
   const cleanPath = path.split('?')[0] ?? '/app/content';
   if (cleanPath === '/app/content') return { kind: 'overview' };
   const segments = cleanPath
@@ -1776,16 +1730,22 @@ function routeFromPath(path: string): RouteState {
     .filter(Boolean);
   const segment = segments[0] ?? '';
   if (segment === 'publication') return { kind: 'publication' };
+  if (segment === 'upload') return { kind: 'ingest' };
   if (segment === 'processing') return { kind: 'processing' };
   if (segment === 'factory') return { kind: 'factory' };
-  if (segment === 'studio') return { kind: segments[1] === 'social' ? 'social' : 'create' };
+  if (segment === 'studio') return { kind: 'create' };
   if (segment === 'create') return { kind: 'create' };
-  if (segment === 'social') return { kind: 'social' };
+  if (segment === 'social') return { kind: 'overview' };
   if (segment === 'knowledge') return { kind: 'knowledge' };
   if (segment === 'prompts') return { kind: 'prompts' };
   if (segment === 'activity') return { kind: 'activity' };
+  if (segments[1] === 'review') {
+    return { kind: 'review', sourceKey: decodeURIComponent(segment) };
+  }
   return { kind: 'detail', sourceKey: decodeURIComponent(segment) };
 }
+
+const routeFromPath = contentWorkspaceRouteFromPath;
 
 async function apiGet<T>(path: string, onProtectedStateCleared: () => void): Promise<T> {
   return apiRequest<T>(path, { method: 'GET' }, onProtectedStateCleared);

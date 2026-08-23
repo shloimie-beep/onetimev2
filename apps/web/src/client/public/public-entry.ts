@@ -1,5 +1,11 @@
 import './styles.css';
 import { schoolInquiryFormModel } from './school/model.js';
+import {
+  familySignupPostSuccessDestination,
+  familySignupRequestTarget,
+} from './signup/navigation.js';
+
+const canonicalApplicationOrigin = 'https://app.onetimeonetime.com';
 
 const schoolInquiryModel = schoolInquiryFormModel();
 
@@ -113,9 +119,7 @@ function renderTimedAccessState() {
     if (container.matches('[data-signup-form]')) {
       const submit = container.querySelector<HTMLButtonElement>('button[type="submit"]');
       if (submit && !submit.disabled) {
-        submit.textContent = expired
-          ? 'Create account and continue to checkout'
-          : 'Create my free family account';
+        submit.textContent = 'Create your Family account';
       }
     }
   });
@@ -142,32 +146,50 @@ async function installRoleSelector(root: HTMLElement) {
   const status = root.querySelector<HTMLElement>('[data-role-status]');
   const buttons = [...root.querySelectorAll<HTMLButtonElement>('[data-select-role]')];
   let csrfToken = '';
-  try {
-    const response = await fetch('/api/v2.1/auth/session', {
-      credentials: 'same-origin',
-      headers: { accept: 'application/json' },
-    });
-    const payload = (await response.json()) as {
-      csrf_token?: string;
-      account_context?: { available_roles?: string[] };
-    };
-    if (!response.ok || !payload.csrf_token) throw new Error('session_unavailable');
-    csrfToken = payload.csrf_token;
-    const available = new Set(payload.account_context?.available_roles ?? []);
+  let availableRoles = new Set<string>();
+  const enableAvailableRoles = () => {
     buttons.forEach((button) => {
-      button.disabled = !available.has(button.dataset.selectRole ?? '');
+      button.disabled = !availableRoles.has(button.dataset.selectRole ?? '');
     });
-  } catch {
-    if (status)
-      status.textContent = 'Your signed-in account could not be verified. Please sign in again.';
+  };
+  const refreshSession = async () => {
     buttons.forEach((button) => (button.disabled = true));
-    return;
-  }
+    try {
+      const response = await fetch('/api/v2.1/auth/session', {
+        credentials: 'same-origin',
+        cache: 'no-store',
+        headers: { accept: 'application/json' },
+      });
+      const payload = (await response.json()) as {
+        csrf_token?: string;
+        account_context?: { available_roles?: string[] };
+      };
+      if (response.status === 401 || response.status === 404) {
+        csrfToken = '';
+        availableRoles = new Set();
+        if (status) status.textContent = 'Your session ended. Sign in again to continue.';
+        return false;
+      }
+      if (!response.ok || !payload.csrf_token) throw new Error('session_unavailable');
+      csrfToken = payload.csrf_token;
+      availableRoles = new Set(payload.account_context?.available_roles ?? []);
+      enableAvailableRoles();
+      return true;
+    } catch {
+      csrfToken = '';
+      if (status) {
+        status.textContent = 'We could not verify your session yet. Select a role to retry.';
+      }
+      buttons.forEach((button) => (button.disabled = false));
+      return false;
+    }
+  };
 
   buttons.forEach((button) =>
     button.addEventListener('click', async () => {
       const requestedRole = button.dataset.selectRole;
       if (requestedRole !== 'admin' && requestedRole !== 'parent') return;
+      if (!csrfToken && !(await refreshSession())) return;
       buttons.forEach((candidate) => (candidate.disabled = true));
       if (status)
         status.textContent = `Opening the ${requestedRole === 'admin' ? 'Admin' : 'Parent'} workspace…`;
@@ -182,8 +204,13 @@ async function installRoleSelector(root: HTMLElement) {
           },
           body: JSON.stringify({ requested_role: requestedRole, csrf_token: csrfToken }),
         });
-        const payload = (await response.json()) as { return_to?: string; message?: string };
+        const payload = (await response.json()) as {
+          return_to?: string;
+          message?: string;
+          code?: string;
+        };
         if (!response.ok || !payload.return_to) {
+          csrfToken = '';
           throw new Error(payload.message ?? 'Role switch failed.');
         }
         window.location.assign(payload.return_to);
@@ -191,6 +218,78 @@ async function installRoleSelector(root: HTMLElement) {
         if (status) {
           status.textContent =
             error instanceof Error ? error.message : 'Role switching is unavailable right now.';
+        }
+        enableAvailableRoles();
+      }
+    }),
+  );
+  await refreshSession();
+}
+
+const householdSelector = document.querySelector<HTMLElement>('[data-household-selector]');
+if (householdSelector) void installHouseholdSelector(householdSelector);
+
+async function installHouseholdSelector(root: HTMLElement) {
+  const status = root.querySelector<HTMLElement>('[data-household-status]');
+  const buttons = [...root.querySelectorAll<HTMLButtonElement>('[data-select-household]')];
+  let csrfToken = '';
+  try {
+    const response = await fetch('/api/v2.1/account-context/households', {
+      credentials: 'same-origin',
+      cache: 'no-store',
+      headers: { accept: 'application/json' },
+    });
+    const payload = (await response.json()) as {
+      csrf_token?: string;
+      households?: { householdId?: string }[];
+    };
+    if (!response.ok || !payload.csrf_token) throw new Error('session_unavailable');
+    csrfToken = payload.csrf_token;
+    const available = new Set(
+      (payload.households ?? []).map((household) => household.householdId).filter(Boolean),
+    );
+    buttons.forEach((button) => {
+      button.disabled = !available.has(button.dataset.selectHousehold ?? '');
+    });
+  } catch {
+    if (status)
+      status.textContent = 'Your household access could not be verified. Please sign in again.';
+    buttons.forEach((button) => (button.disabled = true));
+    return;
+  }
+
+  buttons.forEach((button) =>
+    button.addEventListener('click', async () => {
+      const selectedHouseholdId = button.dataset.selectHousehold;
+      if (!selectedHouseholdId) return;
+      buttons.forEach((candidate) => (candidate.disabled = true));
+      if (status) status.textContent = 'Opening the selected Parent workspace…';
+      try {
+        const response = await fetch('/api/v2.1/account-context/household', {
+          method: 'POST',
+          credentials: 'same-origin',
+          cache: 'no-store',
+          headers: {
+            accept: 'application/json',
+            'content-type': 'application/json',
+            'x-csrf-token': csrfToken,
+          },
+          body: JSON.stringify({
+            selected_household_id: selectedHouseholdId,
+            csrf_token: csrfToken,
+          }),
+        });
+        const payload = (await response.json()) as { return_to?: string; message?: string };
+        if (!response.ok || !payload.return_to) {
+          throw new Error(payload.message ?? 'Household selection failed.');
+        }
+        window.location.assign(payload.return_to);
+      } catch (error) {
+        if (status) {
+          status.textContent =
+            error instanceof Error
+              ? error.message
+              : 'Household selection is unavailable right now.';
         }
         buttons.forEach((candidate) => (candidate.disabled = false));
       }
@@ -236,6 +335,7 @@ if (carousel) {
   const toggle = carousel.querySelector<HTMLButtonElement>('[data-gallery-toggle]');
   let index = 0;
   let pointerStartX: number | null = null;
+  let suppressClickUntil = 0;
   let autoplayTimer: number | undefined;
   let userPaused = reducedMotion;
   let pointerInside = false;
@@ -319,9 +419,14 @@ if (carousel) {
     const delta = event.clientX - pointerStartX;
     pointerStartX = null;
     if (Math.abs(delta) < 36) return;
+    suppressClickUntil = window.performance.now() + 500;
     showFromControl(index + (delta < 0 ? 1 : -1));
   });
   viewport?.addEventListener('pointercancel', () => (pointerStartX = null));
+  viewport?.addEventListener('click', () => {
+    if (window.performance.now() < suppressClickUntil) return;
+    showFromControl(index + 1);
+  });
   carousel.addEventListener('mouseenter', () => {
     pointerInside = true;
     syncAutoplay();
@@ -361,6 +466,82 @@ if (carousel) {
   syncAutoplay();
 }
 
+const pressCarousel = document.querySelector<HTMLElement>('[data-press-carousel]');
+if (pressCarousel) {
+  const slides = [...pressCarousel.querySelectorAll<HTMLElement>('span')];
+  const status = document.querySelector<HTMLElement>('[data-press-status]');
+  let index = 0;
+  let timer: number | undefined;
+  let paused = reducedMotion;
+  let pointerStartX: number | null = null;
+  let suppressClickUntil = 0;
+  const show = (next: number, announce = true) => {
+    index = (next + slides.length) % slides.length;
+    slides.forEach((slide, slideIndex) => {
+      slide.toggleAttribute('data-active', slideIndex === index);
+      slide.setAttribute('aria-hidden', String(slideIndex !== index));
+    });
+    const label = slides[index]?.querySelector('img')?.alt;
+    if (announce && label && status) status.textContent = `Showing ${label}`;
+  };
+  const sync = () => {
+    window.clearInterval(timer);
+    if (!paused && !document.hidden && slides.length > 1)
+      timer = window.setInterval(() => show(index + 1, false), 3500);
+  };
+  const showFromControl = (next: number) => {
+    show(next);
+    sync();
+  };
+  pressCarousel.addEventListener('pointerdown', (event) => {
+    pointerStartX = event.clientX;
+  });
+  pressCarousel.addEventListener('pointerup', (event) => {
+    if (pointerStartX === null) return;
+    const delta = event.clientX - pointerStartX;
+    pointerStartX = null;
+    if (Math.abs(delta) < 36) return;
+    suppressClickUntil = window.performance.now() + 500;
+    showFromControl(index + (delta < 0 ? 1 : -1));
+  });
+  pressCarousel.addEventListener('pointercancel', () => (pointerStartX = null));
+  pressCarousel.addEventListener('click', () => {
+    if (window.performance.now() < suppressClickUntil) return;
+    showFromControl(index + 1);
+  });
+  pressCarousel.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+      event.preventDefault();
+      showFromControl(index + (event.key === 'ArrowRight' ? 1 : -1));
+    } else if (event.key === 'Home') {
+      event.preventDefault();
+      showFromControl(0);
+    } else if (event.key === 'End') {
+      event.preventDefault();
+      showFromControl(slides.length - 1);
+    }
+  });
+  pressCarousel.addEventListener('mouseenter', () => {
+    paused = true;
+    sync();
+  });
+  pressCarousel.addEventListener('mouseleave', () => {
+    paused = reducedMotion;
+    sync();
+  });
+  pressCarousel.addEventListener('focusin', () => {
+    paused = true;
+    sync();
+  });
+  pressCarousel.addEventListener('focusout', () => {
+    paused = reducedMotion;
+    sync();
+  });
+  document.addEventListener('visibilitychange', sync);
+  show(0, false);
+  sync();
+}
+
 document.querySelectorAll<HTMLImageElement>('[data-image-watch]').forEach((image) => {
   image.addEventListener(
     'error',
@@ -395,6 +576,9 @@ if (!reducedMotion && 'IntersectionObserver' in window) {
   });
 }
 
+const signupReceived = document.querySelector<HTMLElement>('[data-signup-received]');
+if (signupReceived) configureSignupReceivedPage(signupReceived);
+
 const form = document.querySelector<HTMLFormElement>('[data-signup-form]');
 if (form) {
   const status = form.querySelector<HTMLElement>('[data-form-status]');
@@ -402,50 +586,106 @@ if (form) {
   const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
   const timezone = form.querySelector<HTMLInputElement>('#timezone');
   const schoolOnly = form.dataset.signupEntry === 'school';
-  const preregistrationOnly = form.dataset.signupEntry === 'preregistration';
-  const preregistrationIdempotencyKey = `family-preregistration-${crypto.randomUUID()}`;
   const familyBootstrap: {
     idempotency_key: string;
     csrf_token: string;
     expires_at: string;
     writes_allowed: boolean;
   }[] = [];
+  const familySubmissionUnknownMessage =
+    "We couldn't confirm whether your account was created. To avoid creating it twice, don't submit this form again. Try signing in or resetting your password.";
+  let familyPostAttempted = false;
+  let familySubmissionLocked = false;
+  let submissionInFlight = false;
   if (submit) submit.hidden = false;
 
+  const controlForName = (name: string) => {
+    const control = form.elements.namedItem(name);
+    return control instanceof HTMLInputElement ? control : null;
+  };
   const setError = (name: string, message: string) => {
     const field = form.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
     if (field) field.textContent = message;
+    const control = controlForName(name);
+    if (control) control.setAttribute('aria-invalid', message ? 'true' : 'false');
   };
-  const clearErrors = () =>
-    form
-      .querySelectorAll<HTMLElement>('[data-error-for]')
-      .forEach((node) => (node.textContent = ''));
-  const currentEntry = () =>
-    schoolOnly ? 'school' : preregistrationOnly ? 'preregistration' : 'family';
-  const familyButtonCopy = () => {
-    const boundary = Date.parse(form.dataset.accessBoundary ?? '');
-    return Number.isFinite(boundary) && serverNow().getTime() < boundary
-      ? 'Create my free family account'
-      : 'Create account and continue to checkout';
+  const clearErrors = () => {
+    form.querySelectorAll<HTMLElement>('[data-error-for]').forEach((node) => {
+      const name = node.dataset.errorFor;
+      if (name) setError(name, '');
+    });
+  };
+  const focusFirstInvalid = () => {
+    const first = form.querySelector<HTMLInputElement>('[aria-invalid="true"]');
+    if (!first) return;
+    first.scrollIntoView({ block: 'center', behavior: reducedMotion ? 'auto' : 'smooth' });
+    first.focus({ preventScroll: true });
+  };
+  const validateFamilyForm = () => {
+    const controls = [
+      ...form.querySelectorAll<HTMLInputElement>('[data-family-fields] input[required]'),
+    ];
+    for (const control of controls) {
+      let message = '';
+      if (
+        control.validity.valueMissing ||
+        (control.type !== 'password' && control.type !== 'checkbox' && !control.value.trim())
+      ) {
+        message = 'This field is required.';
+      } else if (control.validity.typeMismatch && control.type === 'email') {
+        message = 'Enter a valid email address.';
+      } else if (control.validity.tooShort) {
+        message =
+          control.type === 'password'
+            ? 'At least 6 characters.'
+            : `Use at least ${control.minLength} characters.`;
+      } else if (control.validity.tooLong) {
+        message =
+          control.type === 'password'
+            ? 'Choose a shorter password.'
+            : `Use no more than ${control.maxLength} characters.`;
+      } else if (control.name === 'timezone' && !isIanaTimeZone(control.value.trim())) {
+        message = 'Enter a valid time zone, such as America/New_York.';
+      }
+      setError(control.name, message);
+    }
+    const password = controlForName('password');
+    const confirmation = controlForName('password_confirmation');
+    if (
+      password &&
+      confirmation &&
+      !confirmation.getAttribute('aria-invalid')?.includes('true') &&
+      password.value !== confirmation.value
+    ) {
+      setError('password_confirmation', 'Passwords must match.');
+    }
+    const valid = !form.querySelector('[aria-invalid="true"]');
+    if (!valid) focusFirstInvalid();
+    return valid;
+  };
+  const currentEntry = () => (schoolOnly ? 'school' : 'family');
+  const familyButtonCopy = () => 'Create your Family account';
+  const lockUnknownFamilySubmission = () => {
+    familySubmissionLocked = true;
+    if (status) status.textContent = familySubmissionUnknownMessage;
   };
 
   const detectedTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   if (timezone && detectedTimezone) timezone.value = detectedTimezone;
-  if (submit) {
-    submit.textContent = schoolOnly
-      ? schoolInquiryModel.cta
-      : preregistrationOnly
-        ? 'Pre-register my Family'
-        : familyButtonCopy();
-  }
+  if (submit) submit.textContent = schoolOnly ? schoolInquiryModel.cta : familyButtonCopy();
 
-  const loadFamilyBootstrap = async () => {
+  const loadFamilyBootstrap = async (force = false) => {
+    if (force) familyBootstrap.splice(0, familyBootstrap.length);
     const current = familyBootstrap[0];
     if (current && Date.parse(current.expires_at) > serverNow().getTime() + 10_000) return current;
-    const response = await fetch('/api/v1/signup/family/bootstrap', {
+    const target = familySignupRequestTarget(
+      '/api/v1/signup/family/bootstrap',
+      window.location.origin,
+    );
+    const response = await fetch(target.url, {
       method: 'GET',
       cache: 'no-store',
-      credentials: 'same-origin',
+      credentials: target.credentials,
       headers: { accept: 'application/json' },
     });
     const json = (await response.json()) as (typeof familyBootstrap)[number] & {
@@ -453,100 +693,102 @@ if (form) {
       message?: string;
     };
     if (!response.ok || !json.success) {
-      throw new Error(json.message ?? 'Refresh the page and try again.');
+      throw new Error('Secure Family signup is temporarily unavailable. Please try again.');
     }
     familyBootstrap.splice(0, familyBootstrap.length, json);
     return json;
   };
-  if (!schoolOnly && !preregistrationOnly) {
+  type SignupResponsePayload = {
+    success?: boolean;
+    message?: string | { heading?: string; body?: string };
+    field_errors?: Record<string, string>;
+    code?: string;
+    session_established?: boolean;
+    continue_to?: string;
+    provider_projection_state?: string;
+  };
+  const postFamilySignup = async (data: FormData) => {
+    const postWith = async (bootstrap: (typeof familyBootstrap)[number]) => {
+      if (!bootstrap.writes_allowed) {
+        throw new Error('Signup writes are disabled in this verification environment.');
+      }
+      const unifiedTermsAccepted = data.get('terms_accepted') === 'on';
+      const target = familySignupRequestTarget('/api/v1/signup/family', window.location.origin);
+      familyPostAttempted = true;
+      const response = await fetch(target.url, {
+        method: 'POST',
+        credentials: target.credentials,
+        headers: {
+          'content-type': 'application/json',
+          accept: 'application/json',
+          'x-csrf-token': bootstrap.csrf_token,
+        },
+        body: JSON.stringify({
+          classification: 'family',
+          idempotency_key: bootstrap.idempotency_key,
+          first_name: String(data.get('first_name') ?? ''),
+          last_name: String(data.get('last_name') ?? ''),
+          email: String(data.get('email') ?? ''),
+          password: String(data.get('password') ?? ''),
+          password_confirmation: String(data.get('password_confirmation') ?? ''),
+          timezone: String(data.get('timezone') ?? ''),
+          terms_accepted: unifiedTermsAccepted,
+          privacy_accepted: unifiedTermsAccepted,
+          general_marketing_consent: unifiedTermsAccepted,
+          parent_newsletter_consent: unifiedTermsAccepted,
+        }),
+      });
+      return { response, json: (await response.json()) as SignupResponsePayload };
+    };
+
+    let result = await postWith(await loadFamilyBootstrap());
+    if (!result.response.ok && result.json.code === 'CSRF_REQUIRED') {
+      // CSRF rejection occurs before signup submission. A single fresh-bootstrap retry is safe
+      // and preserves the same entered values without risking a duplicate account write.
+      result = await postWith(await loadFamilyBootstrap(true));
+    }
+    return result;
+  };
+  if (!schoolOnly) {
     void loadFamilyBootstrap().catch(() => {
       if (status)
         status.textContent = 'Secure Family signup is still loading. You can retry shortly.';
     });
   }
+  const clearEditedFieldError = (event: Event) => {
+    const control = event.target;
+    if (!(control instanceof HTMLInputElement) || !control.name) return;
+    setError(control.name, '');
+    if (control.name === 'password') setError('password_confirmation', '');
+  };
+  form.addEventListener('input', clearEditedFieldError);
+  form.addEventListener('change', clearEditedFieldError);
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
-    clearErrors();
     const entry = currentEntry();
-    const password = form.querySelector<HTMLInputElement>('#password');
-    const passwordConfirmation = form.querySelector<HTMLInputElement>('#password_confirmation');
-    if (
-      entry === 'family' &&
-      password &&
-      passwordConfirmation &&
-      password.value !== passwordConfirmation.value
-    ) {
-      setError('password_confirmation', 'Passwords must match.');
-      passwordConfirmation.focus();
+    if (submissionInFlight) return;
+    if (entry === 'family' && familySubmissionLocked) {
+      if (status) status.textContent = familySubmissionUnknownMessage;
       return;
     }
-    if (!form.reportValidity()) return;
+    clearErrors();
+    if (entry === 'family' ? !validateFamilyForm() : !form.reportValidity()) return;
     const data = new FormData(form);
+    submissionInFlight = true;
+    familyPostAttempted = false;
 
     if (submit) {
       submit.disabled = true;
-      submit.textContent =
-        entry === 'family'
-          ? 'Creating account…'
-          : entry === 'preregistration'
-            ? 'Saving pre-registration…'
-            : 'Sending inquiry…';
+      submit.textContent = entry === 'family' ? 'Creating account…' : 'Sending inquiry…';
     }
     if (status) status.textContent = '';
 
     try {
       let response: Response;
-      if (entry === 'preregistration') {
-        response = await fetch('/api/v1/leads', {
-          method: 'POST',
-          credentials: 'same-origin',
-          headers: { 'content-type': 'application/json', accept: 'application/json' },
-          body: JSON.stringify({
-            contact_name: String(data.get('contact_name') ?? ''),
-            family_or_school: String(data.get('family_or_school') ?? ''),
-            audience_type: 'family',
-            location: String(data.get('location') ?? ''),
-            timezone: String(data.get('timezone') ?? ''),
-            ...(detectedTimezone ? { browser_timezone: detectedTimezone } : {}),
-            email: String(data.get('email') ?? ''),
-            reminder_preference: 'none',
-            reminder_consent: false,
-            idempotency_key: preregistrationIdempotencyKey,
-            attribution: {
-              landing_path: '/signup',
-              referrer: document.referrer.slice(0, 500),
-            },
-          }),
-        });
-      } else if (entry === 'family') {
-        const bootstrap = await loadFamilyBootstrap();
-        if (!bootstrap.writes_allowed) {
-          throw new Error('Signup writes are disabled in this verification environment.');
-        }
-        response = await fetch('/api/v1/signup/family', {
-          method: 'POST',
-          credentials: 'same-origin',
-          headers: {
-            'content-type': 'application/json',
-            accept: 'application/json',
-            'x-csrf-token': bootstrap.csrf_token,
-          },
-          body: JSON.stringify({
-            classification: 'family',
-            idempotency_key: bootstrap.idempotency_key,
-            first_name: String(data.get('first_name') ?? ''),
-            last_name: String(data.get('last_name') ?? ''),
-            email: String(data.get('email') ?? ''),
-            password: String(data.get('password') ?? ''),
-            password_confirmation: String(data.get('password_confirmation') ?? ''),
-            timezone: String(data.get('timezone') ?? ''),
-            terms_accepted: data.get('terms_accepted') === 'on',
-            privacy_accepted: data.get('privacy_accepted') === 'on',
-            general_marketing_consent: data.get('general_marketing_consent') === 'on',
-            parent_newsletter_consent: data.get('parent_newsletter_consent') === 'on',
-          }),
-        });
+      let json: SignupResponsePayload;
+      if (entry === 'family') {
+        ({ response, json } = await postFamilySignup(data));
       } else {
         const phone = String(data.get('phone') ?? '').trim();
         const note = String(data.get('note') ?? '').trim();
@@ -563,91 +805,154 @@ if (form) {
             ...(note ? { note } : {}),
           }),
         });
+        json = (await response.json()) as SignupResponsePayload;
       }
-      const json = (await response.json()) as {
-        success?: boolean;
-        message?: string | { heading?: string; body?: string };
-        field_errors?: Record<string, string>;
-        code?: string;
-        session_established?: boolean;
-        continue_to?: string;
-      };
       if (!response.ok || !json.success) {
-        if (json.field_errors) {
+        const familyOutcomeUnknown =
+          entry === 'family' &&
+          (response.status >= 500 || (!json.field_errors && json.code !== 'VALIDATION_ERROR'));
+        if (familyOutcomeUnknown) {
+          lockUnknownFamilySubmission();
+        } else if (json.field_errors) {
           Object.entries(json.field_errors).forEach(([name, message]) => setError(name, message));
-          form.querySelector<HTMLElement>('[data-error-for]:not(:empty)')?.focus();
+          if (status) status.textContent = 'Please check the highlighted fields.';
+          focusFirstInvalid();
         } else if (status) {
-          status.textContent =
-            typeof json.message === 'string'
-              ? json.message
-              : (json.code ?? 'We could not save that request yet.');
+          const serverMessage = typeof json.message === 'string' ? json.message : '';
+          status.textContent = /\brefresh\b/iu.test(serverMessage)
+            ? 'We could not verify that request. Please try again.'
+            : serverMessage || json.code || 'We could not save that request yet.';
         }
         return;
       }
-      if (entry === 'family' && json.session_established === true) {
+      if (entry === 'family') {
         const search = new URLSearchParams(window.location.search);
-        const requestedContinueTo = search.get('continue_to');
-        const continuation = search.has('continue_to')
-          ? safeParentContinueTo(requestedContinueTo)
-          : safeParentContinueTo(json.continue_to);
-        if (continuation) {
-          window.location.assign(continuation);
-          return;
-        }
+        const destination = familySignupPostSuccessDestination(
+          json,
+          search.has('continue_to') ? search.get('continue_to') : undefined,
+        );
+        window.location.assign(
+          destination.kind === 'application' ? applicationUrl(destination.path) : destination.path,
+        );
+        return;
       }
       form.hidden = true;
       if (success) {
         success.hidden = false;
         const heading = success.querySelector<HTMLElement>('[data-success-heading]');
         const body = success.querySelector<HTMLElement>('[data-success-body]');
+        const parentDashboard = success.querySelector<HTMLAnchorElement>('[data-success-continue]');
         if (heading) {
           heading.textContent =
-            entry === 'preregistration'
-              ? typeof json.message === 'object' && json.message.heading
-                ? json.message.heading
-                : 'Adult pre-registration received.'
-              : entry === 'family'
-                ? 'Your Family account was saved.'
-                : (typeof json.message === 'object' && json.message.heading) ||
-                  'Thank you — we received your School inquiry.';
+            (typeof json.message === 'object' && json.message.heading) ||
+            'Thank you — we received your School inquiry.';
         }
         if (body) {
           body.textContent =
-            entry === 'preregistration'
-              ? typeof json.message === 'object' && json.message.body
-                ? json.message.body
-                : 'We saved the adult contact for follow-up. No portal account, Student account, subscription, or charge was created.'
-              : entry === 'family'
-                ? typeof json.message === 'string'
-                  ? json.message
-                  : 'Automatic sign-in is not available yet. Use Member Login when session setup is available.'
-                : typeof json.message === 'string'
-                  ? json.message
-                  : (json.message?.body ?? schoolInquiryModel.success);
+            typeof json.message === 'string'
+              ? json.message
+              : (json.message?.body ?? schoolInquiryModel.success);
         }
+        if (parentDashboard) parentDashboard.hidden = true;
         success.focus();
       }
     } catch (error) {
-      if (status) {
+      if (entry === 'family' && familyPostAttempted) {
+        lockUnknownFamilySubmission();
+      } else if (status) {
+        const message = error instanceof Error ? error.message : '';
         status.textContent =
-          error instanceof Error ? error.message : 'We could not save that request yet.';
+          message && !/\brefresh\b/iu.test(message) && !(error instanceof TypeError)
+            ? message
+            : 'We could not save that request yet. Please try again.';
       }
     } finally {
+      submissionInFlight = false;
       if (submit) {
-        submit.disabled = false;
+        submit.disabled = entry === 'family' && familySubmissionLocked;
         submit.textContent =
-          entry === 'family'
-            ? familyButtonCopy()
-            : entry === 'preregistration'
-              ? 'Pre-register my Family'
+          entry === 'family' && familySubmissionLocked
+            ? 'Check sign-in instead'
+            : entry === 'family'
+              ? familyButtonCopy()
               : schoolInquiryModel.cta;
       }
     }
   });
 }
 
+function isIanaTimeZone(value: string): boolean {
+  if (!value) return false;
+  try {
+    new Intl.DateTimeFormat('en-US', { timeZone: value }).format();
+    return value.includes('/') || value === 'UTC';
+  } catch {
+    return false;
+  }
+}
+
+function familyConfirmationCopy(providerProjectionState: string | undefined): string {
+  return providerProjectionState === 'ready'
+    ? 'Your Family account is ready, and we sent your confirmation email.'
+    : 'Your Family account is ready. You can continue now while we finish sending your confirmation email.';
+}
+
+function configureSignupReceivedPage(receipt: HTMLElement): void {
+  const heading = receipt.querySelector<HTMLElement>('[data-signup-received-heading]');
+  const body = receipt.querySelector<HTMLElement>('[data-signup-received-body]');
+  const primary = receipt.querySelector<HTMLAnchorElement>('[data-signup-received-primary]');
+  if (!heading || !body || !primary) return;
+
+  const search = new URLSearchParams(window.location.search);
+  const state = search.get('state');
+  primary.hidden = false;
+  if (state === 'ready') {
+    heading.textContent = 'You’re all set.';
+    body.textContent = familyConfirmationCopy(search.get('email') === 'sent' ? 'ready' : undefined);
+    primary.textContent = 'Go to Parent dashboard';
+    primary.href = applicationUrl(safeParentContinueTo(search.get('continue_to')) ?? '/app/parent');
+  } else if (state === 'session_pending') {
+    heading.textContent = 'Signup received';
+    body.textContent =
+      'Your Family account was saved. Sign in to continue while we finish sending your confirmation email.';
+    primary.textContent = 'Sign in';
+    primary.href = applicationUrl('/login');
+  } else if (state === 'sign_in') {
+    heading.textContent = 'Your account already exists';
+    body.textContent = 'Sign in or reset your password to continue.';
+    primary.textContent = 'Sign in';
+    primary.href = applicationUrl('/login');
+  } else if (state === 'identity_review') {
+    heading.textContent = 'Signup received';
+    body.textContent =
+      'Your inactive account was saved. Checkout remains unavailable pending identity review.';
+    primary.hidden = true;
+  } else if (state === 'checkout_queued') {
+    heading.textContent = 'Signup received';
+    body.textContent =
+      'Your inactive account was saved. The standard hosted-checkout handoff is queued; no charge was made by this form.';
+    primary.hidden = true;
+  } else if (state === 'support') {
+    heading.textContent = 'Your account is ready';
+    body.textContent =
+      'The free period has ended. Contact us for paid continuation options; no charge was made by this form.';
+    primary.textContent = 'Contact support';
+    primary.href = 'mailto:info@onetimeonetime.com';
+  } else {
+    heading.textContent = 'Signup received';
+    body.textContent = 'Your Family signup was saved. Sign in to continue.';
+    primary.textContent = 'Sign in';
+    primary.href = applicationUrl('/login');
+  }
+  receipt.focus();
+}
+
+function applicationUrl(path: string): string {
+  return new URL(path, canonicalApplicationOrigin).toString();
+}
+
 function safeParentContinueTo(value: string | null | undefined): string | null {
-  if (!value || !value.startsWith('/') || value.startsWith('//')) return null;
+  if (!value || value.startsWith('//')) return null;
   let decoded = value;
   for (let pass = 0; pass < 3; pass += 1) {
     if (unsafeContinuationText(decoded)) return null;
@@ -666,9 +971,9 @@ function safeParentContinueTo(value: string | null | undefined): string | null {
     return null;
   }
   try {
-    const target = new URL(decoded, window.location.origin);
+    const target = new URL(decoded, canonicalApplicationOrigin);
     if (
-      target.origin !== window.location.origin ||
+      target.origin !== canonicalApplicationOrigin ||
       target.username ||
       target.password ||
       (target.pathname !== '/app/parent' && !target.pathname.startsWith('/app/parent/'))
@@ -882,7 +1187,20 @@ if (activationRoot) {
     const data = new FormData(form);
     if (!passwordsMatch(form, data)) return;
     setFormStatus(form, '');
-    setSubmitBusy(form, true, 'Activating...');
+    const activationMode = form.dataset.activationMode;
+    const busyLabel =
+      activationMode === 'student-reset'
+        ? 'Resetting PIN...'
+        : activationMode === 'student-setup'
+          ? 'Saving PIN...'
+          : 'Activating...';
+    const readyLabel =
+      activationMode === 'student-reset'
+        ? 'Reset PIN'
+        : activationMode === 'student-setup'
+          ? 'Set PIN'
+          : 'Activate account';
+    setSubmitBusy(form, true, busyLabel);
     try {
       const response = await postJson('/api/v1/account-lifecycle/activate', {
         token,
@@ -895,7 +1213,7 @@ if (activationRoot) {
       }
       window.location.assign(String(response.json.return_to ?? '/app/parent'));
     } finally {
-      setSubmitBusy(form, false, 'Activate account');
+      setSubmitBusy(form, false, readyLabel);
     }
   });
 }
@@ -993,10 +1311,48 @@ async function checkLifecycleToken(
     );
     return;
   }
-  if (status) status.textContent = 'Secure link verified.';
+  const studentPin =
+    flow === 'activation' &&
+    (response.json.token_type === 'student_setup' || response.json.token_type === 'student_reset');
+  const studentReset = flow === 'activation' && response.json.token_type === 'student_reset';
+  if (status) {
+    status.textContent = studentPin
+      ? studentReset
+        ? 'Secure link verified. Reset your six-digit Student PIN.'
+        : 'Secure link verified. Set your six-digit Student PIN.'
+      : 'Secure link verified.';
+  }
   if (form) {
     form.hidden = false;
-    form.querySelector<HTMLInputElement>('input[type="password"]')?.focus();
+    const password = form.querySelector<HTMLInputElement>('input[name="password"]');
+    const confirmation = form.querySelector<HTMLInputElement>('input[name="password_confirm"]');
+    if (studentPin) {
+      const root = form.closest<HTMLElement>('[data-activation-root]');
+      form.dataset.activationMode = studentReset ? 'student-reset' : 'student-setup';
+      document.title = `${studentReset ? 'Reset' : 'Set'} Student PIN | One Time Mishnayos`;
+      root
+        ?.querySelector<HTMLElement>('[data-activation-context]')
+        ?.replaceChildren(studentReset ? 'Student PIN reset' : 'Student account setup');
+      root
+        ?.querySelector<HTMLElement>('[data-activation-heading]')
+        ?.replaceChildren(studentReset ? 'Reset your PIN' : 'Set your PIN');
+      root
+        ?.querySelector<HTMLElement>('[data-activation-password-label]')
+        ?.replaceChildren('Six-digit Student PIN');
+      root
+        ?.querySelector<HTMLElement>('[data-activation-confirm-label]')
+        ?.replaceChildren('Confirm Student PIN');
+      root
+        ?.querySelector<HTMLButtonElement>('[data-activation-submit]')
+        ?.replaceChildren(studentReset ? 'Reset PIN' : 'Set PIN');
+      for (const input of [password, confirmation]) {
+        input?.setAttribute('minlength', '6');
+        input?.setAttribute('maxlength', '6');
+        input?.setAttribute('inputmode', 'numeric');
+        input?.setAttribute('pattern', '[0-9]{6}');
+      }
+    }
+    password?.focus();
   }
 }
 
@@ -1057,7 +1413,11 @@ function passwordsMatch(form: HTMLFormElement, data: FormData) {
   const confirm = String(data.get('password_confirm') ?? '');
   if (password !== confirm) {
     const field = form.querySelector<HTMLElement>('[data-error-for="password_confirm"]');
-    if (field) field.textContent = 'Passwords do not match.';
+    if (field) {
+      field.textContent = form.dataset.activationMode
+        ? 'Student PINs do not match.'
+        : 'Passwords do not match.';
+    }
     return false;
   }
   return true;

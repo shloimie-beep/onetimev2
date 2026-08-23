@@ -61,12 +61,12 @@ test('authenticated owner routes cover dashboard, CRM detail, communications, cl
   const synthetic = await createSyntheticContact(page);
   await useW12AdminSession(page);
   await page.goto('/app/dashboard');
-  await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Today' })).toBeVisible();
 
   for (const viewport of [mobileViewport, desktopViewport]) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     for (const probe of ownerRouteProbes) {
-      if (probe.id === 'crm_contact_detail') {
+      if (probe.id === 'contact_detail') {
         await openSyntheticContactDetail(page, synthetic.contactName, synthetic.email);
         const detailProbe: RouteProbe = {
           ...probe,
@@ -85,14 +85,14 @@ test('authenticated owner routes cover dashboard, CRM detail, communications, cl
   }
 });
 
-test('parent, student, and portal test lab journeys stay responsive and role-scoped', async ({
+test('parent and student journeys stay responsive and role-scoped', async ({
   browser,
   browserName,
 }) => {
   test.setTimeout(90_000);
   const journeys: Array<{
     probe: RouteProbe;
-    role: 'parent' | 'student' | null;
+    role: 'parent' | 'student';
     viewport: ViewportSpec;
   }> = [
     {
@@ -115,16 +115,6 @@ test('parent, student, and portal test lab journeys stay responsive and role-sco
       role: 'student',
       viewport: mobileViewport,
     },
-    {
-      probe: {
-        id: 'portal_test_lab',
-        path: '/app/portal-test-lab',
-        audience: 'test_lab',
-        expectedHeading: 'W12 Portal Test Lab',
-      },
-      role: null,
-      viewport: desktopViewport,
-    },
   ];
 
   for (const journey of journeys) {
@@ -132,8 +122,7 @@ test('parent, student, and portal test lab journeys stay responsive and role-sco
       viewport: { width: journey.viewport.width, height: journey.viewport.height },
     });
     const page = await context.newPage();
-    if (journey.probe.id === 'portal_test_lab') await useW12AdminSession(page);
-    if (journey.role) await loginAs(page, journey.role, journey.probe.path);
+    await loginAs(page, journey.role, journey.probe.path);
     const record = await collectRouteSnapshot(page, journey.probe, journey.viewport, browserName);
     routeRecords.push(record);
     expect(record.missing_accessible_names).toEqual([]);

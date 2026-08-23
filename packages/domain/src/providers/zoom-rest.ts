@@ -34,6 +34,11 @@ export type ZoomRestClientOptions = {
   fetchImpl?: ZoomFetch | undefined;
 };
 
+export type ZoomHostZakClientOptions = ZoomRestClientOptions & {
+  /** The reviewed account-owned host is fixed when this capability is constructed. */
+  hostUserId: string;
+};
+
 export type ZoomDailyMeetingInput = {
   hostUserId: string;
   localDate: string;
@@ -123,6 +128,8 @@ export type ZoomDisposableCanaryRequestObserver = Readonly<{
   onOauthTokenRequest?: (() => void) | undefined;
   onResourceRequest?: ((method: string) => void) | undefined;
 }>;
+
+export type ZoomHostZakRequestObserver = ZoomDisposableCanaryRequestObserver;
 
 export class ZoomApiError extends Error {
   readonly status: number;
@@ -530,6 +537,68 @@ export function createZoomDisposableCanaryLifecycleClient(
   });
 }
 
+/**
+ * The production classroom may obtain only the bound host's ephemeral ZAK.
+ * This client deliberately exposes no meeting read, create, update, delete, or
+ * registrant operation, and its production authorization is exact-path GET only.
+ */
+export function createZoomHostZakClient(
+  options: ZoomHostZakClientOptions,
+  observer: ZoomHostZakRequestObserver = {},
+) {
+  const resourcePath = `/users/${encodeURIComponent(options.hostUserId)}/token?type=zak`;
+  let resourceRequestStarted = false;
+  const zoomJson = createZoomJsonRequester(
+    options,
+    {
+      onOauthTokenRequest: observer.onOauthTokenRequest,
+      onResourceRequest(method) {
+        resourceRequestStarted = true;
+        observer.onResourceRequest?.(method);
+      },
+    },
+    {
+      operation: 'host_zak',
+      method: 'GET',
+      path: resourcePath,
+    },
+  );
+
+  return Object.freeze({
+    async getHostZakToken() {
+      resourceRequestStarted = false;
+      let json: unknown;
+      try {
+        json = await zoomJson(resourcePath, { method: 'GET' });
+      } catch (error) {
+        if (
+          error instanceof ZoomApiError &&
+          (error.code === 'ZOOM_PROVIDER_DISABLED' || error.code === 'ZOOM_PRODUCTION_BLOCKED')
+        ) {
+          throw error;
+        }
+        if (!(error instanceof ZoomApiError)) {
+          throw new ZoomApiError(
+            502,
+            'ZOOM_HOST_ZAK_REQUEST_FAILED',
+            'Zoom host authorization could not be issued.',
+          );
+        }
+        throw classifiedHostZakError(error, resourceRequestStarted);
+      }
+      const parsed = zakResponseSchema.safeParse(json);
+      if (!parsed.success) {
+        throw new ZoomApiError(
+          502,
+          'ZOOM_HOST_ZAK_READBACK_INVALID',
+          'Zoom host authorization readback was incomplete.',
+        );
+      }
+      return parsed.data.token;
+    },
+  });
+}
+
 export function createZoomRestClient(
   options: ZoomRestClientOptions,
   observer: ZoomDisposableCanaryRequestObserver = {},
@@ -783,7 +852,8 @@ export function createZoomMeetingSdkSignature(input: {
       iat: issuedAtSeconds,
       exp: issuedAtSeconds + ttlSeconds,
       tokenExp: issuedAtSeconds + ttlSeconds,
-      video_webrtc_mode: 1,
+      // Use Zoom's non-WebRTC video path for the protected browser launch.
+      video_webrtc_mode: 0,
     },
     input.credentials.sdkSecret,
   );
@@ -857,9 +927,16 @@ type ZoomJsonRequestObserver = Readonly<{
   onResourceRequest?: ((method: string) => void) | undefined;
 }>;
 
+type ZoomProductionRequestAuthorization = Readonly<{
+  operation: 'host_zak';
+  method: 'GET';
+  path: string;
+}>;
+
 function createZoomJsonRequester(
   options: ZoomRestClientOptions,
   observer: ZoomJsonRequestObserver = {},
+  productionAuthorization?: ZoomProductionRequestAuthorization | undefined,
 ) {
   const apiBaseUrl = trimTrailingSlash(options.apiBaseUrl ?? 'https://api.zoom.us/v2');
   const oauthTokenUrl = options.oauthTokenUrl ?? 'https://zoom.us/oauth/token';
@@ -868,7 +945,7 @@ function createZoomJsonRequester(
   let cachedToken: { value: string; expiresAt: number } | null = null;
 
   async function accessToken() {
-    assertEnabled(options);
+    assertEnabled(options, productionAuthorization);
     const now = Date.now();
     if (cachedToken && cachedToken.expiresAt - 60_000 > now) return cachedToken.value;
     const url = new URL(oauthTokenUrl);
@@ -908,8 +985,9 @@ function createZoomJsonRequester(
   }
 
   return async function zoomJson(path: string, init: RequestInit = {}) {
-    const token = await accessToken();
     const method = init.method?.toUpperCase() ?? 'GET';
+    assertProductionRequestAuthorized(options, productionAuthorization, method, path);
+    const token = await accessToken();
     observer.onResourceRequest?.(method);
     const response = await fetchWithTimeout(
       fetchImpl,
@@ -987,17 +1065,62 @@ function safeZoomErrorMessage(status: number) {
   return 'Zoom provider request failed.';
 }
 
-function assertEnabled(options: ZoomRestClientOptions) {
+function assertEnabled(
+  options: ZoomRestClientOptions,
+  productionAuthorization?: ZoomProductionRequestAuthorization | undefined,
+) {
   if (!options.enabled) {
     throw new ZoomApiError(503, 'ZOOM_PROVIDER_DISABLED', 'Zoom provider is disabled.');
   }
-  if (options.environment === 'production') {
+  if (options.environment === 'production' && !productionAuthorization) {
     throw new ZoomApiError(
       503,
       'ZOOM_PRODUCTION_BLOCKED',
       'Zoom production provider calls are not enabled by OT-103.',
     );
   }
+}
+
+function assertProductionRequestAuthorized(
+  options: ZoomRestClientOptions,
+  authorization: ZoomProductionRequestAuthorization | undefined,
+  method: string,
+  path: string,
+) {
+  assertEnabled(options, authorization);
+  if (
+    options.environment === 'production' &&
+    (!authorization ||
+      authorization.operation !== 'host_zak' ||
+      authorization.method !== method ||
+      authorization.path !== path)
+  ) {
+    throw new ZoomApiError(
+      503,
+      'ZOOM_PRODUCTION_BLOCKED',
+      'Zoom production provider calls are not enabled by OT-103.',
+    );
+  }
+}
+
+function classifiedHostZakError(error: ZoomApiError, resourceRequestStarted: boolean) {
+  const code = !resourceRequestStarted
+    ? 'ZOOM_HOST_ZAK_OAUTH_FAILED'
+    : error.status === 401 || error.status === 403
+      ? 'ZOOM_HOST_ZAK_NOT_AUTHORIZED'
+      : error.status === 404
+        ? 'ZOOM_HOST_ZAK_HOST_NOT_FOUND'
+        : error.status === 429
+          ? 'ZOOM_HOST_ZAK_RATE_LIMITED'
+          : error.status === 0 || error.status >= 500
+            ? 'ZOOM_HOST_ZAK_PROVIDER_UNAVAILABLE'
+            : 'ZOOM_HOST_ZAK_REQUEST_FAILED';
+  return new ZoomApiError(
+    error.status,
+    code,
+    'Zoom host authorization could not be issued.',
+    error.retryable || error.status === 429,
+  );
 }
 
 function signJwt(payload: Record<string, string | number>, secret: string) {

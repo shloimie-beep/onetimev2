@@ -93,6 +93,7 @@ export const routeBranding: RouteBranding[] = [
   publicRoute('/school/received'),
   publicRoute('/privacy', 'Privacy'),
   publicRoute('/terms', 'Terms'),
+  publicRoute('/cancellation-refund', 'Cancellation and refunds'),
   authRoute('/login', 'public'),
   authRoute('/forgot-password', 'public'),
   authRoute('/setup/:token', 'public'),

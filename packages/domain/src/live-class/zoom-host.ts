@@ -108,7 +108,7 @@ export function inspectZoomHostControlReadiness(config: AppConfig): ZoomHostCont
   if (!config.zoomMeetingSdkCanonicalClientSecretConfigured) {
     sdkAppBlockers.push('ZOOM_MEETING_SDK_CLIENT_SECRET');
   }
-  if (!hasExactSdkOriginBinding(config.publicBaseUrl, config.zoomMeetingSdkAllowedOrigin)) {
+  if (!hasExactSdkOriginBinding(config.applicationBaseUrl, config.zoomMeetingSdkAllowedOrigin)) {
     sdkAppBlockers.push('ZOOM_MEETING_SDK_ALLOWED_ORIGIN');
   }
   if (!config.zoomMeetingSdkWebVersionConfigured) {
@@ -251,11 +251,11 @@ function phase(blockerVariableNames: readonly string[]): ZoomHostControlReadines
   };
 }
 
-function hasExactSdkOriginBinding(publicBaseUrl: string, allowedOrigin: string | undefined) {
+function hasExactSdkOriginBinding(applicationBaseUrl: string, allowedOrigin: string | undefined) {
   if (!hasValue(allowedOrigin)) return false;
   try {
     const configured = new URL(allowedOrigin!);
-    const runtime = new URL(publicBaseUrl);
+    const runtime = new URL(applicationBaseUrl);
     return (
       configured.protocol === 'https:' &&
       configured.username === '' &&

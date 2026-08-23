@@ -147,6 +147,8 @@ export function createStudentNotificationService(deps: {
   };
 }
 
+export type StudentNotificationService = ReturnType<typeof createStudentNotificationService>;
+
 function assertOwned(
   principal: StudentNotificationPrincipal,
   notification: StudentNotificationRecord,

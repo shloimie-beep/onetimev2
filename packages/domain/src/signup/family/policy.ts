@@ -9,6 +9,7 @@ import {
   FAMILY_SIGNUP_IDEMPOTENCY_KEY_MAX_LENGTH,
   FAMILY_SIGNUP_IDEMPOTENCY_KEY_MIN_LENGTH,
   FAMILY_SIGNUP_OPERATION,
+  FAMILY_SIGNUP_UNIFIED_AGREEMENT_POLICY_VERSION,
   type FamilySignupAdultConsentChoices,
   type FamilySignupCommand,
   type FamilySignupLocalProjection,
@@ -23,7 +24,7 @@ import {
   type CanonicalState,
 } from '../../../../contracts/src/state/index.ts';
 import { normalizeAdultEmail } from '../../accounts/v21-household-identity.ts';
-import { evaluatePassword } from '../../auth/policy.ts';
+import { COMMON_AUTH_PASSWORDS, evaluatePassword } from '../../auth/policy.ts';
 import {
   createFamilySignupProjection,
   freePeriodConfiguration,
@@ -93,6 +94,9 @@ export interface CanonicalFamilySignupRequest {
   timezone: string;
   terms_accepted: true;
   privacy_accepted: true;
+  student_data_child_safety_accepted: true;
+  cancellation_refund_accepted: true;
+  unified_agreement_policy_version: typeof FAMILY_SIGNUP_UNIFIED_AGREEMENT_POLICY_VERSION;
   general_marketing_consent: boolean;
   parent_newsletter_consent: boolean;
 }
@@ -104,6 +108,7 @@ export interface PlanFamilySignupInput {
   normalized_email: string;
   now: Date;
   free_access_expires_at?: string;
+  ghl_payment_link_configured?: boolean;
   proposed_adult_id: string;
   proposed_human_account_id: string;
   proposed_household_id: string;
@@ -163,8 +168,8 @@ export function assertFamilySignupEnvelope(
     new Set(command.idempotency_key).size < 16 ||
     command.terms_accepted !== true ||
     command.privacy_accepted !== true ||
-    typeof command.general_marketing_consent !== 'boolean' ||
-    typeof command.parent_newsletter_consent !== 'boolean' ||
+    command.general_marketing_consent !== true ||
+    command.parent_newsletter_consent !== true ||
     !command.first_name.trim() ||
     !command.last_name.trim() ||
     !command.timezone.trim()
@@ -186,6 +191,7 @@ export function assertFamilySignupPassword(command: FamilySignupCommand): void {
     password: command.password,
     email: command.email,
     names: [command.first_name, command.last_name],
+    common_passwords: COMMON_AUTH_PASSWORDS,
   });
   if (!password.accepted) throw new FamilySignupError('invalid_password');
 }
@@ -209,10 +215,13 @@ export function canonicalizeFamilySignupRequest(
     normalized_email: normalizeAdultEmail(command.email),
     password_fingerprint: passwordFingerprint,
     timezone: command.timezone.trim(),
-    terms_accepted: true,
-    privacy_accepted: true,
-    general_marketing_consent: command.general_marketing_consent,
-    parent_newsletter_consent: command.parent_newsletter_consent,
+    terms_accepted: true as const,
+    privacy_accepted: true as const,
+    student_data_child_safety_accepted: true as const,
+    cancellation_refund_accepted: true as const,
+    unified_agreement_policy_version: FAMILY_SIGNUP_UNIFIED_AGREEMENT_POLICY_VERSION,
+    general_marketing_consent: true,
+    parent_newsletter_consent: true,
   };
   return {
     request_binding: {
@@ -278,9 +287,23 @@ export function planFamilySignup(input: PlanFamilySignupInput): FamilySignupPlan
   const expiry = freeAccessExpiresAt ? Date.parse(freeAccessExpiresAt) : Number.NaN;
   const beforeExpiry = Number.isFinite(expiry) && input.now.getTime() < expiry;
   const identityReviewBlocksCheckout = !beforeExpiry && link.state === 'identity_review';
+  const ghlPaymentLinkConfigured = input.ghl_payment_link_configured === true;
+  const checkoutRequired =
+    !beforeExpiry && !identityReviewBlocksCheckout && ghlPaymentLinkConfigured;
   const consentChoices: FamilySignupAdultConsentChoices = {
-    general_marketing: input.command.general_marketing_consent,
-    parent_newsletter: input.command.parent_newsletter_consent,
+    general_marketing: true,
+    parent_newsletter: true,
+  };
+  const unifiedAgreement = {
+    policy_version: FAMILY_SIGNUP_UNIFIED_AGREEMENT_POLICY_VERSION,
+    captured_at: input.now.toISOString(),
+    terms_accepted: true as const,
+    privacy_accepted: true as const,
+    student_data_child_safety_accepted: true as const,
+    cancellation_refund_accepted: true as const,
+    email_marketing_consent: 'opted_in' as const,
+    newsletter_consent: 'opted_in' as const,
+    sms_call_whatsapp_consent: false as const,
   };
   const projection: FamilySignupLocalProjection = {
     adult_id: input.proposed_adult_id,
@@ -291,12 +314,14 @@ export function planFamilySignup(input: PlanFamilySignupInput): FamilySignupPlan
       ? 'immediate_free'
       : identityReviewBlocksCheckout
         ? 'inactive_identity_review'
-        : 'inactive_checkout',
+        : checkoutRequired
+          ? 'inactive_checkout'
+          : 'inactive_support',
     access_state: beforeExpiry ? 'free' : 'inactive',
     seat_limit: 3,
     active_seat_count: 0,
     free_access_expires_at: beforeExpiry ? freeAccessExpiresAt! : null,
-    checkout_required: !beforeExpiry && !identityReviewBlocksCheckout,
+    checkout_required: checkoutRequired,
     checkout_blocked_by_identity_review: identityReviewBlocksCheckout,
     rolling_trial_granted: false,
     card_collected: false,
@@ -309,6 +334,7 @@ export function planFamilySignup(input: PlanFamilySignupInput): FamilySignupPlan
     household_id: projection.household_id,
     normalized_email_hash: normalizedEmailHash,
     adult_consent_choices: consentChoices,
+    unified_agreement: unifiedAgreement,
     dispatch_state: link.state === 'identity_review' ? 'identity_review' : 'ready',
     preserve_adult_suppression: true,
     local_commit_required: true,
@@ -345,8 +371,21 @@ export function planFamilySignup(input: PlanFamilySignupInput): FamilySignupPlan
             privacy_accepted: true,
             general_marketing: consentChoices.general_marketing,
             parent_newsletter: consentChoices.parent_newsletter,
+            unified_agreement: unifiedAgreement,
           }),
         ),
+      },
+      adult_signup_event: {
+        household_reconciliation_key: projection.household_id,
+        audience_type: 'adult',
+        email_consent: 'opted_in',
+        policy_version: FAMILY_SIGNUP_UNIFIED_AGREEMENT_POLICY_VERSION,
+        captured_at: unifiedAgreement.captured_at,
+        lifecycle_stage: 'Active Member',
+        tags: ['ot | lead', 'ot | email opt-in'],
+        ot01_authority: 'direct_enrollment_after_local_commit',
+        student_contacts: 0,
+        password_or_security_data: false,
       },
       provider_readback_required: input.ghl_evidence.status === 'evidence_unavailable',
       provider_effect_authorized: false,
@@ -361,7 +400,7 @@ export function planFamilySignup(input: PlanFamilySignupInput): FamilySignupPlan
     projection,
     now: input.now,
     ...(freeAccessExpiresAt === undefined ? {} : { freeAccessExpiresAt }),
-    checkoutRequired: !beforeExpiry && !identityReviewBlocksCheckout,
+    checkoutRequired,
   });
   return {
     result: {
@@ -371,7 +410,9 @@ export function planFamilySignup(input: PlanFamilySignupInput): FamilySignupPlan
         ? 'signed_in'
         : identityReviewBlocksCheckout
           ? 'identity_review'
-          : 'checkout',
+          : checkoutRequired
+            ? 'checkout'
+            : 'support',
       setup_email_required: false,
       provider_effects_completed_inline: 0,
       outbox_intent_ids: [outbox.intent_id],
@@ -385,12 +426,16 @@ export function planFamilySignup(input: PlanFamilySignupInput): FamilySignupPlan
         ? 'not_applicable'
         : identityReviewBlocksCheckout
           ? 'blocked_identity_review'
-          : 'queued',
+          : checkoutRequired
+            ? 'queued'
+            : 'not_configured',
       safe_message: beforeExpiry
         ? 'Your family account is ready.'
         : identityReviewBlocksCheckout
           ? 'Your inactive account is ready. Checkout will be available after account review.'
-          : 'Your account is ready. Continue to checkout.',
+          : checkoutRequired
+            ? 'Your account is ready. Continue to checkout.'
+            : 'Your account is ready. The free period has ended; contact info@onetimeonetime.com for paid continuation options.',
     },
     outbox_intents: [outbox],
     commercial_billing: commercialBilling,

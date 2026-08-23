@@ -10,30 +10,47 @@ import type {
   OwnerDashboardResponse,
   SessionUser,
 } from '@onetime/contracts';
+import type {
+  SupportAdminView,
+  SupportLifecycleState,
+} from '../../../../../packages/contracts/src/support/v21.ts';
+import type {
+  AdminNavigationResolution,
+  AdminSearchPage,
+  AdminSearchRequest,
+  AdminSearchResult,
+} from '../../../../../packages/contracts/src/admin/operations/index.ts';
 import { Button, Card, EmptyState, Select } from '@onetime/brand-system/react';
 import {
   CLASSROOM_SECTIONS,
   CONTACTS_SECTIONS,
   DASHBOARD_SECTIONS,
+  ACCOUNT_SECTIONS,
   adminPrimaryNav,
+  rabbiPrimaryNav,
   classroomHref,
   classroomOccurrenceFromLocation,
   classroomSectionFromPath,
+  classroomSeriesFromLocation,
   contactsSectionFromPath,
   dashboardSectionFromPath,
   type DashboardSectionId,
   type ClassroomSectionId,
 } from './admin-ia.js';
-import {
-  communicationsRouteDescriptor,
-  contactCommunicationsTabDescriptor,
-} from './communications/route-descriptor.js';
+import { communicationsRouteDescriptor } from './communications/route-descriptor.js';
 import { AppShell, type ShellNavItem, type ShellUser } from './shell/AppShell.js';
 import { WorkspaceTabs } from './shell/WorkspaceTabs.js';
 import { GamificationAdminPanel } from './gamification-admin/GamificationAdminPanel.js';
 import { AdminLearningWorkspace } from './admin/learning/AdminLearningWorkspace.js';
+import { AdminSupportWorkspace } from './admin/support/AdminSupportWorkspace.js';
+import {
+  AdminGlobalSearch,
+  AdminPrivateAuthorizationError,
+  postPrivateAdminNavigationResolution,
+  postPrivateAdminSearch,
+} from './admin/search/AdminGlobalSearch.js';
+import type { AdminCredentialBoundSnapshot } from './admin/adminPrivateCompletion.js';
 import { ClassManagementWorkspace } from './classes/ClassManagementWorkspace.js';
-import { SupportFeature } from './support/SupportFeature.js';
 import { changeOwnPassword } from './portal-api.js';
 import { resolveCurrentClientRoute } from './router/index.js';
 import { compatibilityPathForRoute } from './router/canonical-route-views.js';
@@ -41,8 +58,10 @@ import {
   AuthExpiredError,
   appendNote,
   archiveContactRequest,
+  assignAdminSupportTicket,
   assignTag,
   confirmReply,
+  correctAdminAttendance,
   createTag,
   createIdempotencyKey,
   getAssignees,
@@ -51,15 +70,21 @@ import {
   getContact,
   getContentLibrary,
   getGamificationAdminDashboard,
+  getAdminAttendanceSnapshot,
   getAdminLearningSnapshot,
+  getAdminSupportTicket,
   getOwnerDashboard,
   getSession,
   listContacts,
+  listAdminSupportTickets,
   logoutSession,
   previewReply,
   reactivateContactRequest,
   resolveCrmCapabilities,
+  replyAdminSupportTicket,
   saveContactRequest,
+  transitionAdminQuestion,
+  updateAdminSupportTicketStatus,
   type Assignee,
   type ApiSession,
   type AdminLearningSnapshot,
@@ -70,6 +95,12 @@ import './crm.css';
 const CommunicationsPanel = React.lazy(() =>
   communicationsRouteDescriptor.load().then((module) => ({
     default: module.CommunicationsFeature,
+  })),
+);
+
+const WorkflowReadbackPanel = React.lazy(() =>
+  import('./communications/WorkflowReadbackFeature.js').then((module) => ({
+    default: module.WorkflowReadbackFeature,
   })),
 );
 
@@ -109,9 +140,21 @@ type Notice = {
   message: string;
 };
 
-type CommunicationsMode = { kind: 'global' } | { kind: 'contact'; contactId: string };
+type CommunicationsMode = { kind: 'global' } | { kind: 'workflow'; workflowId: string };
+type AdminSupportRoute = {
+  mode: 'workspace' | 'queue' | 'detail';
+  ticketId: string | null;
+};
 type OwnerSurface =
-  'dashboard' | 'crm' | 'classes' | 'content' | 'billing' | 'support' | 'operations';
+  | 'dashboard'
+  | 'crm'
+  | 'search'
+  | 'classes'
+  | 'content'
+  | 'billing'
+  | 'support'
+  | 'operations'
+  | 'account';
 type AsyncPanelState = {
   loading: boolean;
   error: string;
@@ -143,7 +186,9 @@ function CrmApp() {
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [query, setQuery] = useState<QueryState>(defaultQuery);
   const [listLoading, setListLoading] = useState(true);
-  const [detailLoading, setDetailLoading] = useState(false);
+  const [detailLoading, setDetailLoading] = useState(() =>
+    /^\/app\/(?:crm\/)?contacts\/[^/]+$/u.test(window.location.pathname),
+  );
   const [listError, setListError] = useState('');
   const [detailError, setDetailError] = useState('');
   const [notice, setNotice] = useState<Notice | null>(null);
@@ -156,7 +201,13 @@ function CrmApp() {
   );
   const [surface, setSurface] = useState<OwnerSurface>('crm');
   const [communicationsMode, setCommunicationsMode] = useState<CommunicationsMode | null>(null);
-  const [supportReceiptId, setSupportReceiptId] = useState<string | null>(null);
+  const [adminSupportRoute, setAdminSupportRoute] = useState<AdminSupportRoute>({
+    mode: 'workspace',
+    ticketId: null,
+  });
+  const [adminSearchRecentQueries, setAdminSearchRecentQueries] = useState<
+    AdminCredentialBoundSnapshot<readonly string[]> | undefined
+  >(undefined);
   const [dashboard, setDashboard] = useState<OwnerDashboardResponse | null>(null);
   const [dashboardState, setDashboardState] = useState<AsyncPanelState>({
     loading: false,
@@ -218,6 +269,10 @@ function CrmApp() {
   const canReadOwnerShell = canReadCommunications;
   const isRabbi = false;
   const canReadCrm = session?.user.role === 'admin';
+  const isActiveAdminContext =
+    session?.session_model === 'v21'
+      ? session.account_context?.active_role === 'admin'
+      : session?.user.role === 'admin';
 
   useEffect(() => {
     void loadSession();
@@ -253,18 +308,20 @@ function CrmApp() {
   async function loadSession() {
     try {
       const json = await getSession();
+      setSessionExpired(false);
       setSession(json);
       if (json.user.role === 'admin') {
-        const assigneeJson = await getAssignees();
-        setAssignees(assigneeJson.assignees);
+        try {
+          const assigneeJson = await getAssignees();
+          setAssignees(assigneeJson.assignees);
+        } catch {
+          setAssignees([]);
+        }
       }
-      setSessionExpired(false);
     } catch (error) {
       if (error instanceof AuthExpiredError) {
         clearProtectedState();
-        return;
       }
-      clearProtectedState();
     }
   }
 
@@ -285,8 +342,13 @@ function CrmApp() {
     if (routePath === '/app/support' || supportReceiptMatch?.[1]) {
       setContactOperationsMode(false);
       setSurface('support');
-      setSupportReceiptId(
-        supportReceiptMatch?.[1] ? decodeURIComponent(supportReceiptMatch[1]) : null,
+      const ticketId = new URLSearchParams(routeSearch).get('ticket_id');
+      setAdminSupportRoute(
+        canonicalRoute?.routeId === 'RT-ADM-063' && ticketId
+          ? { mode: 'detail', ticketId }
+          : canonicalRoute?.routeId === 'RT-ADM-062'
+            ? { mode: 'queue', ticketId: null }
+            : { mode: 'workspace', ticketId: null },
       );
       setCommunicationsMode(null);
       setSelected(null);
@@ -304,9 +366,25 @@ function CrmApp() {
       setSurface('crm');
       setContactOperationsMode(false);
       setContactOperationsHouseholdKey(null);
-      setContactsRoutePath(routePath);
+      setContactsRoutePath(`${routePath}${routeSearch}`);
       setCommunicationsMode(null);
-      setSupportReceiptId(null);
+      setAdminSupportRoute({ mode: 'workspace', ticketId: null });
+      setSelected(null);
+      setEditing(false);
+      setCreating(false);
+      setListLoading(false);
+      return;
+    }
+    const workflowReadbackMatch = routePath.match(
+      /^\/app\/operations\/workflow-readback\/([^/]+)$/,
+    );
+    if (workflowReadbackMatch?.[1]) {
+      setContactOperationsMode(false);
+      setSurface('operations');
+      setCommunicationsMode({
+        kind: 'workflow',
+        workflowId: decodeURIComponent(workflowReadbackMatch[1]),
+      });
       setSelected(null);
       setEditing(false);
       setCreating(false);
@@ -319,7 +397,7 @@ function CrmApp() {
       setContactOperationsHouseholdKey(null);
       setSurface(ownerSurface);
       setCommunicationsMode(null);
-      setSupportReceiptId(null);
+      setAdminSupportRoute({ mode: 'workspace', ticketId: null });
       setSelected(null);
       setEditing(false);
       setCreating(false);
@@ -336,8 +414,13 @@ function CrmApp() {
         if (classroomSectionFromPath(routePath) === 'rewards' && !isRabbi) {
           await loadGamificationDashboard();
         }
-        if (!isRabbi && ['questions', 'rewards'].includes(classroomSectionFromPath(routePath))) {
-          await loadAdminLearning();
+        if (
+          !isRabbi &&
+          ['questions', 'rewards', 'attendance'].includes(classroomSectionFromPath(routePath))
+        ) {
+          await loadAdminLearning(
+            classroomSectionFromPath(routePath) === 'attendance' ? 'attendance' : 'questions',
+          );
         }
       } else {
         setSelectedClass(null);
@@ -359,20 +442,11 @@ function CrmApp() {
       setListLoading(false);
       return;
     }
-    const contactCommunicationsMatch = routePath.match(
+    const retiredContactCommunicationsMatch = routePath.match(
       /^\/app\/crm\/contacts\/([^/]+)\/communications$/,
     );
-    if (contactCommunicationsMatch?.[1]) {
-      setContactOperationsMode(false);
-      setSurface('crm');
-      setCommunicationsMode({
-        kind: 'contact',
-        contactId: decodeURIComponent(contactCommunicationsMatch[1]),
-      });
-      setSelected(null);
-      setEditing(false);
-      setCreating(false);
-      setListLoading(false);
+    if (retiredContactCommunicationsMatch?.[1]) {
+      window.location.replace(`/app/people/parents`);
       return;
     }
     if (routePath === '/app/crm/contact-operations') {
@@ -383,7 +457,7 @@ function CrmApp() {
         new URLSearchParams(routeSearch).get('household')?.trim() || null,
       );
       setCommunicationsMode(null);
-      setSupportReceiptId(null);
+      setAdminSupportRoute({ mode: 'workspace', ticketId: null });
       setSelected(null);
       setEditing(false);
       setCreating(false);
@@ -395,7 +469,7 @@ function CrmApp() {
     setContactOperationsHouseholdKey(null);
     setContactsRoutePath(routePath);
     setCommunicationsMode(null);
-    setSupportReceiptId(null);
+    setAdminSupportRoute({ mode: 'workspace', ticketId: null });
     const match = routePath.match(/^\/app\/crm\/contacts\/([^/]+)$/);
     const contactId = match?.[1];
     if (contactId) {
@@ -480,10 +554,12 @@ function CrmApp() {
     }
   }
 
-  async function loadAdminLearning() {
+  async function loadAdminLearning(mode: 'questions' | 'attendance' = 'questions') {
     setAdminLearningState({ loading: true, error: '' });
     try {
-      setAdminLearning(await getAdminLearningSnapshot());
+      setAdminLearning(
+        await (mode === 'attendance' ? getAdminAttendanceSnapshot() : getAdminLearningSnapshot()),
+      );
       setAdminLearningState({ loading: false, error: '' });
     } catch (error) {
       if (handleAuthError(error)) return;
@@ -602,7 +678,7 @@ function CrmApp() {
     setCreating(true);
     setContactOperationsMode(false);
     setCommunicationsMode(null);
-    setSupportReceiptId(null);
+    setAdminSupportRoute({ mode: 'workspace', ticketId: null });
     history.pushState({}, '', '/app/crm');
   }
 
@@ -616,39 +692,7 @@ function CrmApp() {
     setContactOperationsMode(true);
     setContactOperationsHouseholdKey(householdKey ?? null);
     setCommunicationsMode(null);
-    setSupportReceiptId(null);
-    setSelected(null);
-    setEditing(false);
-    setCreating(false);
-    setListLoading(false);
-  }
-
-  function openGlobalCommunications() {
-    setContactOperationsMode(false);
-    setContactOperationsHouseholdKey(null);
-    history.pushState({}, '', communicationsRouteDescriptor.path);
-    setSurface('crm');
-    setContactsRoutePath('/app/crm');
-    setCommunicationsMode({ kind: 'global' });
-    setSupportReceiptId(null);
-    setSelected(null);
-    setEditing(false);
-    setCreating(false);
-    setListLoading(false);
-  }
-
-  function openContactCommunications(contactId: string) {
-    setContactOperationsMode(false);
-    setContactOperationsHouseholdKey(null);
-    history.pushState(
-      {},
-      '',
-      `/app/crm/contacts/${encodeURIComponent(contactId)}/${contactCommunicationsTabDescriptor.id}`,
-    );
-    setSurface('crm');
-    setContactsRoutePath('/app/crm');
-    setCommunicationsMode({ kind: 'contact', contactId });
-    setSupportReceiptId(null);
+    setAdminSupportRoute({ mode: 'workspace', ticketId: null });
     setSelected(null);
     setEditing(false);
     setCreating(false);
@@ -664,7 +708,7 @@ function CrmApp() {
     setContactOperationsMode(false);
     setContactOperationsHouseholdKey(null);
     setCommunicationsMode(null);
-    setSupportReceiptId(null);
+    setAdminSupportRoute({ mode: 'workspace', ticketId: null });
     setSelected(null);
     setEditing(false);
     setCreating(false);
@@ -679,8 +723,12 @@ function CrmApp() {
       if (classroomSectionFromPath(target.pathname) === 'rewards') {
         void loadGamificationDashboard();
       }
-      if (['questions', 'rewards'].includes(classroomSectionFromPath(target.pathname))) {
-        void loadAdminLearning();
+      if (
+        ['questions', 'rewards', 'attendance'].includes(classroomSectionFromPath(target.pathname))
+      ) {
+        void loadAdminLearning(
+          classroomSectionFromPath(target.pathname) === 'attendance' ? 'attendance' : 'questions',
+        );
       }
     } else {
       setSelectedClass(null);
@@ -710,7 +758,7 @@ function CrmApp() {
     setContactOperationsHouseholdKey(null);
     setContactsRoutePath(href);
     setCommunicationsMode(null);
-    setSupportReceiptId(null);
+    setAdminSupportRoute({ mode: 'workspace', ticketId: null });
     setSelected(null);
     setEditing(false);
     setCreating(false);
@@ -770,6 +818,33 @@ function CrmApp() {
     return true;
   }
 
+  async function runPrivateAdminSearch(request: AdminSearchRequest): Promise<AdminSearchPage> {
+    try {
+      return await postPrivateAdminSearch(fetch, request);
+    } catch (error) {
+      if (error instanceof AdminPrivateAuthorizationError && error.status === 401)
+        clearProtectedState();
+      throw error;
+    }
+  }
+
+  async function resolvePrivateAdminSearchResult(
+    result: AdminSearchResult,
+    credentialVersion: number,
+  ): Promise<AdminNavigationResolution> {
+    try {
+      return await postPrivateAdminNavigationResolution(fetch, {
+        kind: result.kind,
+        targetId: result.targetId,
+        selectedCredentialVersion: credentialVersion,
+      });
+    } catch (error) {
+      if (error instanceof AdminPrivateAuthorizationError && error.status === 401)
+        clearProtectedState();
+      throw error;
+    }
+  }
+
   function clearProtectedState() {
     setContacts([]);
     setNextCursor(null);
@@ -782,7 +857,8 @@ function CrmApp() {
     setContactOperationsHouseholdKey(null);
     setSurface('crm');
     setCommunicationsMode(null);
-    setSupportReceiptId(null);
+    setAdminSupportRoute({ mode: 'workspace', ticketId: null });
+    setAdminSearchRecentQueries(undefined);
     setDashboard(null);
     setDashboardState({ loading: false, error: '' });
     setClasses([]);
@@ -805,7 +881,7 @@ function CrmApp() {
   function signIn() {
     const returnTo =
       location.pathname.startsWith('/app/crm') ||
-      location.pathname === communicationsRouteDescriptor.path ||
+      location.pathname.startsWith(communicationsRouteDescriptor.path) ||
       Boolean(ownerSurfaceFromPath(location.pathname)) ||
       location.pathname.startsWith('/app/support')
         ? location.pathname
@@ -824,141 +900,162 @@ function CrmApp() {
     [query],
   );
   const dashboardSection = dashboardSectionFromPath(dashboardRoutePath);
-  const contactsSection = contactsSectionFromPath(contactsRoutePath);
+  const contactsRoute = new URL(contactsRoutePath, location.origin);
+  const contactsSection = contactsSectionFromPath(contactsRoute.pathname);
   const classroomPath = new URL(classroomRoutePath, location.origin);
   const classroomSection = classroomSectionFromPath(classroomPath.pathname);
 
-  const adminCurrentArea =
-    surface === 'dashboard'
-      ? 'dashboard'
-      : surface === 'crm' || surface === 'billing'
-        ? 'contacts'
-        : surface === 'content'
-          ? 'content'
-          : surface === 'classes'
-            ? 'classroom'
-            : null;
+  const adminCurrentArea = communicationsMode
+    ? 'communications'
+    : surface === 'dashboard'
+      ? 'today'
+      : surface === 'crm'
+        ? 'people'
+        : surface === 'billing'
+          ? 'people'
+          : surface === 'operations'
+            ? 'operations'
+            : surface === 'content'
+              ? 'learning'
+              : surface === 'classes'
+                ? 'learning'
+                : surface === 'account'
+                  ? 'account'
+                  : null;
   const liveConsoleReady =
     isRabbi || session?.capabilities?.operator_experience?.live_console === true;
   const navItems: ShellNavItem[] = canReadOwnerShell
-    ? adminPrimaryNav(adminCurrentArea, liveConsoleReady)
+    ? isRabbi
+      ? rabbiPrimaryNav(adminCurrentArea, liveConsoleReady)
+      : adminPrimaryNav(adminCurrentArea, liveConsoleReady)
     : canReadCrm
       ? [{ id: 'contacts', label: 'Contacts', href: '/app/crm', current: true }]
       : [];
-  const utilityItems: ShellNavItem[] = [];
+  const utilityItems: ShellNavItem[] = canReadOwnerShell
+    ? [{ id: 'search', label: 'Search', href: '/app/search', current: surface === 'search' }]
+    : [];
+  const adminCredentialVersion = session?.credential_version ?? 0;
+  const adminSearchAuthorization = {
+    state:
+      session?.user.role === 'admin' && adminCredentialVersion >= 1
+        ? ('admin' as const)
+        : sessionExpired
+          ? ('revoked' as const)
+          : ('signed_out' as const),
+    credentialVersion: adminCredentialVersion,
+  };
   const shellUser = session ? shellUserFromSession(session.user) : null;
   const pageTitle =
-    surface !== 'crm'
-      ? ownerSurfaceTitle(surface)
-      : communicationsMode
-        ? 'Communications'
-        : contactOperationsMode
-          ? 'Parent household'
-          : contactsSection !== 'people'
-            ? (CONTACTS_SECTIONS.find((item) => item.id === contactsSection)?.label ?? 'Contacts')
-            : creating
-              ? 'Add contact'
-              : editing
-                ? 'Edit contact'
-                : selected
-                  ? selected.display_name
-                  : 'Contacts';
+    surface === 'support' && adminSupportRoute.mode !== 'workspace'
+      ? adminSupportRoute.mode === 'detail'
+        ? 'Support ticket'
+        : 'Tickets'
+      : communicationsMode?.kind === 'workflow'
+        ? 'Workflow readback'
+        : surface !== 'crm'
+          ? ownerSurfaceTitle(surface)
+          : communicationsMode
+            ? 'Communications'
+            : contactOperationsMode
+              ? 'Parent household'
+              : contactsSection !== 'people'
+                ? (CONTACTS_SECTIONS.find((item) => item.id === contactsSection)?.label ??
+                  'Contacts')
+                : creating
+                  ? 'Add contact'
+                  : editing
+                    ? 'Edit contact'
+                    : selected
+                      ? selected.display_name
+                      : 'Contacts';
   const pageDescription =
-    surface !== 'crm'
-      ? ownerSurfaceDescription(surface)
-      : communicationsMode
-        ? communicationsMode.kind === 'contact'
-          ? 'Communication history and draft activity for this contact.'
-          : 'One Time communication activity and draft follow-up status.'
-        : contactOperationsMode
-          ? 'Invite a Parent, create local-only Students, and manage access and adult-only GHL sync.'
-          : contactsSection !== 'people'
-            ? contactsSection === 'households'
-              ? 'Create and maintain family records, guardians, access, and account setup.'
-              : contactsSection === 'users'
-                ? 'Manage secure account setup, roles, password reset, and access state.'
-                : contactsSection === 'learners'
-                  ? 'Manage local learners, Student setup, status, and the three-active-learner limit.'
-                  : 'Review timestamped local CRM and account administration activity.'
-            : creating
-              ? 'Create a One Time contact without sending messages or granting access.'
-              : editing
-                ? 'Update CRM fields backed by the One Time contact API.'
-                : selected
-                  ? contactSummary(selected)
-                  : 'Parent and adult contact review. Students remain One Time-only.';
-  const toolbar =
-    surface === 'dashboard' && dashboardSection === 'overview' ? (
-      <ReadOnlyToolbar
-        label="Refresh dashboard"
-        actionId="dashboard.refresh.button"
-        loading={dashboardState.loading}
-        onRefresh={() => void loadDashboard()}
-      />
-    ) : surface === 'classes' ? (
-      <ReadOnlyToolbar
-        label="Refresh classroom"
-        actionId="classes.refresh.button"
-        loading={classesState.loading}
-        onRefresh={() => void loadClasses()}
-      />
-    ) : surface === 'billing' ? (
-      <ReadOnlyToolbar
-        label="Refresh household access"
-        actionId="household.access.refresh.button"
-        loading={dashboardState.loading}
-        onRefresh={() => void loadDashboard()}
-      />
-    ) : surface === 'support' ||
-      surface === 'operations' ||
-      (surface === 'crm' &&
-        !communicationsMode &&
-        contactsSection !== 'people') ? null : communicationsMode?.kind === 'contact' ? (
-      <ContactCommunicationsToolbar
-        onBack={() => {
-          history.pushState(
-            {},
-            '',
-            `/app/crm/contacts/${encodeURIComponent(communicationsMode.contactId)}`,
-          );
-          setCommunicationsMode(null);
-          void loadContact(communicationsMode.contactId);
-        }}
-      />
-    ) : contactOperationsMode ? (
-      <FormToolbar onCancel={() => void backToList()} />
-    ) : selected ? (
-      <DetailToolbar
-        contact={selected}
-        canEdit={canEdit && selected.lead_status !== 'archived'}
-        canReadCommunications={canReadCommunications}
-        onBack={backToList}
-        onEdit={() => setEditing(true)}
-        onCommunications={() => openContactCommunications(selected.contact_id)}
-        onManageHousehold={
-          selected.managed_household
-            ? () => startContactOperations(selected.managed_household?.household_key)
-            : undefined
-        }
-      />
-    ) : creating || editing ? (
-      <FormToolbar onCancel={() => (editing ? setEditing(false) : setCreating(false))} />
-    ) : (
-      <ListToolbar
-        query={query}
-        activeChips={activeChips}
-        canEdit={canCreate}
-        canOperateHouseholds={canReadOwnerShell}
-        onChange={setQuery}
-        onApply={(nextQuery) => void loadList(undefined, nextQuery)}
-        onClear={() => {
-          setQuery(defaultQuery);
-          void loadList(undefined, defaultQuery);
-        }}
-        onCreate={startCreate}
-        onHouseholdOperations={startContactOperations}
-      />
-    );
+    surface === 'support' && adminSupportRoute.mode !== 'workspace'
+      ? adminSupportRoute.mode === 'detail'
+        ? 'Review and update one durable One Time support conversation.'
+        : 'Review the durable One Time support queue.'
+      : communicationsMode?.kind === 'workflow'
+        ? 'Read-only workflow diagnostics for technical operations. One Time does not publish or control GHL workflows here.'
+        : surface !== 'crm'
+          ? ownerSurfaceDescription(surface)
+          : communicationsMode
+            ? 'Active One Time accounts with redacted setup, reset, and PIN delivery status.'
+            : contactOperationsMode
+              ? 'Invite a Parent, create local-only Students, and manage access and adult-only GHL sync.'
+              : contactsSection !== 'people'
+                ? contactsSection === 'households'
+                  ? 'Create and maintain family records, guardians, access, and account setup.'
+                  : contactsSection === 'users'
+                    ? 'Manage secure account setup, roles, password reset, and access state.'
+                    : contactsSection === 'learners'
+                      ? 'Manage local learners, Student setup, status, and the three-active-learner limit.'
+                      : 'Review timestamped local CRM and account administration activity.'
+                : creating
+                  ? 'Create a One Time contact without sending messages or granting access.'
+                  : editing
+                    ? 'Update CRM fields backed by the One Time contact API.'
+                    : selected
+                      ? contactSummary(selected)
+                      : 'Parent and adult contact review. Students remain One Time-only.';
+  const toolbar = communicationsMode ? null : surface === 'dashboard' &&
+    dashboardSection === 'today' ? (
+    <ReadOnlyToolbar
+      label="Refresh dashboard"
+      actionId="dashboard.refresh.button"
+      loading={dashboardState.loading}
+      onRefresh={() => void loadDashboard()}
+    />
+  ) : surface === 'classes' ? (
+    <ReadOnlyToolbar
+      label="Refresh classroom"
+      actionId="classes.refresh.button"
+      loading={classesState.loading}
+      onRefresh={() => void loadClasses()}
+    />
+  ) : surface === 'billing' ? (
+    <ReadOnlyToolbar
+      label="Refresh household access"
+      actionId="household.access.refresh.button"
+      loading={dashboardState.loading}
+      onRefresh={() => void loadDashboard()}
+    />
+  ) : surface === 'support' ||
+    surface === 'operations' ||
+    (surface === 'crm' &&
+      !communicationsMode &&
+      contactsSection !== 'people') ? null : contactOperationsMode ? (
+    <FormToolbar onCancel={() => void backToList()} />
+  ) : selected ? (
+    <DetailToolbar
+      contact={selected}
+      canEdit={canEdit && selected.lead_status !== 'archived'}
+      onBack={backToList}
+      onEdit={() => setEditing(true)}
+      onManageHousehold={
+        selected.managed_household
+          ? () => startContactOperations(selected.managed_household?.household_key)
+          : undefined
+      }
+    />
+  ) : detailLoading ? (
+    <DetailLoadingToolbar />
+  ) : creating || editing ? (
+    <FormToolbar onCancel={() => (editing ? setEditing(false) : setCreating(false))} />
+  ) : surface === 'crm' ? (
+    <ListToolbar
+      query={query}
+      activeChips={activeChips}
+      canEdit={canCreate}
+      canOperateHouseholds={canReadOwnerShell}
+      onChange={setQuery}
+      onApply={(nextQuery) => void loadList(undefined, nextQuery)}
+      onClear={() => {
+        setQuery(defaultQuery);
+        void loadList(undefined, defaultQuery);
+      }}
+      onCreate={startCreate}
+      onHouseholdOperations={startContactOperations}
+    />
+  ) : null;
 
   return (
     <AppShell
@@ -970,14 +1067,17 @@ function CrmApp() {
       toolbar={toolbar}
       notice={notice ? <NoticeBanner notice={notice} /> : undefined}
       onNavigate={(href) => {
-        if (href === '/app/live-console') {
+        if (
+          href.startsWith('/app/live-console') ||
+          href === '/app/live' ||
+          href.startsWith('/app/live?') ||
+          href.startsWith('/app/live/')
+        ) {
           window.location.assign(href);
           return;
         }
-        const ownerSurface = ownerSurfaceFromPath(href);
-        if (ownerSurface && ownerSurface !== 'crm') openOwnerSurface(ownerSurface, href);
-        if (href === '/app/crm') void backToList();
-        if (href === communicationsRouteDescriptor.path) openGlobalCommunications();
+        history.pushState({}, '', href);
+        void routeFromLocation();
       }}
       onLogout={() => void logout()}
       sessionExpired={sessionExpired}
@@ -992,6 +1092,34 @@ function CrmApp() {
           : undefined
       }
     >
+      {surface === 'search' && (
+        <AdminGlobalSearch
+          authorization={adminSearchAuthorization}
+          {...(adminSearchRecentQueries ? { recentQueries: adminSearchRecentQueries } : {})}
+          onSearch={runPrivateAdminSearch}
+          onResolveOpen={resolvePrivateAdminSearchResult}
+          onQueryCommitted={(committedQuery) => {
+            const queryValue = committedQuery.trim();
+            if (!queryValue || adminCredentialVersion < 1) return;
+            setAdminSearchRecentQueries((current) => {
+              const retained =
+                current?.credentialVersion === adminCredentialVersion ? current.value : [];
+              return {
+                credentialVersion: adminCredentialVersion,
+                value: [queryValue, ...retained.filter((value) => value !== queryValue)].slice(
+                  0,
+                  5,
+                ),
+              };
+            });
+          }}
+          onClearRecentQueries={() => setAdminSearchRecentQueries(undefined)}
+          onNavigate={(href) => {
+            history.pushState({}, '', href);
+            void routeFromLocation();
+          }}
+        />
+      )}
       {surface === 'dashboard' &&
         (isRabbi ? (
           <RabbiDashboardPanel />
@@ -1009,6 +1137,10 @@ function CrmApp() {
         <ClassesPanel
           csrfToken={session?.csrf_token ?? ''}
           section={classroomSection}
+          selectedSeriesKey={classroomSeriesFromLocation(
+            classroomPath.pathname,
+            classroomPath.search,
+          )}
           teachingOnly={isRabbi}
           classes={classes}
           selectedClass={selectedClass}
@@ -1022,17 +1154,35 @@ function CrmApp() {
           error={classesState.error}
           detailLoading={classDetailState.loading}
           detailError={classDetailState.error}
-          onNavigate={(href) => openOwnerSurface('classes', href)}
+          onNavigate={(href) => {
+            if (href.startsWith('/app/live-console')) {
+              window.location.assign(href);
+              return;
+            }
+            openOwnerSurface('classes', href);
+          }}
           onSelectOccurrence={selectClassOccurrence}
           onRetry={() => void loadClasses()}
           onRefreshOccurrences={loadClasses}
           onRetryDetail={(occurrenceKey) => void loadClassDetail(occurrenceKey)}
           onRetryRewards={() => void loadGamificationDashboard()}
-          onRetryLearning={() => void loadAdminLearning()}
+          onRetryLearning={() =>
+            loadAdminLearning(classroomSection === 'attendance' ? 'attendance' : 'questions')
+          }
         />
       )}
       {surface === 'content' &&
-        (isRabbi ? (
+        (!isActiveAdminContext ? (
+          <section className="state-panel" aria-labelledby="content-admin-context-title">
+            <h2 id="content-admin-context-title">Content is available in Admin</h2>
+            <p>Your current Parent workspace cannot open administrative content tools.</p>
+            {session?.account_context?.available_roles.includes('admin') ? (
+              <p>Use the Admin role switcher above to continue.</p>
+            ) : (
+              <p>Return to your Parent workspace to continue.</p>
+            )}
+          </section>
+        ) : isRabbi ? (
           <RabbiTeachingContentPanel
             items={teachingContent}
             loading={teachingContentState.loading}
@@ -1063,26 +1213,53 @@ function CrmApp() {
           onRetry={() => void loadDashboard()}
         />
       )}
-      {surface === 'operations' && (
-        <OperationsPanel
-          csrfToken={session?.csrf_token ?? ''}
-          dashboard={dashboard}
-          loading={dashboardState.loading}
-          error={dashboardState.error}
-          onNavigate={(href) => {
-            const nextSurface = ownerSurfaceFromPath(href);
-            if (nextSurface && nextSurface !== 'crm') {
-              openOwnerSurface(nextSurface, href);
-              return;
+      {surface === 'operations' &&
+        (communicationsMode?.kind === 'workflow' ? (
+          <Suspense
+            fallback={
+              <p className="state-panel" role="status">
+                Loading workflow readback...
+              </p>
             }
-            window.location.assign(href);
-          }}
-          onRetry={() => void loadDashboard()}
+          >
+            <WorkflowReadbackPanel
+              workflowId={communicationsMode.workflowId}
+              onProtectedStateCleared={clearProtectedState}
+            />
+          </Suspense>
+        ) : (
+          <OperationsPanel
+            csrfToken={session?.csrf_token ?? ''}
+            dashboard={dashboard}
+            loading={dashboardState.loading}
+            error={dashboardState.error}
+            onNavigate={(href) => {
+              const nextSurface = ownerSurfaceFromPath(href);
+              if (nextSurface && nextSurface !== 'crm') {
+                openOwnerSurface(nextSurface, href);
+                return;
+              }
+              window.location.assign(href);
+            }}
+            onRetry={() => void loadDashboard()}
+          />
+        ))}
+      {surface === 'account' && (
+        <AccountPanel
+          section={accountSectionFromPath(location.pathname)}
+          user={session?.user ?? null}
+          csrfToken={session?.csrf_token ?? ''}
+          onNavigate={(href) => openOwnerSurface('account', href)}
         />
       )}
       {surface === 'support' && (
-        <SupportFeature
-          receiptId={supportReceiptId ?? undefined}
+        <AdminSupportContainer
+          csrfToken={session?.csrf_token ?? ''}
+          route={adminSupportRoute}
+          onNavigate={(href) => {
+            history.pushState({}, '', href);
+            void routeFromLocation();
+          }}
           onProtectedStateCleared={clearProtectedState}
         />
       )}
@@ -1094,15 +1271,12 @@ function CrmApp() {
             </p>
           }
         >
-          <CommunicationsPanel
-            contactId={
-              communicationsMode.kind === 'contact' ? communicationsMode.contactId : undefined
-            }
-            onProtectedStateCleared={clearProtectedState}
-          />
+          {communicationsMode.kind !== 'workflow' && (
+            <CommunicationsPanel onProtectedStateCleared={clearProtectedState} />
+          )}
         </Suspense>
       )}
-      {surface === 'crm' && (
+      {surface === 'crm' && !communicationsMode && (
         <WorkspaceTabs
           tabs={CONTACTS_SECTIONS}
           currentId={contactsSection}
@@ -1122,8 +1296,15 @@ function CrmApp() {
             }
           >
             <AdminDirectoryPanel
-              mode={contactsSection}
+              mode={contactsSection === 'access' ? 'users' : contactsSection}
               csrfToken={session?.csrf_token ?? ''}
+              selectedRecordId={
+                contactsSection === 'users'
+                  ? contactsRoute.searchParams.get('user_key')
+                  : contactsSection === 'learners'
+                    ? contactsRoute.searchParams.get('learner_key')
+                    : undefined
+              }
               onSessionExpired={clearProtectedState}
             />
           </Suspense>
@@ -1192,8 +1373,19 @@ function CrmApp() {
         contactsSection === 'people' &&
         !communicationsMode &&
         !contactOperationsMode &&
+        detailLoading &&
+        !selected && (
+          <section className="contact-detail" data-usable="crm-detail" aria-busy="true">
+            <DetailSkeleton />
+          </section>
+        )}
+      {surface === 'crm' &&
+        contactsSection === 'people' &&
+        !communicationsMode &&
+        !contactOperationsMode &&
         !creating &&
         !selected &&
+        !detailLoading &&
         !editing && (
           <ContactList
             contacts={contacts}
@@ -1228,6 +1420,127 @@ function CrmApp() {
   );
 }
 
+function AdminSupportContainer({
+  csrfToken,
+  route,
+  onNavigate,
+  onProtectedStateCleared,
+}: {
+  csrfToken: string;
+  route: AdminSupportRoute;
+  onNavigate: (href: string) => void;
+  onProtectedStateCleared: () => void;
+}) {
+  const [tickets, setTickets] = useState<readonly SupportAdminView[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState('');
+  const loadSequence = useRef(0);
+
+  useEffect(() => {
+    void load();
+  }, [route.mode, route.ticketId]);
+
+  async function load() {
+    const requestId = ++loadSequence.current;
+    setLoading(true);
+    setTickets([]);
+    try {
+      if (route.mode === 'detail' && route.ticketId) {
+        const response = await getAdminSupportTicket(route.ticketId);
+        if (requestId !== loadSequence.current) return;
+        setTickets([response.data]);
+      } else {
+        const response = await listAdminSupportTickets();
+        if (requestId !== loadSequence.current) return;
+        setTickets(response.data);
+      }
+      setStatus('');
+    } catch (error) {
+      if (error instanceof AuthExpiredError) {
+        onProtectedStateCleared();
+        return;
+      }
+      if (requestId !== loadSequence.current) return;
+      setStatus(errorMessage(error, 'Support operations could not load.'));
+    } finally {
+      if (requestId === loadSequence.current) setLoading(false);
+    }
+  }
+
+  async function mutate(run: () => Promise<unknown>, successMessage: string) {
+    setStatus('Saving support conversation...');
+    try {
+      await run();
+      await load();
+      setStatus(successMessage);
+    } catch (error) {
+      if (error instanceof AuthExpiredError) {
+        onProtectedStateCleared();
+        return;
+      }
+      setStatus(errorMessage(error, 'Support conversation could not be updated.'));
+    }
+  }
+
+  if (loading) {
+    return (
+      <section className="state-panel" role="status">
+        <h2>Loading support operations</h2>
+      </section>
+    );
+  }
+
+  return (
+    <>
+      <p className="form-status" role="status">
+        {status}
+      </p>
+      <AdminSupportWorkspace
+        tickets={tickets}
+        mode={route.mode}
+        onNavigate={onNavigate}
+        onAssign={(ticketId, assigneeAdminId, expectedVersion) =>
+          void mutate(
+            () =>
+              assignAdminSupportTicket({
+                csrfToken,
+                ticketId,
+                assigneeAdminId,
+                expectedVersion,
+              }),
+            'Support conversation assigned.',
+          )
+        }
+        onStatus={(ticketId, nextStatus: SupportLifecycleState, expectedVersion) =>
+          void mutate(
+            () =>
+              updateAdminSupportTicketStatus({
+                csrfToken,
+                ticketId,
+                status: nextStatus,
+                expectedVersion,
+              }),
+            'Support status updated.',
+          )
+        }
+        onReply={(ticketId, body, expectedVersion) =>
+          void mutate(
+            () =>
+              replyAdminSupportTicket({
+                csrfToken,
+                ticketId,
+                body,
+                expectedVersion,
+                idempotencyKey: createIdempotencyKey(),
+              }),
+            'In-app reply saved.',
+          )
+        }
+      />
+    </>
+  );
+}
+
 function ReadOnlyToolbar({
   label,
   actionId,
@@ -1258,19 +1571,15 @@ function ReadOnlyToolbar({
 function RabbiDashboardPanel() {
   const destinations = [
     {
-      title: 'Classroom and schedule',
-      detail: 'Review upcoming classes, learner questions, attendance, and progress.',
-      href: '/app/classes',
+      title: 'Today’s canonical class',
+      detail:
+        'Sunday–Thursday at 7:00 PM Asia/Jerusalem. Start, continue, or end from the protected classroom control.',
+      href: '/app/live',
     },
     {
-      title: 'Teaching content',
-      detail: 'Open the current read-only lesson and media library.',
-      href: '/app/content',
-    },
-    {
-      title: 'Live Console',
-      detail: 'Run the current class, learner questions, and approved Zoom controls.',
-      href: '/app/live-console',
+      title: 'Learning',
+      detail: 'Review classroom, library, questions, attendance, and recordings.',
+      href: '/app/learning/classroom',
     },
   ];
   return (
@@ -1402,6 +1711,35 @@ function DashboardPanel({
         />
       ) : (
         <>
+          <Card className="dashboard-overview-card" data-usable="canonical-class-card">
+            <h2>One Time recurring class</h2>
+            <p>Sunday–Thursday at 7:00 PM Asia/Jerusalem.</p>
+            <dl className="dashboard-overview-list">
+              <div>
+                <dt>Class state</dt>
+                <dd>Check protected readiness before starting.</dd>
+              </div>
+              <div>
+                <dt>Membership</dt>
+                <dd>
+                  Active entitled Parent learners and Students are resolved from app access; no
+                  manual enrollment is required for the daily flow.
+                </dd>
+              </div>
+              <div>
+                <dt>Attendance and recordings</dt>
+                <dd>Available from the current occurrence when recorded.</dd>
+              </div>
+            </dl>
+            <div className="form-actions">
+              <Button type="button" variant="primary" onClick={() => onNavigate('/app/live')}>
+                Check readiness
+              </Button>
+              <Button type="button" onClick={() => onNavigate('/app/learning/classroom')}>
+                Open Classroom
+              </Button>
+            </div>
+          </Card>
           <Card className="dashboard-overview-card">
             <h2>Workspace overview</h2>
             <ul className="dashboard-overview-list">
@@ -1434,6 +1772,154 @@ function DashboardPanel({
   );
 }
 
+function AccountPanel({
+  section,
+  user,
+  csrfToken,
+  onNavigate,
+}: {
+  section: 'profile' | 'security' | 'privacy';
+  user: SessionUser | null;
+  csrfToken: string;
+  onNavigate: (href: string) => void;
+}) {
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [notice, setNotice] = useState<Notice | null>(null);
+  const passwordValid =
+    currentPassword.length > 0 &&
+    newPassword.length >= 6 &&
+    newPassword.length <= 128 &&
+    newPassword === confirmPassword &&
+    newPassword !== currentPassword;
+
+  return (
+    <section className="dashboard-surface" aria-label="Account">
+      <WorkspaceTabs
+        tabs={ACCOUNT_SECTIONS}
+        currentId={section}
+        label="Account area"
+        onNavigate={onNavigate}
+      />
+      {section === 'profile' ? (
+        <Card className="dashboard-overview-card">
+          <h2>Profile</h2>
+          <p>Your secure One Time account identity.</p>
+          <dl className="dashboard-overview-list">
+            <div>
+              <dt>Name</dt>
+              <dd>{user?.display_name ?? 'Loading account'}</dd>
+            </div>
+            <div>
+              <dt>Email</dt>
+              <dd>{user?.email ?? 'Loading account'}</dd>
+            </div>
+            <div>
+              <dt>Role</dt>
+              <dd>{user ? roleLabel(user) : 'Loading account'}</dd>
+            </div>
+          </dl>
+        </Card>
+      ) : section === 'privacy' ? (
+        <Card className="dashboard-overview-card">
+          <h2>Privacy</h2>
+          <p>
+            One Time displays only the account data necessary for your authorized workspace. Student
+            identities remain local to One Time and are never created as GHL contacts.
+          </p>
+          <p>
+            <a href="/privacy">Read the privacy notice</a>
+          </p>
+        </Card>
+      ) : (
+        <Card className="dashboard-overview-card">
+          <h2>Sign-in &amp; Security</h2>
+          <p>
+            Change the password for this signed-in account. This never displays a credential or
+            reset token.
+          </p>
+          <form
+            className="contact-form"
+            onSubmit={(event) => {
+              event.preventDefault();
+              if (!passwordValid || saving) return;
+              setSaving(true);
+              setNotice(null);
+              void changeOwnPassword({ csrfToken, currentPassword, newPassword })
+                .then((result) => {
+                  setCurrentPassword('');
+                  setNewPassword('');
+                  setConfirmPassword('');
+                  setNotice({
+                    kind: 'success',
+                    message:
+                      result.sessions_invalidated > 0
+                        ? `Password changed. ${result.sessions_invalidated} other session${result.sessions_invalidated === 1 ? '' : 's'} signed out.`
+                        : 'Password changed. This session remains signed in.',
+                  });
+                })
+                .catch((caught) =>
+                  setNotice({
+                    kind: 'error',
+                    message: errorMessage(caught, 'Password was not changed.'),
+                  }),
+                )
+                .finally(() => setSaving(false));
+            }}
+          >
+            <label>
+              <span>Current password</span>
+              <input
+                type="password"
+                autoComplete="current-password"
+                value={currentPassword}
+                required
+                maxLength={128}
+                onChange={(event) => setCurrentPassword(event.currentTarget.value)}
+              />
+            </label>
+            <label>
+              <span>New password</span>
+              <input
+                type="password"
+                autoComplete="new-password"
+                value={newPassword}
+                required
+                minLength={6}
+                maxLength={128}
+                onChange={(event) => setNewPassword(event.currentTarget.value)}
+              />
+            </label>
+            <label>
+              <span>Confirm new password</span>
+              <input
+                type="password"
+                autoComplete="new-password"
+                value={confirmPassword}
+                required
+                minLength={6}
+                maxLength={128}
+                onChange={(event) => setConfirmPassword(event.currentTarget.value)}
+              />
+            </label>
+            {notice && <NoticeBanner notice={notice} />}
+            <div className="form-actions">
+              <Button type="submit" variant="primary" disabled={!passwordValid || saving}>
+                {saving ? 'Changing password' : 'Change password'}
+              </Button>
+            </div>
+          </form>
+          <p>
+            Cannot use the current password? <a href="/forgot-password">Request a secure reset</a>.
+          </p>
+        </Card>
+      )}
+    </section>
+  );
+}
+
 function OperationsPanel({
   csrfToken,
   dashboard,
@@ -1454,8 +1940,7 @@ function OperationsPanel({
   const [confirmPassword, setConfirmPassword] = useState('');
   const [savingPassword, setSavingPassword] = useState(false);
   const [passwordNotice, setPasswordNotice] = useState<Notice | null>(null);
-  const passwordReady =
-    newPassword.length >= 10 && /[A-Za-z]/u.test(newPassword) && /[0-9]/u.test(newPassword);
+  const passwordReady = newPassword.length >= 6 && newPassword.length <= 128;
   const passwordMatches = newPassword === confirmPassword;
   const canChangePassword =
     !savingPassword &&
@@ -1567,7 +2052,7 @@ function OperationsPanel({
               autoComplete="current-password"
               value={currentPassword}
               required
-              maxLength={256}
+              maxLength={128}
               onChange={(event) => setCurrentPassword(event.currentTarget.value)}
             />
           </label>
@@ -1578,8 +2063,8 @@ function OperationsPanel({
               autoComplete="new-password"
               value={newPassword}
               required
-              minLength={10}
-              maxLength={256}
+              minLength={6}
+              maxLength={128}
               aria-describedby="admin-password-help"
               onChange={(event) => setNewPassword(event.currentTarget.value)}
             />
@@ -1591,13 +2076,13 @@ function OperationsPanel({
               autoComplete="new-password"
               value={confirmPassword}
               required
-              minLength={10}
-              maxLength={256}
+              minLength={6}
+              maxLength={128}
               onChange={(event) => setConfirmPassword(event.currentTarget.value)}
             />
           </label>
           <p id="admin-password-help">
-            Use at least 10 characters with at least one letter and one number.
+            At least 6 characters.
             {confirmPassword && !passwordMatches ? ' The new passwords do not match.' : ''}
           </p>
           {passwordNotice && <NoticeBanner notice={passwordNotice} />}
@@ -1618,6 +2103,7 @@ function OperationsPanel({
 function ClassesPanel({
   csrfToken,
   section,
+  selectedSeriesKey,
   teachingOnly,
   classes,
   selectedClass,
@@ -1641,6 +2127,7 @@ function ClassesPanel({
 }: {
   csrfToken: string;
   section: ClassroomSectionId;
+  selectedSeriesKey: string | null;
   teachingOnly: boolean;
   classes: ClassOccurrenceSummary[];
   selectedClass: ClassOccurrenceDetail | null;
@@ -1660,13 +2147,14 @@ function ClassesPanel({
   onRefreshOccurrences: (preferredOccurrenceKey?: string | null) => Promise<void>;
   onRetryDetail: (occurrenceKey: string) => void;
   onRetryRewards: () => void;
-  onRetryLearning: () => void;
+  onRetryLearning: () => Promise<void>;
 }) {
   const teachingSections = [
     'classes',
     'occurrences',
     'questions',
     'rewards',
+    'live-console',
   ] as ClassroomSectionId[];
   const focusedSection = teachingOnly && !teachingSections.includes(section) ? 'classes' : section;
   const isManagementSection =
@@ -1677,9 +2165,8 @@ function ClassesPanel({
   return (
     <section className="classroom-workspace" aria-busy={loading || detailLoading}>
       <WorkspaceTabs
-        tabs={(teachingOnly
-          ? CLASSROOM_SECTIONS.filter((item) => teachingSections.includes(item.id))
-          : CLASSROOM_SECTIONS
+        tabs={CLASSROOM_SECTIONS.filter(
+          (item) => !teachingOnly || teachingSections.includes(item.id),
         ).map((item) => ({
           ...item,
           href: classroomHref(item.id, selectedClass?.occurrence_key),
@@ -1690,14 +2177,20 @@ function ClassesPanel({
       />
       {!teachingOnly && section === 'questions' ? (
         <AdminLearningPanel
+          mode="questions"
           snapshot={adminLearning}
           loading={adminLearningLoading}
           error={adminLearningError}
           onRetry={onRetryLearning}
+          onTransitionQuestion={async (transition) => {
+            await transitionAdminQuestion(csrfToken, transition);
+            await onRetryLearning();
+          }}
         />
       ) : !teachingOnly && section === 'rewards' ? (
         <>
           <AdminLearningPanel
+            mode="questions"
             snapshot={adminLearning}
             loading={adminLearningLoading}
             error={adminLearningError}
@@ -1710,10 +2203,24 @@ function ClassesPanel({
             onRetry={onRetryRewards}
           />
         </>
+      ) : !teachingOnly && section === 'attendance' ? (
+        <AdminLearningPanel
+          mode="attendance"
+          snapshot={adminLearning}
+          loading={adminLearningLoading}
+          error={adminLearningError}
+          onRetry={onRetryLearning}
+          onCorrectAttendance={async (correction) => {
+            await correctAdminAttendance(csrfToken, correction);
+            await onRetryLearning();
+          }}
+        />
       ) : isManagementSection ? (
         <ClassManagementWorkspace
           csrfToken={csrfToken}
           section={section}
+          dailyFlow={location.pathname.startsWith('/app/learning')}
+          selectedSeriesKey={selectedSeriesKey}
           occurrences={classes}
           selectedOccurrenceKey={selectedClass?.occurrence_key ?? null}
           occurrencesLoading={loading}
@@ -1851,15 +2358,23 @@ function ClassroomFocusedBody({
 }
 
 function AdminLearningPanel({
+  mode,
   snapshot,
   loading,
   error,
   onRetry,
+  onTransitionQuestion,
+  onCorrectAttendance,
 }: {
+  mode: 'questions' | 'attendance';
   snapshot: AdminLearningSnapshot | null;
   loading: boolean;
   error: string;
-  onRetry: () => void;
+  onRetry: () => Promise<void>;
+  onTransitionQuestion?: React.ComponentProps<
+    typeof AdminLearningWorkspace
+  >['onTransitionQuestion'];
+  onCorrectAttendance?: React.ComponentProps<typeof AdminLearningWorkspace>['onCorrectAttendance'];
 }) {
   if (loading && !snapshot) return <ReadOnlySkeleton label="Loading learning engagement" />;
   if (error && !snapshot) {
@@ -1869,12 +2384,19 @@ function AdminLearningPanel({
         title="Learning engagement could not load"
         body={error}
         actionLabel="Retry"
-        onAction={onRetry}
+        onAction={() => void onRetry()}
       />
     );
   }
   if (!snapshot) return null;
-  return <AdminLearningWorkspace {...snapshot} />;
+  return (
+    <AdminLearningWorkspace
+      {...snapshot}
+      mode={mode}
+      {...(onTransitionQuestion ? { onTransitionQuestion } : {})}
+      {...(onCorrectAttendance ? { onCorrectAttendance } : {})}
+    />
+  );
 }
 
 function BillingPanel({
@@ -2116,18 +2638,14 @@ function ListToolbar({
 function DetailToolbar({
   contact,
   canEdit,
-  canReadCommunications,
   onBack,
   onEdit,
-  onCommunications,
   onManageHousehold,
 }: {
   contact: ContactDetail;
   canEdit: boolean;
-  canReadCommunications: boolean;
   onBack: () => void;
   onEdit: () => void;
-  onCommunications: () => void;
   onManageHousehold?: (() => void) | undefined;
 }) {
   return (
@@ -2140,11 +2658,6 @@ function DetailToolbar({
         <Chip label={labelStatus(contact.lead_status)} tone="status" />
         <Chip label={sourceLabel(contact.source)} tone="source" />
       </div>
-      {canReadCommunications && (
-        <button type="button" className="button-secondary" onClick={onCommunications}>
-          Communications
-        </button>
-      )}
       {onManageHousehold && (
         <button type="button" className="button-secondary" onClick={onManageHousehold}>
           Manage household
@@ -2159,12 +2672,14 @@ function DetailToolbar({
   );
 }
 
-function ContactCommunicationsToolbar({ onBack }: { onBack: () => void }) {
+function DetailLoadingToolbar() {
   return (
-    <div className="detail-toolbar">
-      <button type="button" className="button-secondary" onClick={onBack}>
-        Back to contact
-      </button>
+    <div
+      className="detail-toolbar detail-toolbar--loading"
+      role="status"
+      aria-label="Loading contact detail"
+    >
+      <span className="toolbar-summary">Loading contact details...</span>
     </div>
   );
 }
@@ -3059,8 +3574,13 @@ function sourceLabel(value: string) {
 }
 
 function ownerSurfaceFromPath(pathname: string): OwnerSurface | null {
+  if (pathname === '/app/today' || pathname.startsWith('/app/today/')) return 'dashboard';
+  if (pathname === '/app/learning' || pathname.startsWith('/app/learning/')) return 'classes';
+  if (pathname === '/app/people' || pathname.startsWith('/app/people/')) return 'crm';
   if (pathname === '/app/dashboard' || pathname.startsWith('/app/dashboard/')) return 'dashboard';
+  if (pathname === '/app/search') return 'search';
   if (pathname === '/app/operations') return 'operations';
+  if (pathname === '/app/account' || pathname.startsWith('/app/account/')) return 'account';
   if (pathname === '/app/classes' || pathname.startsWith('/app/classes/')) return 'classes';
   if (pathname === '/app/content' || pathname.startsWith('/app/content/')) return 'content';
   if (pathname === '/app/billing') return 'billing';
@@ -3068,7 +3588,8 @@ function ownerSurfaceFromPath(pathname: string): OwnerSurface | null {
   if (pathname === '/app/support' || pathname.startsWith('/app/support/receipts/')) {
     return 'support';
   }
-  if (pathname === '/app/crm') return 'crm';
+  if (pathname === '/app/tickets' || pathname.startsWith('/app/tickets/')) return 'support';
+  if (pathname === '/app/crm' || pathname.startsWith('/app/crm/')) return 'crm';
   return null;
 }
 
@@ -3078,18 +3599,23 @@ function ownerSurfacePath(surface: Exclude<OwnerSurface, 'crm'>) {
 }
 
 function ownerSurfaceTitle(surface: OwnerSurface) {
-  if (surface === 'dashboard') return 'Dashboard';
+  if (surface === 'dashboard') return 'Today';
+  if (surface === 'search') return 'Global search';
   if (surface === 'operations') return 'Operations';
   if (surface === 'classes') return 'Classroom';
   if (surface === 'content') return 'Content';
   if (surface === 'billing') return 'Household Access';
   if (surface === 'support') return 'Support';
+  if (surface === 'account') return 'Account';
   return 'Contacts';
 }
 
 function ownerSurfaceDescription(surface: OwnerSurface) {
   if (surface === 'dashboard') {
-    return 'A focused overview of the One Time workspace.';
+    return 'One canonical Sunday–Thursday class at 7:00 PM Asia/Jerusalem.';
+  }
+  if (surface === 'search') {
+    return 'Search authorized operational records without placing private terms in the URL.';
   }
   if (surface === 'operations') {
     return 'Account security, audit history, provider status, and application operations.';
@@ -3103,7 +3629,15 @@ function ownerSurfaceDescription(surface: OwnerSurface) {
     return 'Current household learning access; payment history remains in GHL.';
   }
   if (surface === 'support') return 'Subscriber-only technical support inside the One Time shell.';
+  if (surface === 'account')
+    return 'Profile, secure sign-in, and privacy information for this account.';
   return 'Parent and adult contact review.';
+}
+
+function accountSectionFromPath(pathname: string): 'profile' | 'security' | 'privacy' {
+  if (pathname === '/app/account/security') return 'security';
+  if (pathname === '/app/account/privacy') return 'privacy';
+  return 'profile';
 }
 
 function productStateLabel(value: string) {

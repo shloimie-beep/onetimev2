@@ -7,7 +7,6 @@ import express, {
 } from 'express';
 import { z, ZodError } from 'zod';
 import type { AppConfig } from '../../../../../../../packages/config/src/index.ts';
-import { ADULT_SESSION_POLICY } from '../../../../../../../packages/contracts/src/accounts/v21-household-identity.ts';
 import type {
   FamilySignupCommand,
   FamilySignupResult,
@@ -28,16 +27,33 @@ import {
 } from '../../registry/index.ts';
 import { authReturnLocation, sessionCookieHeader } from '../../auth/http-security.ts';
 import {
+  CANONICAL_APPLICATION_HOST,
+  CANONICAL_APPLICATION_ORIGIN,
+} from '../../domain-transition/policy.ts';
+import {
   createPostgresFamilySignupRepository,
   PostgresFamilySignupRepositoryError,
+  type TransactionBoundFamilySignupSessionEstablisher,
 } from './repository.ts';
-import { createFamilySignupService } from './service.ts';
+import {
+  createFamilySignupService,
+  type EstablishedFamilySignupSession,
+  type FamilySignupSubmission,
+} from './service.ts';
+export type { FamilySignupSessionEstablishment } from './service.ts';
 
 const CSRF_COOKIE = 'ot_family_signup_csrf';
 const CSRF_DOMAIN = 'one-time-family-signup-csrf-v1';
 const PASSWORD_FINGERPRINT_DOMAIN = 'one-time-family-signup-password-idempotency-fingerprint-v1';
 const CSRF_TTL_MS = 20 * 60 * 1000;
 const BASE64URL_32_BYTES = /^[A-Za-z0-9_-]{43}$/u;
+const FAMILY_SIGNUP_CORS_METHODS = 'GET, POST, OPTIONS';
+const FAMILY_SIGNUP_CORS_HEADERS = 'Accept, Cache-Control, Content-Type, Pragma, X-CSRF-Token';
+const FAMILY_SIGNUP_CORS_REQUEST_HEADERS = new Set(
+  FAMILY_SIGNUP_CORS_HEADERS.toLowerCase()
+    .split(',')
+    .map((header) => header.trim()),
+);
 
 const familySignupPayloadSchema = z
   .object({
@@ -49,14 +65,14 @@ const familySignupPayloadSchema = z
       .regex(/^[A-Za-z0-9_-]+$/u),
     first_name: z.string().min(1).max(100),
     last_name: z.string().min(1).max(100),
-    email: z.string().max(254),
-    password: z.string().min(1).max(256),
-    password_confirmation: z.string().min(1).max(256),
+    email: z.string().trim().email().max(254),
+    password: z.string().min(6).max(128),
+    password_confirmation: z.string().min(6).max(128),
     timezone: z.string().min(1).max(100),
     terms_accepted: z.literal(true),
     privacy_accepted: z.literal(true),
-    general_marketing_consent: z.boolean(),
-    parent_newsletter_consent: z.boolean(),
+    general_marketing_consent: z.literal(true),
+    parent_newsletter_consent: z.literal(true),
   })
   .strict();
 
@@ -65,33 +81,10 @@ export type FamilySignupSubmitter = {
     scope: FamilySignupScope;
     command: FamilySignupCommand;
     now: Date;
-  }): Promise<FamilySignupResult>;
+  }): Promise<FamilySignupSubmission>;
 };
 
-export type FamilySignupSessionEstablishment =
-  | {
-      established: true;
-      browser_session_token: string;
-      csrf_token: string;
-      expires_at: string;
-      middleware_readback_verified: true;
-    }
-  | {
-      established: false;
-      safe_reason: 'integration_unavailable' | 'session_creation_failed';
-    };
-
-export interface FamilySignupSessionEstablisher {
-  establish(input: {
-    scope: FamilySignupScope;
-    adult_id: string;
-    human_account_id: string;
-    household_id: string;
-    active_role: 'parent';
-    security_version: 1;
-    now: Date;
-  }): Promise<FamilySignupSessionEstablishment>;
-}
+export type FamilySignupSessionEstablisher = TransactionBoundFamilySignupSessionEstablisher;
 
 export type FamilySignupRouterInput = {
   config: AppConfig;
@@ -108,13 +101,55 @@ export function createFamilySignupRouter(input: FamilySignupRouterInput): expres
   const router = express.Router();
   const now = input.clock ?? (() => new Date());
   const randomKey = input.randomKey ?? (() => randomBytes(32).toString('base64url'));
-  const submitter = input.submitter ?? defaultSubmitter(input.config, input.pool);
+  const submitter =
+    input.submitter ?? defaultSubmitter(input.config, input.pool, input.sessionEstablisher);
   const scope = input.runtimeBinding ?? resolveFamilySignupScope(input.config);
   const writesAllowed = scope.verification_environment_id !== 'production_read_only';
   const mutationRateLimit =
     input.rateLimit === false
       ? (_req: Request, _res: Response, next: NextFunction) => next()
       : (input.rateLimit ?? leadRateLimit(input.config, input.pool));
+
+  router.use((req: RequestWithTrace, res, next) => {
+    const publicOrigin = new URL(input.config.publicBaseUrl).origin;
+    const origin = req.header('origin');
+    const isCanonicalPublicToApplicationRequest =
+      origin === publicOrigin && publicOrigin !== CANONICAL_APPLICATION_ORIGIN;
+    if (isCanonicalPublicToApplicationRequest) {
+      res.setHeader('Access-Control-Allow-Origin', publicOrigin);
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+      res.append('Vary', 'Origin');
+    }
+    if (req.method !== 'OPTIONS') {
+      next();
+      return;
+    }
+    const requestedMethod = req.header('access-control-request-method')?.toUpperCase();
+    const requestedHeaders = (req.header('access-control-request-headers') ?? '')
+      .split(',')
+      .map((header) => header.trim().toLowerCase())
+      .filter(Boolean);
+    if (
+      !isCanonicalPublicToApplicationRequest ||
+      (requestedMethod !== 'GET' && requestedMethod !== 'POST') ||
+      requestedHeaders.some((header) => !FAMILY_SIGNUP_CORS_REQUEST_HEADERS.has(header))
+    ) {
+      res
+        .status(403)
+        .json(
+          publicError(
+            'CROSS_ORIGIN_REQUIRED',
+            'We could not verify this request. Please try again.',
+            req.traceId,
+          ),
+        );
+      return;
+    }
+    res.setHeader('Access-Control-Allow-Methods', FAMILY_SIGNUP_CORS_METHODS);
+    res.setHeader('Access-Control-Allow-Headers', FAMILY_SIGNUP_CORS_HEADERS);
+    res.setHeader('Access-Control-Max-Age', '300');
+    res.status(204).end();
+  });
 
   router.use((_req, res, next) => {
     setNoStore(res);
@@ -169,7 +204,11 @@ export function createFamilySignupRouter(input: FamilySignupRouterInput): expres
           res
             .status(403)
             .json(
-              publicError('SAME_ORIGIN_REQUIRED', 'Refresh the page and try again.', req.traceId),
+              publicError(
+                'SAME_ORIGIN_REQUIRED',
+                'We could not verify this request. Please try again.',
+                req.traceId,
+              ),
             );
           return;
         }
@@ -188,18 +227,23 @@ export function createFamilySignupRouter(input: FamilySignupRouterInput): expres
         ) {
           res
             .status(403)
-            .json(publicError('CSRF_REQUIRED', 'Refresh the page and try again.', req.traceId));
+            .json(
+              publicError(
+                'CSRF_REQUIRED',
+                'We could not verify this request. Please try again.',
+                req.traceId,
+              ),
+            );
           return;
         }
         res.locals.familySignupCommand = command;
         next();
       } catch (error) {
         if (error instanceof ZodError) {
-          res
-            .status(400)
-            .json(
-              publicError('VALIDATION_ERROR', 'Please check the Family signup form.', req.traceId),
-            );
+          res.status(400).json({
+            ...publicError('VALIDATION_ERROR', 'Please check the Family signup form.', req.traceId),
+            field_errors: familySignupFieldErrors(error),
+          });
           return;
         }
         next(error);
@@ -210,32 +254,36 @@ export function createFamilySignupRouter(input: FamilySignupRouterInput): expres
       try {
         const command = res.locals.familySignupCommand as FamilySignupCommand;
         const submittedAt = now();
-        const result = await submitter.submit({
+        const submission = await submitter.submit({
           scope,
           command,
           now: submittedAt,
         });
-        const session = await establishFamilySignupSession(
-          input.sessionEstablisher,
-          scope,
-          result,
-          submittedAt,
-        );
-        sendSafeResult(res, result, session, submittedAt);
+        sendSafeResult(res, submission.result, submission.session, submittedAt);
       } catch (error) {
         if (error instanceof FamilySignupError) {
           const conflict = error.code === 'idempotency_conflict';
-          res
-            .status(conflict ? 409 : 400)
-            .json(
-              publicError(
-                conflict ? 'IDEMPOTENCY_CONFLICT' : 'VALIDATION_ERROR',
-                conflict
-                  ? 'This request key was already used. Refresh and try again.'
-                  : 'Please check the Family signup form.',
-                req.traceId,
-              ),
-            );
+          const command = res.locals.familySignupCommand as FamilySignupCommand;
+          const passwordFieldErrors =
+            error.code !== 'invalid_password'
+              ? {}
+              : command.password !== command.password_confirmation
+                ? { field_errors: { password_confirmation: 'Passwords must match.' } }
+                : {
+                    field_errors: {
+                      password: 'Choose a different password with at least 6 characters.',
+                    },
+                  };
+          res.status(conflict ? 409 : 400).json({
+            ...publicError(
+              conflict ? 'IDEMPOTENCY_CONFLICT' : 'VALIDATION_ERROR',
+              conflict
+                ? 'We could not verify this request. Please try again.'
+                : 'Please check the Family signup form.',
+              req.traceId,
+            ),
+            ...passwordFieldErrors,
+          });
           return;
         }
         if (
@@ -275,12 +323,57 @@ export const familySignupFeatureRegistration = defineServerFeature({
     }),
 });
 
-function defaultSubmitter(config: AppConfig, pool: DbPool): FamilySignupSubmitter {
-  return createFamilySignupService({
-    repository: createPostgresFamilySignupRepository(pool),
+function familySignupFieldErrors(error: ZodError): Record<string, string> {
+  const fieldErrors: Record<string, string> = {};
+
+  for (const issue of error.issues) {
+    const field = issue.path[0];
+    if (typeof field !== 'string' || field in fieldErrors) continue;
+
+    if (field === 'password' || field === 'password_confirmation') {
+      fieldErrors[field] =
+        issue.code === 'too_small'
+          ? 'At least 6 characters.'
+          : issue.code === 'too_big'
+            ? 'Choose a shorter password.'
+            : 'Check this password field.';
+      continue;
+    }
+    if (field === 'email') {
+      fieldErrors[field] = 'Enter a valid email address.';
+      continue;
+    }
+    if (
+      field === 'first_name' ||
+      field === 'last_name' ||
+      field === 'timezone' ||
+      field === 'terms_accepted'
+    ) {
+      fieldErrors[field] = 'This field is required.';
+    }
+  }
+
+  return fieldErrors;
+}
+
+function defaultSubmitter(
+  config: AppConfig,
+  pool: DbPool,
+  sessionEstablisher: FamilySignupSessionEstablisher | undefined,
+): FamilySignupSubmitter {
+  const service = createFamilySignupService({
+    repository: createPostgresFamilySignupRepository(
+      pool,
+      {
+        accountKey: config.accountKey,
+        productKey: config.productKey,
+      },
+      sessionEstablisher,
+    ),
     ...(config.oneTimeFreeAccessExpiresAt
       ? { freeAccessExpiresAt: config.oneTimeFreeAccessExpiresAt }
       : {}),
+    ...(config.oneTimeGhlPaymentLink ? { ghlPaymentLinkConfigured: true } : {}),
     hashPassword: async (password) => hashAuthPassword(password),
     fingerprintPasswordForIdempotency: async (password) =>
       createHmac('sha256', config.authCsrfSecret)
@@ -294,6 +387,7 @@ function defaultSubmitter(config: AppConfig, pool: DbPool): FamilySignupSubmitte
       household_id: `household_${randomUUID()}`,
     }),
   });
+  return { submit: (submitInput) => service.submitWithSession(submitInput) };
 }
 
 export function resolveFamilySignupScope(config: AppConfig): FamilySignupScope {
@@ -337,50 +431,10 @@ export function resolveFamilySignupScope(config: AppConfig): FamilySignupScope {
   };
 }
 
-async function establishFamilySignupSession(
-  establisher: FamilySignupSessionEstablisher | undefined,
-  scope: FamilySignupScope,
-  result: FamilySignupResult,
-  now: Date,
-): Promise<FamilySignupSessionEstablishment> {
-  if (!establisher || !result.projection) {
-    return { established: false, safe_reason: 'integration_unavailable' };
-  }
-  try {
-    const session = await establisher.establish({
-      scope,
-      adult_id: result.projection.adult_id,
-      human_account_id: result.projection.human_account_id,
-      household_id: result.projection.household_id,
-      active_role: 'parent',
-      security_version: 1,
-      now,
-    });
-    if (!session.established) return session;
-    const expiresAt = Date.parse(session.expires_at);
-    const maximumExpiry = now.getTime() + ADULT_SESSION_POLICY.parent.absoluteMilliseconds + 60_000;
-    if (
-      session.middleware_readback_verified !== true ||
-      session.browser_session_token.length < 32 ||
-      session.browser_session_token.length > 4096 ||
-      session.csrf_token.length < 32 ||
-      session.csrf_token.length > 4096 ||
-      !Number.isFinite(expiresAt) ||
-      expiresAt <= now.getTime() ||
-      expiresAt > maximumExpiry
-    ) {
-      return { established: false, safe_reason: 'session_creation_failed' };
-    }
-    return session;
-  } catch {
-    return { established: false, safe_reason: 'session_creation_failed' };
-  }
-}
-
 function sendSafeResult(
   res: Response,
   result: FamilySignupResult,
-  session: FamilySignupSessionEstablishment,
+  session: EstablishedFamilySignupSession | null,
   now: Date,
 ): void {
   if (result.projection === null) {
@@ -394,25 +448,22 @@ function sendSafeResult(
     });
     return;
   }
-
-  const sessionFields = session.established
-    ? {
-        session_established: true as const,
-        csrf_token: session.csrf_token,
-        session_expires_at: session.expires_at,
-      }
-    : {
-        session_established: false as const,
-      };
-  if (session.established) {
-    res.setHeader(
-      'Set-Cookie',
-      sessionCookieHeader({
-        token: session.browser_session_token,
-        max_age_seconds: Math.floor((Date.parse(session.expires_at) - now.getTime()) / 1000),
-      }),
-    );
+  if (session === null) {
+    throw new Error('family_signup_committed_result_missing_session');
   }
+
+  const sessionFields = {
+    session_established: true as const,
+    csrf_token: session.csrf_token,
+    session_expires_at: session.expires_at,
+  };
+  res.setHeader(
+    'Set-Cookie',
+    sessionCookieHeader({
+      token: session.browser_session_token,
+      max_age_seconds: Math.floor((Date.parse(session.expires_at) - now.getTime()) / 1000),
+    }),
+  );
   const common = {
     success: true,
     disposition: result.disposition,
@@ -425,23 +476,20 @@ function sendSafeResult(
     provider_effects_completed_inline: 0,
     ...sessionFields,
   } as const;
+  const confirmationMessage =
+    result.ghl_handoff_state === 'ready'
+      ? 'Your Family account is ready, and we sent your confirmation email.'
+      : 'Your Family account is ready. You can continue now while we finish sending your confirmation email.';
   if (result.next_action === 'signed_in') {
-    if (session.established) {
-      res.status(result.disposition === 'created' ? 201 : 200).json({
-        ...common,
-        code: 'FAMILY_SIGNUP_COMPLETE',
-        next_action: 'parent_overview',
-        continue_to: authReturnLocation({ role: 'parent' }),
-        message: 'Your family account and free access are ready.',
-      });
-      return;
-    }
-    res.status(202).json({
+    res.status(result.disposition === 'created' ? 201 : 200).json({
       ...common,
-      code: 'SIGNUP_COMMITTED_SESSION_UNAVAILABLE',
-      next_action: 'session_integration_pending',
-      message:
-        'Your family account and free access were saved. Automatic sign-in is not available yet.',
+      code: 'FAMILY_SIGNUP_COMPLETE',
+      next_action: 'parent_overview',
+      continue_to: new URL(
+        authReturnLocation({ role: 'parent' }),
+        CANONICAL_APPLICATION_ORIGIN,
+      ).toString(),
+      message: confirmationMessage,
     });
     return;
   }
@@ -452,6 +500,18 @@ function sendSafeResult(
       next_action: 'identity_review',
       message:
         'Your inactive account was saved. Checkout remains unavailable pending identity review.',
+    });
+    return;
+  }
+  if (result.next_action === 'support') {
+    res.status(202).json({
+      ...common,
+      code: 'SIGNUP_COMMITTED_SUPPORT_REQUIRED',
+      next_action: 'support',
+      checkout_provider: 'highlevel',
+      direct_stripe_mutation_by_one_time: false,
+      message:
+        'Your account is ready. The free period has ended; contact info@onetimeonetime.com for paid continuation options.',
     });
     return;
   }
@@ -533,11 +593,15 @@ function exactRandomKey(value: string): string {
 
 function isSameOrigin(req: Request, config: AppConfig): boolean {
   const fetchSite = req.header('sec-fetch-site');
-  if (fetchSite && fetchSite !== 'same-origin') return false;
+  if (fetchSite && fetchSite !== 'same-origin' && fetchSite !== 'same-site') return false;
   const source = req.header('origin') ?? req.header('referer');
   if (!source) return false;
   try {
-    return new URL(source).origin === new URL(config.publicBaseUrl).origin;
+    const sourceOrigin = new URL(source).origin;
+    return (
+      sourceOrigin === new URL(config.publicBaseUrl).origin ||
+      sourceOrigin === `https://${CANONICAL_APPLICATION_HOST}`
+    );
   } catch {
     return false;
   }

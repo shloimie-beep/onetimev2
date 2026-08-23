@@ -21,13 +21,13 @@ const cases = [
     heading: 'Worldwide Mishnah Learning / Live from Eretz Yisrael',
     role: 'anonymous',
   },
-  { id: 'signup', path: '/signup', heading: 'Pre-register Your Family', role: 'anonymous' },
+  { id: 'signup', path: '/signup', heading: 'Create Family Account', role: 'anonymous' },
   { id: 'login', path: '/login', button: 'Login', role: 'anonymous' },
   { id: 'crm', path: '/app/crm', heading: 'CRM', role: 'admin' },
   { id: 'dashboard', path: '/app/dashboard', heading: 'Dashboard', role: 'admin' },
   { id: 'parent', path: '/app/parent', heading: 'Parent Portal', role: 'parent' },
   { id: 'student', path: '/app/student', heading: 'Student Portal', role: 'student' },
-  { id: 'support', path: '/app/support', heading: /support/i, role: 'parent' },
+  { id: 'support', path: '/app/parent/support', heading: /support/i, role: 'parent' },
 ];
 
 test.describe('OPS-07 Day-One route gates', () => {

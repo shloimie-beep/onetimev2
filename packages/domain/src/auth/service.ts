@@ -23,9 +23,9 @@ import { householdHasLearningAccess } from '../access/service.ts';
 import { normalizeEmail, stableKey } from '../lead/normalize.ts';
 import { consumeRateLimitBudgets } from '../security/rate-limit.ts';
 import {
+  COMMON_AUTH_PASSWORDS,
   evaluatePassword,
   normalizeLegacyAuthRole,
-  unicodeCodePointLength,
   verifyAuthPassword,
 } from './policy.ts';
 
@@ -51,15 +51,6 @@ const EMAIL_CHALLENGE_DELIVERY_KEY_VERSION = 1;
 const EMAIL_CHALLENGE_DELIVERY_BATCH_SIZE = 10;
 const EMAIL_CHALLENGE_DELIVERY_LEASE_MS = 120_000;
 const TRANSACTIONAL_AUTH_EMAIL_SENDER = 'info@onetimeonetime.com';
-const COMMON_AUTH_PASSWORDS = new Set([
-  '12345678',
-  '123456789',
-  'password',
-  'password123',
-  'qwerty123',
-  'letmein123',
-]);
-
 type AssuranceMethod =
   'password' | 'totp' | 'recovery_code' | 'email_challenge' | 'email_link' | 'trusted_device';
 
@@ -200,12 +191,6 @@ export async function changeOwnPassword({
   ip?: string | undefined;
   userAgent?: string | undefined;
 }): Promise<PasswordChangeResult> {
-  const passwordLength = unicodeCodePointLength(newPassword);
-  const minimumPasswordLength = session.user.role === 'student' ? 8 : 12;
-  const maximumPasswordLength = session.user.role === 'student' ? 64 : 128;
-  if (passwordLength < minimumPasswordLength || passwordLength > maximumPasswordLength) {
-    return { ok: false, code: 'PASSWORD_POLICY_FAILED' };
-  }
   const rateLimit = await consumeRateLimitBudgets({
     pool,
     config,
@@ -551,7 +536,7 @@ export async function authenticateUser({
       {
         scope: 'login_identifier',
         subject: identifierHash,
-        limit: 5,
+        limit: config.loginIdentifierRateLimitMax,
         windowMs: config.loginRateLimitWindowMs,
       },
       {

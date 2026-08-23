@@ -228,7 +228,7 @@ describe('Parent and Student current-access authentication', () => {
     });
   });
 
-  it('changes Parent and Student passwords while preserving only the initiating session', async () => {
+  it('accepts a six-character Parent password and migrates an existing Student password to a PIN', async () => {
     const parentLogin = await authenticateUser({
       pool,
       config,
@@ -244,7 +244,7 @@ describe('Parent and Student current-access authentication', () => {
         config,
         session: parentSession,
         currentPassword: parentPassword,
-        newPassword: 'too-short',
+        newPassword: 'short',
       }),
     ).resolves.toEqual({ ok: false, code: 'PASSWORD_POLICY_FAILED' });
     const parentChanged = await changeOwnPassword({
@@ -252,14 +252,14 @@ describe('Parent and Student current-access authentication', () => {
       config,
       session: parentSession,
       currentPassword: parentPassword,
-      newPassword: 'ParentChanged!567',
+      newPassword: 'Ab1234',
     });
     expect(parentChanged).toMatchObject({ ok: true, sessions_invalidated: 1 });
     await expectLogin('parent@example.test', parentPassword, {
       ok: false,
       code: 'INVALID_CREDENTIALS',
     });
-    await expectLogin('parent@example.test', 'ParentChanged!567', {
+    await expectLogin('parent@example.test', 'Ab1234', {
       ok: true,
       user: { role: 'parent' },
     });
@@ -285,18 +285,18 @@ describe('Parent and Student current-access authentication', () => {
       config,
       session: studentSession,
       currentPassword: studentPassword,
-      newPassword: 'StudentChanged!567',
+      newPassword: '000456',
     });
     expect(studentChanged).toMatchObject({ ok: true, sessions_invalidated: 1 });
     await expectLogin(studentUsername, studentPassword, {
       ok: false,
       code: 'INVALID_CREDENTIALS',
     });
-    await expectLogin(studentUsername, 'StudentChanged!567', {
+    await expectLogin(studentUsername, '000456', {
       ok: true,
       user: { role: 'student' },
     });
-    await expectLogin('student@example.test', 'StudentChanged!567', {
+    await expectLogin('student@example.test', '000456', {
       ok: true,
       user: { role: 'student' },
     });

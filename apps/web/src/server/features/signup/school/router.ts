@@ -57,7 +57,8 @@ export function createSchoolInquiryRouter(input: SchoolInquiryRouterInput): expr
   const router = express.Router();
   const scope = input.runtimeBinding ?? resolveSchoolSignupScope(input.config);
   const writesAllowed = scope.verification_environment_id !== 'production_read_only';
-  const submitter = input.submitter ?? defaultSubmitter(input.pool, input.allocateLeadId);
+  const submitter =
+    input.submitter ?? defaultSubmitter(input.config, input.pool, input.allocateLeadId);
   const mutationRateLimit =
     input.rateLimit === false
       ? (_req: Request, _res: express.Response, next: NextFunction) => next()
@@ -229,11 +230,15 @@ export function resolveSchoolSignupScope(config: AppConfig): SchoolSignupScope {
 }
 
 function defaultSubmitter(
+  config: AppConfig,
   pool: DbPool,
   allocateLeadId: (() => string) | undefined,
 ): SchoolInquirySubmitter {
   const service = createSchoolSignupService({
-    repository: createPostgresSchoolSignupRepository(pool),
+    repository: createPostgresSchoolSignupRepository(pool, {
+      accountKey: config.accountKey,
+      productKey: config.productKey,
+    }),
     allocateLeadId: allocateLeadId ?? (() => `school-lead-${randomUUID()}`),
   });
   return {

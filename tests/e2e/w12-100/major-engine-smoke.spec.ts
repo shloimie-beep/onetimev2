@@ -15,10 +15,10 @@ test('landing, signup, login, and 404 smoke in major browser engines', async ({
   for (const route of [
     {
       path: '/',
-      heading: 'Worldwide Mishnah Learning / Live from Eretz Yisrael',
+      heading: 'Help your son love learning Mishnayos.',
       status: 200,
     },
-    { path: '/signup', heading: 'Pre-register Your Family', status: 200 },
+    { path: '/signup', heading: 'Create Family Account', status: 200 },
     { path: '/login', heading: 'Welcome back', status: 200 },
     { path: '/w12-100-missing-route', heading: /not found/i, status: 404 },
   ]) {

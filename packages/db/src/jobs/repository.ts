@@ -42,6 +42,7 @@ export interface ExecuteTransactionalCommandInput<Response> {
     resulting_version: number;
     outbox_intents: readonly TransactionalOutboxIntent[];
   }>;
+  afterOutbox?(client: JobSqlClient, outbox_job_ids: readonly string[]): Promise<void>;
 }
 
 export type TransactionalCommandResult<Response> =
@@ -61,6 +62,11 @@ export type TransactionalCommandResult<Response> =
 export function createPostgresJobFoundationRepository(pool: JobSqlPool) {
   const repository: JobFoundationRepository = {
     async claimDueJobs(input) {
+      const exactJobIds = input.job_ids ? [...new Set(input.job_ids)] : null;
+      if (exactJobIds?.some((jobId) => jobId.trim() === '')) {
+        throw new Error('job_claim_invalid_exact_identity');
+      }
+      if (exactJobIds?.length === 0) return [];
       return withTransaction(pool, async (client) => {
         const candidates = await client.query(
           `SELECT *
@@ -73,6 +79,7 @@ export function createPostgresJobFoundationRepository(pool: JobSqlPool) {
               AND unknown_effect = false
               AND dispatch_attempts < 8
               AND (next_attempt_at IS NULL OR next_attempt_at <= $5::timestamptz)
+              ${exactJobIds ? 'AND job_id = ANY($7::text[])' : ''}
             ORDER BY COALESCE(next_attempt_at, created_at), created_at, job_id
             LIMIT $6
             FOR UPDATE SKIP LOCKED`,
@@ -83,6 +90,7 @@ export function createPostgresJobFoundationRepository(pool: JobSqlPool) {
             input.operation_types,
             input.now.toISOString(),
             input.limit,
+            ...(exactJobIds ? [exactJobIds] : []),
           ],
         );
         const claimed: ProviderJobRecord[] = [];
@@ -194,6 +202,7 @@ export function createPostgresJobFoundationRepository(pool: JobSqlPool) {
         for (const intent of mutation.outbox_intents) {
           outboxJobIds.push(await insertOutboxIntent(client, intent));
         }
+        await input.afterOutbox?.(client, outboxJobIds);
         await client.query(
           `INSERT INTO onetime.job_command_idempotency
              (product, runtime_tier, verification_environment_id, actor_ref,

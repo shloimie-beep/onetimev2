@@ -1,7 +1,13 @@
 import type {
   ApprovedForPublicationProjectionParams,
+  ContentProcessingVersion,
   SourceCompleteApprovedForPublicationProjection,
 } from '../processing/index.ts';
+import type {
+  ContentSourceRecord,
+  ManagedObjectReadback,
+  RecoveryJournalReceipt,
+} from '../ingest/index.ts';
 import type {
   JobLeaseToken,
   JobScope,
@@ -84,17 +90,10 @@ export interface CanonicalGovernedOccurrence extends ContentPublicationScope {
   active: true;
 }
 
-export interface ContentPublicationRecord extends ContentPublicationScope {
+interface ContentPublicationRecordBase extends ContentPublicationScope {
   contentId: string;
   contentVersionId: string;
   contentVersionDigest: string;
-  participantSetVersion: string;
-  participantSnapshotSetDigest: string;
-  participantReviewState: 'pending' | 'complete';
-  unresolvedParticipantCount: number;
-  requiredRedactionCount: number;
-  completedRedactionCount: number;
-  redactionReviewDigest: string;
   version: number;
   state: ContentPublicationState;
   title: string;
@@ -119,8 +118,38 @@ export interface ContentPublicationRecord extends ContentPublicationScope {
   providerReadbackDigest: string | null;
   publishedAt: string | null;
   archivedAt: string | null;
+}
+
+export interface ObsContentPublicationRecord extends ContentPublicationRecordBase {
+  reviewKind?: 'participant_snapshot';
+  participantSetVersion: string;
+  participantSnapshotSetDigest: string;
+  participantReviewState: 'pending' | 'complete';
+  unresolvedParticipantCount: number;
+  requiredRedactionCount: number;
+  completedRedactionCount: number;
+  redactionReviewDigest: string;
   occurrenceRelations: readonly GovernedContentOccurrenceRelation[];
 }
+
+/**
+ * A source-review publication is deliberately separate from the controlled
+ * OBS/occurrence model. The empty relation list is meaningful: it must not be
+ * populated with an invented historical occurrence merely to reuse playback.
+ */
+export interface ExistingReviewedRecordingContentPublicationRecord extends ContentPublicationRecordBase {
+  reviewKind: 'existing_reviewed_recording';
+  sourceReview: {
+    reviewedSourceDigest: string;
+    reviewedByAdminId: string;
+    reviewedAt: string;
+    approvalEvidenceDigest: string;
+  };
+  occurrenceRelations: readonly GovernedContentOccurrenceRelation[];
+}
+
+export type ContentPublicationRecord =
+  ObsContentPublicationRecord | ExistingReviewedRecordingContentPublicationRecord;
 
 export interface ContentPublicationPrincipal {
   actorId: string;
@@ -591,4 +620,131 @@ export interface ContentPublicationWorkerRepository {
     scope: JobScope,
     limit: number,
   ): Promise<readonly ContentPublicationAcceptedWork[]>;
+}
+
+export type OptionalDriveCanaryState = 'not_configured' | 'provider_off' | 'ready' | 'verified';
+
+export type ContentMediaCanaryBlocker =
+  | 'invalid_environment'
+  | 'one_recording_required'
+  | 'bulk_action_forbidden'
+  | 'direct_upload_primary_required'
+  | 'original_readback_mismatch'
+  | 'recovery_journal_mismatch'
+  | 'processing_not_approved'
+  | 'approved_artifact_set_incomplete'
+  | 'publication_not_reconciled'
+  | 'protected_playback_mismatch'
+  | 'access_denial_incomplete'
+  | 'raw_provider_url_exposed'
+  | 'provider_effect_budget_exceeded'
+  | 'provider_effects_unreconciled';
+
+export type ContentMediaCanarySourceEvidence = Pick<
+  ContentSourceRecord,
+  | 'accountKey'
+  | 'productKey'
+  | 'id'
+  | 'sourceKind'
+  | 'runtimeTier'
+  | 'verificationEnvironmentId'
+  | 'bucketRef'
+  | 'objectKeyDigest'
+  | 'objectVersionId'
+  | 'kmsKeyVersionRef'
+  | 'checksumReadbackReceiptId'
+  | 'byteCount'
+  | 'sha256'
+  | 'originalPreserved'
+>;
+
+export type ContentMediaCanaryProcessingEvidence = Pick<
+  ContentProcessingVersion,
+  | 'id'
+  | 'accountKey'
+  | 'productKey'
+  | 'sourceId'
+  | 'sourceSha256'
+  | 'sourceObjectVersionId'
+  | 'state'
+> & {
+  artifacts: readonly Pick<ContentProcessingVersion['artifacts'][number], 'kind' | 'status'>[];
+  publicationApproval?: Pick<
+    NonNullable<ContentProcessingVersion['publicationApproval']>,
+    'contentVersionDigest'
+  >;
+};
+
+export type ContentMediaCanaryPublicationEvidence = Pick<
+  ContentPublicationRecord,
+  | 'accountKey'
+  | 'productKey'
+  | 'contentId'
+  | 'contentVersionId'
+  | 'contentVersionDigest'
+  | 'state'
+  | 'publicationGeneration'
+  | 'playbackGrantGeneration'
+  | 'pendingProviderOperationId'
+  | 'pendingProviderRequestHash'
+  | 'opaqueProviderAssetRef'
+  | 'providerReadbackDigest'
+  | 'publishedAt'
+> & {
+  approval: null | {
+    evidence: Pick<ContentApprovalEvidence, 'projectionDigest'>;
+  };
+};
+
+export type ContentMediaCanaryPlaybackEvidence = Pick<
+  StudentPlaybackGrant,
+  | 'accountKey'
+  | 'productKey'
+  | 'contentId'
+  | 'contentVersionId'
+  | 'publicationGeneration'
+  | 'playbackGrantGeneration'
+  | 'bootstrapPath'
+  | 'issuedAt'
+  | 'expiresAt'
+  | 'approvalProjectionDigest'
+>;
+
+export interface ContentMediaCanaryEvidence {
+  canaryId: string;
+  runtimeTier: 'production';
+  verificationEnvironmentId: 'production_operator_canary';
+  operatorControlledRecordingCount: number;
+  bulkActionAttempted: boolean;
+  optionalDriveState: OptionalDriveCanaryState;
+  source: ContentMediaCanarySourceEvidence;
+  sourceReadback: ManagedObjectReadback;
+  recoveryJournal: RecoveryJournalReceipt;
+  processingVersion: ContentMediaCanaryProcessingEvidence;
+  publicationRecord: ContentMediaCanaryPublicationEvidence;
+  playbackGrant: ContentMediaCanaryPlaybackEvidence;
+  accessReadback: {
+    entitledStudentAllowed: boolean;
+    parentDenied: boolean;
+    siblingDenied: boolean;
+    revokedDenied: boolean;
+    unpublishRefreshDenied: boolean;
+    rawProviderUrlExposed: boolean;
+  };
+  effects: {
+    driveFilesIngested: number;
+    vimeoAssetsUploaded: number;
+    unrelatedDriveFilesMutated: number;
+    unrelatedVimeoAssetsMutated: number;
+    providerEffectsReconciled: boolean;
+  };
+}
+
+export interface ContentMediaCanaryReadiness {
+  status: 'ready' | 'blocked';
+  canaryId: string;
+  primarySource: 'app_upload';
+  optionalDriveState: OptionalDriveCanaryState;
+  driveBlocksPrimary: false;
+  blockers: readonly ContentMediaCanaryBlocker[];
 }

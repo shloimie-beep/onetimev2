@@ -11,11 +11,13 @@ import {
   type ServerFeatureRegistration,
 } from '../../registry/index.ts';
 import type {
+  AdminAttendanceRecordReader,
   AdminAttendanceSubjectResolver,
   EmbeddedClassroomRequestIdentityResolver,
   VerifiedProviderAttendanceResolver,
 } from './adapters.ts';
 import {
+  createUnavailableAdminAttendanceRecordReader,
   createUnavailableAdminAttendanceSubjectResolver,
   createUnavailableEmbeddedJoinContextResolver,
   createUnavailableMeetingSdkBootstrapPort,
@@ -41,6 +43,7 @@ export type EmbeddedClassroomCandidateRuntime = {
   contextResolver?: EmbeddedJoinContextResolver;
   sdkBootstrap?: MeetingSdkBootstrapPort;
   providerAttendance?: VerifiedProviderAttendanceResolver;
+  adminAttendanceRecords?: AdminAttendanceRecordReader;
   adminAttendanceSubjects?: AdminAttendanceSubjectResolver;
 };
 
@@ -88,6 +91,9 @@ export function createEmbeddedClassroomFeatureComposition(input: {
         adminAttendanceSubjects:
           input.candidateRuntime?.adminAttendanceSubjects ??
           createUnavailableAdminAttendanceSubjectResolver(),
+        adminAttendanceRecords:
+          input.candidateRuntime?.adminAttendanceRecords ??
+          createUnavailableAdminAttendanceRecordReader(),
         ...(context.clock ? { clock: context.clock } : {}),
       });
       const receipt = Object.freeze({

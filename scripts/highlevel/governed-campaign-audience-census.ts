@@ -325,7 +325,7 @@ async function createEnvironmentDependencies(
   environment: NodeJS.ProcessEnv,
 ): Promise<PrepareGovernedCampaignAudienceCensusInput & { close: () => Promise<void> }> {
   requireEnvironment(environment, 'DATABASE_URL');
-  requireEnvironment(environment, 'HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN');
+  requireEnvironment(environment, 'HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN');
   const scope: GovernedCampaignCensusReadScope = {
     runtimeTier: requiredRuntimeTier(environment.GOVERNED_CAMPAIGN_RUNTIME_TIER),
     verificationEnvironmentId: required(environment.GOVERNED_CAMPAIGN_VERIFICATION_ENVIRONMENT_ID),
@@ -346,7 +346,7 @@ async function createEnvironmentDependencies(
   return {
     scope,
     provider: createReadOnlyHighLevelCensusTransport({
-      privateIntegrationsToken: environment.HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN!,
+      privateIntegrationsToken: environment.HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN!,
     }),
     reader: createPostgresGovernedCampaignCensusReader(pool),
     decisionStore: createPostgresGovernedCampaignAudienceDecisionStore(pool),

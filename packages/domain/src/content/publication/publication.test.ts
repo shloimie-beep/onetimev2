@@ -4,12 +4,16 @@ import type {
   ContentApprovalEvidence,
   ContentPublicationOutboxIntent,
   ContentPublicationPrincipal,
-  ContentPublicationRecord,
+  ObsContentPublicationRecord,
   StudentContentAssignment,
   StudentPlaybackAuthorizationFacts,
   StudentPublicationEligibility,
   VimeoContentPublicationObservation,
 } from '../../../../contracts/src/content/publication/index.ts';
+import type {
+  ContentPublicationSeed,
+  ObsApprovedForPublicationProjection,
+} from '../../../../contracts/src/content/processing/index.ts';
 import type { ProviderRegistryBinding } from '../../../../contracts/src/providers/v21-provider-core.ts';
 import { ContentPublicationError } from './errors.ts';
 import {
@@ -101,6 +105,83 @@ describe('P21 publication lifecycle', () => {
     ).toThrow(/composite scope/i);
   });
 
+  it('registers an existing reviewed recording without inventing an occurrence relation', () => {
+    const obs = approvalEvidence();
+    const {
+      participantSetVersion: _participantSetVersion,
+      participantSnapshotDigest: _participantSnapshotDigest,
+      participantReviewState: _participantReviewState,
+      unresolvedParticipantCount: _unresolvedParticipantCount,
+      requiredRedactionCount: _requiredRedactionCount,
+      completedRedactionCount: _completedRedactionCount,
+      redactionReviewDigest: _redactionReviewDigest,
+      projectionDigest: _projectionDigest,
+      ...base
+    } = obs;
+    void [
+      _participantSetVersion,
+      _participantSnapshotDigest,
+      _participantReviewState,
+      _unresolvedParticipantCount,
+      _requiredRedactionCount,
+      _completedRedactionCount,
+      _redactionReviewDigest,
+      _projectionDigest,
+    ];
+    const core = {
+      accountKey: base.accountKey,
+      productKey: base.productKey,
+      contentId: base.contentId,
+      contentVersionId: base.contentVersionId,
+      contentVersionDigest: base.contentVersionDigest,
+      sourceId: base.sourceId,
+      sourceSha256: base.sourceSha256,
+      sourceObjectVersionId: base.sourceObjectVersionId,
+      reviewKind: 'existing_reviewed_recording' as const,
+      reviewedSourceDigest: hash('c'),
+      reviewedByAdminId: admin.actorId,
+      reviewedAt: '2026-07-29T10:38:00.000Z',
+      approvalEvidenceDigest: hash('d'),
+      title: base.title,
+      englishTranscriptText: base.englishTranscriptText,
+      classTopic: base.classTopic,
+      mishnahReferences: base.mishnahReferences,
+      occurredAt: base.occurredAt,
+      durationMs: base.durationMs,
+      approvedByAdminId: base.approvedByAdminId,
+      approvedAt: base.approvedAt,
+      artifacts: base.artifacts,
+      approvedArtifactSetDigest: base.approvedArtifactSetDigest,
+      sourceEvidenceDigest: base.sourceEvidenceDigest,
+    };
+    const evidence = {
+      ...core,
+      projectionDigest: createHash('sha256').update(JSON.stringify(core)).digest('hex'),
+    } as ContentApprovalEvidence;
+    const registered = createReviewReadyContentFromProjection({
+      principal: admin,
+      evidence,
+    });
+    expect(registered).toMatchObject({
+      reviewKind: 'existing_reviewed_recording',
+      occurrenceRelations: [],
+      sourceReview: {
+        reviewedSourceDigest: hash('c'),
+        reviewedByAdminId: admin.actorId,
+      },
+    });
+    expect(() => assertRegisteredProjectionReplay(registered, evidence)).not.toThrow();
+    expect(() =>
+      attachOccurrence({
+        principal: admin,
+        record: registered,
+        relation: relation('occurrence_two', 2),
+        canonicalOccurrence: canonicalOccurrence('occurrence_two', 2),
+        binding: binding(registered.version),
+      }),
+    ).toThrow(/cannot be attached/i);
+  });
+
   it('fails closed until immutable version, participant, redaction, and Admin evidence agree', () => {
     const draft = content();
     const attached = attachOccurrence({
@@ -134,7 +215,10 @@ describe('P21 publication lifecycle', () => {
       approvalEvidence({ accountKey: 'account_other' }),
       approvalEvidence({ productKey: 'one_time_mishnayos', contentVersionId: 'version_other' }),
       approvalEvidence({ participantSnapshotDigest: hash('f') }),
-      approvalEvidence({ participantSetVersion: 'participant_set_other' }),
+      approvalEvidence({
+        reviewKind: 'participant_snapshot' as const,
+        participantSetVersion: 'participant_set_other',
+      }),
       approvalEvidence({ redactionReviewDigest: hash('f') }),
       approvalEvidence({ title: 'Different approved title' }),
       approvalEvidence({ approvedByAdminId: 'admin_other' }),
@@ -479,7 +563,9 @@ describe('P21 publication lifecycle', () => {
   });
 });
 
-function content(overrides: Partial<ContentPublicationRecord> = {}): ContentPublicationRecord {
+function content(
+  overrides: Partial<ObsContentPublicationRecord> = {},
+): ObsContentPublicationRecord {
   return {
     ...scope,
     contentId: 'content_one',
@@ -522,8 +608,8 @@ function content(overrides: Partial<ContentPublicationRecord> = {}): ContentPubl
 }
 
 function approvalEvidence(
-  overrides: Partial<ContentApprovalEvidence> = {},
-): ContentApprovalEvidence {
+  overrides: Partial<ObsApprovedForPublicationProjection & ContentPublicationSeed> = {},
+): ObsApprovedForPublicationProjection & ContentPublicationSeed {
   const { projectionDigest: overriddenDigest, ...coreOverrides } = overrides;
   const core = {
     ...scope,

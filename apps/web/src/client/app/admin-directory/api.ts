@@ -1,6 +1,7 @@
 export type AdminHousehold = {
   household_key: string;
   display_name: string;
+  parent_name: string | null;
   status: 'active' | 'archived';
   version: number;
   active_learner_count: number;
@@ -258,19 +259,6 @@ export function setAdminLearnerStatus(
     csrfToken,
     'POST',
     { version: learner.version },
-  );
-}
-
-export function requestAdminStudentSetup(
-  csrfToken: string,
-  learnerKey: string,
-  payload: { email: string; idempotency_key: string },
-) {
-  return write<{ success: true; setup: { status: 'setup_requested' } }>(
-    `/api/v1/admin-directory/learners/${encodeURIComponent(learnerKey)}/student-setup`,
-    csrfToken,
-    'POST',
-    payload,
   );
 }
 

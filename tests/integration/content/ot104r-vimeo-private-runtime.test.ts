@@ -14,7 +14,6 @@ import {
   reconcileNextOt104rVimeoSource,
   registerOt104rVimeoSource,
   retryOt104rVimeoSource,
-  signOt104rVimeoWebhook,
   type Ot104rVimeoAdapter,
 } from '../../../packages/domain/src/index.ts';
 
@@ -141,7 +140,7 @@ describe('OT-104R Vimeo private runtime registration and projections', () => {
 });
 
 describe('OT-104R Vimeo webhook verification and receipt handling', () => {
-  it('rejects signature, replay, content-type, size, and scope failures while safely acknowledging unknown events', async () => {
+  it('rejects payload-secret, replay, content-type, size, and scope failures while safely acknowledging unknown events', async () => {
     const adapter = createOt104rSinkVimeoAdapter();
     const registered = await registerOt104rVimeoSource({
       pool,
@@ -151,20 +150,23 @@ describe('OT-104R Vimeo webhook verification and receipt handling', () => {
     });
     const payload = webhookPayload({
       id: 'evt_ot104r_001',
-      type: 'video.transcode.complete',
+      event_type: 'video-transcode-complete',
     });
     const rawBody = Buffer.from(JSON.stringify(payload));
-    const headers = signedHeaders(rawBody);
+    const headers = webhookHeaders();
 
-    const badSignature = await receiveOt104rVimeoWebhook({
+    const badSecretBody = Buffer.from(
+      JSON.stringify(webhookPayload({ secret: 'incorrect-vimeo-webhook-secret' })),
+    );
+    const badSecret = await receiveOt104rVimeoWebhook({
       pool,
-      rawBody,
-      headers: { ...headers, signature: `v1=${'0'.repeat(64)}` },
+      rawBody: badSecretBody,
+      headers,
       secret: WEBHOOK_SECRET,
       expectedAccountId: 'vimeo_account_001',
       now,
     });
-    expect(badSignature).toMatchObject({ status: 401, code: 'unauthorized' });
+    expect(badSecret).toMatchObject({ status: 401, code: 'unauthorized' });
     expect(await countRows('onetime.ot104r_vimeo_webhook_receipts')).toBe(0);
 
     const accepted = await receiveOt104rVimeoWebhook({
@@ -190,12 +192,12 @@ describe('OT-104R Vimeo webhook verification and receipt handling', () => {
     expect(duplicate).toMatchObject({ status: 200, receipt_state: 'duplicate' });
 
     const changedRaw = Buffer.from(
-      JSON.stringify(webhookPayload({ id: 'evt_ot104r_001', type: 'video.transcode.error' })),
+      JSON.stringify(webhookPayload({ id: 'evt_ot104r_001', event_type: 'video-upload-failed' })),
     );
     const conflict = await receiveOt104rVimeoWebhook({
       pool,
       rawBody: changedRaw,
-      headers: signedHeaders(changedRaw),
+      headers,
       secret: WEBHOOK_SECRET,
       expectedAccountId: 'vimeo_account_001',
       now,
@@ -203,12 +205,14 @@ describe('OT-104R Vimeo webhook verification and receipt handling', () => {
     expect(conflict).toMatchObject({ status: 409, receipt_state: 'conflict' });
 
     const unknownRaw = Buffer.from(
-      JSON.stringify(webhookPayload({ id: 'evt_ot104r_unknown_001', type: 'comment.created' })),
+      JSON.stringify(
+        webhookPayload({ id: 'evt_ot104r_unknown_001', event_type: 'comment-created' }),
+      ),
     );
     const unknown = await receiveOt104rVimeoWebhook({
       pool,
       rawBody: unknownRaw,
-      headers: signedHeaders(unknownRaw),
+      headers,
       secret: WEBHOOK_SECRET,
       expectedAccountId: 'vimeo_account_001',
       now,
@@ -219,7 +223,7 @@ describe('OT-104R Vimeo webhook verification and receipt handling', () => {
       JSON.stringify(
         webhookPayload({
           id: 'evt_ot104r_wrong_account_001',
-          type: 'video.upload.complete',
+          event_type: 'video-created',
           account_id: 'other_vimeo_account',
         }),
       ),
@@ -227,24 +231,13 @@ describe('OT-104R Vimeo webhook verification and receipt handling', () => {
     const wrongAccount = await receiveOt104rVimeoWebhook({
       pool,
       rawBody: wrongAccountRaw,
-      headers: signedHeaders(wrongAccountRaw),
+      headers,
       secret: WEBHOOK_SECRET,
       expectedAccountId: 'vimeo_account_001',
       now,
     });
     expect(wrongAccount).toMatchObject({ status: 202, code: 'wrong_account_ignored' });
     expect((await sourceRow(registered.source_key)).processing_state).toBe('available');
-
-    const staleHeaders = signedHeaders(rawBody, '1784202000');
-    const stale = await receiveOt104rVimeoWebhook({
-      pool,
-      rawBody,
-      headers: staleHeaders,
-      secret: WEBHOOK_SECRET,
-      expectedAccountId: 'vimeo_account_001',
-      now,
-    });
-    expect(stale).toMatchObject({ status: 401 });
 
     const wrongType = await receiveOt104rVimeoWebhook({
       pool,
@@ -476,7 +469,8 @@ function sourceCommand(overrides: Record<string, unknown> = {}) {
 function webhookPayload(overrides: Record<string, unknown> = {}) {
   return {
     id: 'evt_ot104r_base',
-    type: 'video.transcode.complete',
+    event_type: 'video-transcode-complete',
+    secret: WEBHOOK_SECRET,
     account_id: 'vimeo_account_001',
     video: {
       uri: '/videos/video_private_001',
@@ -486,12 +480,8 @@ function webhookPayload(overrides: Record<string, unknown> = {}) {
   };
 }
 
-function signedHeaders(rawBody: Buffer, timestamp = String(Math.floor(now.getTime() / 1000))) {
-  return {
-    contentType: 'application/json',
-    timestamp,
-    signature: signOt104rVimeoWebhook({ secret: WEBHOOK_SECRET, timestamp, rawBody }),
-  };
+function webhookHeaders() {
+  return { contentType: 'application/json' };
 }
 
 function inspection(

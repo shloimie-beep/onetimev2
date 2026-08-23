@@ -1,8 +1,9 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
 import {
   STUDENT_ACTUAL_NAME_INSTRUCTIONS,
+  STUDENT_PIN_LENGTH,
+  isStudentPin,
   type ParentHouseholdSnapshot,
-  type ParentStudentRelationship,
   type StudentCredentialHandoff,
 } from '../../../../../../../packages/contracts/src/portals/parent-household/index.ts';
 import {
@@ -17,14 +18,12 @@ export type ParentHouseholdView =
 export function ParentHouseholdWorkspace({
   snapshot: initialSnapshot,
   csrfToken: initialCsrfToken = null,
-  relationship: initialRelationship = 'dependent',
   credentialHandoff: initialCredentialHandoff = null,
   view = { kind: 'overview' },
   api: suppliedApi,
 }: {
   snapshot?: ParentHouseholdSnapshot;
   csrfToken?: string | null;
-  relationship?: ParentStudentRelationship;
   credentialHandoff?: StudentCredentialHandoff | null;
   view?: ParentHouseholdView;
   api?: ParentHouseholdApi;
@@ -32,7 +31,6 @@ export function ParentHouseholdWorkspace({
   const api = useMemo(() => suppliedApi ?? createParentHouseholdApi(), [suppliedApi]);
   const [snapshot, setSnapshot] = useState<ParentHouseholdSnapshot | null>(initialSnapshot ?? null);
   const [csrfToken, setCsrfToken] = useState(initialCsrfToken);
-  const [relationship, setRelationship] = useState<ParentStudentRelationship>(initialRelationship);
   const [credentialHandoff, setCredentialHandoff] = useState(initialCredentialHandoff);
   const [pending, setPending] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -65,7 +63,7 @@ export function ParentHouseholdWorkspace({
   ) {
     if (!csrfToken) {
       setError('Refresh the Parent portal and try again.');
-      return;
+      return false;
     }
     setPending(true);
     setError(null);
@@ -75,8 +73,10 @@ export function ParentHouseholdWorkspace({
       setSnapshot(result.snapshot);
       setCredentialHandoff(result.credential_handoff);
       setMessage(success);
+      return true;
     } catch (cause) {
       setError(safeError(cause));
+      return false;
     } finally {
       setPending(false);
     }
@@ -84,8 +84,7 @@ export function ParentHouseholdWorkspace({
 
   if (!snapshot) {
     return (
-      <section aria-live="polite">
-        <h1>Parent household</h1>
+      <section aria-live="polite" aria-label="Student accounts">
         <p>{error ?? 'Loading household…'}</p>
       </section>
     );
@@ -96,20 +95,35 @@ export function ParentHouseholdWorkspace({
       ? (snapshot.students.find((student) => student.student_id === view.student_id) ?? null)
       : null;
   const effectiveView = snapshot.can_manage_students ? view : ({ kind: 'overview' } as const);
+  const childStudents = snapshot.students.filter((student) => student.relationship === 'dependent');
+  const legacySelfStudents = snapshot.students.filter((student) => student.relationship === 'self');
 
   return (
-    <section aria-labelledby="parent-household-heading">
-      <h1 id="parent-household-heading">{snapshot.display_name}</h1>
-      <p>
-        {snapshot.active_student_count} of {snapshot.student_allowance} active Student seats used
+    <section className="parent-student-workspace" aria-label="Student accounts">
+      <p className="parent-student-workspace__seat-summary">
+        Parent learner + {snapshot.active_student_count} of {snapshot.student_allowance} child
+        learners
       </p>
       {snapshot.can_manage_students ? (
-        <a
-          aria-disabled={snapshot.available_student_seats === 0}
-          href={snapshot.available_student_seats === 0 ? undefined : '/app/parent/students/new'}
-        >
-          Add Student
-        </a>
+        snapshot.available_student_seats === 0 ? (
+          <>
+            <button
+              type="button"
+              className="button-secondary"
+              disabled
+              aria-describedby="student-seat-capacity"
+            >
+              Add Student
+            </button>
+            <p id="student-seat-capacity" role="status">
+              All {snapshot.student_allowance} child learner seats are in use.
+            </p>
+          </>
+        ) : effectiveView.kind === 'create' ? null : (
+          <a className="button-primary" href="/app/parent/students/new">
+            Add Student
+          </a>
+        )
       ) : (
         <p role="status">Student management is unavailable while household access is inactive.</p>
       )}
@@ -117,28 +131,31 @@ export function ParentHouseholdWorkspace({
       {message ? <p role="status">{message}</p> : null}
       {error ? <p role="alert">{error}</p> : null}
 
-      <section id="parent-program-schedule" aria-labelledby="parent-program-schedule-heading">
-        <h2 id="parent-program-schedule-heading">Program schedule</h2>
-        <p>
-          Live classes run Sundayâ€“Thursday, with the protected lesson library available anytime.
-        </p>
-        <p>Students sign in with the separate username and password managed below.</p>
-      </section>
+      {effectiveView.kind === 'overview' ? (
+        <>
+          <section id="parent-program-schedule" aria-labelledby="parent-program-schedule-heading">
+            <h2 id="parent-program-schedule-heading">Program schedule</h2>
+            <p>
+              Live classes run Sunday–Thursday, with the protected lesson library available anytime.
+            </p>
+            <p>Students sign in with the separate username and six-digit PIN managed below.</p>
+          </section>
 
-      <section aria-labelledby="parent-account-access-heading">
-        <h2 id="parent-account-access-heading">Parent account access</h2>
-        <p>
-          Need a new Parent password? <a href="/forgot-password">Use secure account recovery</a>.
-        </p>
-      </section>
+          <section aria-labelledby="parent-account-access-heading">
+            <h2 id="parent-account-access-heading">Parent account access</h2>
+            <p>
+              Need a new Parent password? <a href="/forgot-password">Use secure account recovery</a>
+              .
+            </p>
+          </section>
+        </>
+      ) : null}
 
       {effectiveView.kind === 'create' ? (
         <CreateStudentForm
           disabled={
             pending || !snapshot.can_manage_students || snapshot.available_student_seats === 0
           }
-          relationship={relationship}
-          setRelationship={setRelationship}
           onSubmit={(form) =>
             mutate(
               (csrf) =>
@@ -148,13 +165,13 @@ export function ParentHouseholdWorkspace({
                     actual_name: form.actualName,
                     ...(form.displayName ? { display_name: form.displayName } : {}),
                     username: form.username,
-                    relationship,
+                    relationship: 'dependent',
                     new_password: form.password,
                     password_confirmation: form.passwordConfirmation,
                   },
                   csrf,
                 ),
-              'Student created. Save the credentials shown below.',
+              'Student created and enrolled in the recurring 7:00 PM class. Save the PIN shown below.',
             )
           }
         />
@@ -215,7 +232,7 @@ export function ParentHouseholdWorkspace({
                     },
                     csrf,
                   ),
-                'Password reset. Save the credentials shown below.',
+                'Student PIN reset. Save the credentials shown below.',
               )
             }
           />
@@ -224,30 +241,26 @@ export function ParentHouseholdWorkspace({
         )
       ) : null}
 
-      {effectiveView.kind === 'overview' && snapshot.can_manage_students ? (
-        <>
-          <h2>Who is this learner?</h2>
-          <p>{STUDENT_ACTUAL_NAME_INSTRUCTIONS[relationship]}</p>
-        </>
-      ) : null}
-
       {snapshot.can_manage_students ? (
         <>
-          <h2>Students</h2>
-          {snapshot.students.length === 0 ? (
-            <p>No Students yet.</p>
+          <h2>Child learners</h2>
+          {effectiveView.kind === 'overview' ? (
+            <p>{STUDENT_ACTUAL_NAME_INSTRUCTIONS.dependent}</p>
+          ) : null}
+          {childStudents.length === 0 ? (
+            <p>No child learners yet.</p>
           ) : (
-            <ul>
-              {snapshot.students.map((student) => (
-                <li key={student.student_id}>
-                  <a href={`/app/parent/students/${student.student_id}`}>
-                    {student.display_name ?? student.actual_name}
-                  </a>{' '}
-                  <span>{student.state}</span> <span>@{student.username}</span>
-                </li>
-              ))}
-            </ul>
+            <StudentList students={childStudents} />
           )}
+          {legacySelfStudents.length > 0 ? (
+            <>
+              <h2>
+                Legacy self-managed {legacySelfStudents.length === 1 ? 'profile' : 'profiles'}
+              </h2>
+              <p>Kept for account management. It does not use a child learner seat.</p>
+              <StudentList students={legacySelfStudents} />
+            </>
+          ) : null}
           {credentialHandoff ? <CredentialHandoff handoff={credentialHandoff} /> : null}
         </>
       ) : null}
@@ -255,45 +268,93 @@ export function ParentHouseholdWorkspace({
   );
 }
 
+function StudentList({ students }: { students: ParentHouseholdSnapshot['students'] }) {
+  return (
+    <ul>
+      {students.map((student) => (
+        <li key={student.student_id}>
+          <a href={`/app/parent/students/${student.student_id}`}>
+            {student.display_name ?? student.actual_name}
+          </a>{' '}
+          <span>{student.state}</span> <span>@{student.username}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 function CreateStudentForm({
   disabled,
-  relationship,
-  setRelationship,
   onSubmit,
 }: {
   disabled: boolean;
-  relationship: ParentStudentRelationship;
-  setRelationship: (relationship: ParentStudentRelationship) => void;
-  onSubmit: (form: ProfileForm & CredentialForm) => void;
+  onSubmit: (form: ProfileForm & CredentialForm) => Promise<boolean>;
 }) {
+  const passwordId = useId();
+  const confirmationId = useId();
+  const passwordErrorId = useId();
+  const confirmationErrorId = useId();
+  const passwordInputRef = useRef<HTMLInputElement>(null);
+  const confirmationInputRef = useRef<HTMLInputElement>(null);
+  const [password, setPassword] = useState('');
+  const [passwordConfirmation, setPasswordConfirmation] = useState('');
+  const credentials = studentCredentialState(password, passwordConfirmation);
+
   return (
     <form
+      className="parent-student-form"
       aria-labelledby="create-student-heading"
-      onSubmit={(event) => {
+      noValidate
+      onSubmit={async (event) => {
         event.preventDefault();
-        const data = new FormData(event.currentTarget);
-        onSubmit({ ...profileForm(data), ...credentialForm(data) });
+        const formElement = event.currentTarget;
+        if (
+          !submitStudentCredentials({
+            password,
+            passwordConfirmation,
+            focusPassword: () => passwordInputRef.current?.focus(),
+            focusConfirmation: () => confirmationInputRef.current?.focus(),
+          })
+        ) {
+          return;
+        }
+        if (!formElement.reportValidity()) return;
+        const data = new FormData(formElement);
+        const committed = await onSubmit({ ...profileForm(data), ...credentialForm(data) });
+        if (!committed) return;
+        formElement.reset();
+        setPassword('');
+        setPasswordConfirmation('');
       }}
     >
-      <h2 id="create-student-heading">Add Student</h2>
-      <label>
-        Who is this learner?
-        <select
-          name="relationship"
-          value={relationship}
+      <h2 id="create-student-heading">Student details</h2>
+      <div className="parent-student-form__fields">
+        <p className="parent-student-form__guidance">
+          <strong>Someone I manage</strong>
+          <br />
+          {STUDENT_ACTUAL_NAME_INSTRUCTIONS.dependent}
+        </p>
+        <ProfileFields disabled={disabled} />
+        <CredentialFields
           disabled={disabled}
-          onChange={(event) =>
-            setRelationship(event.currentTarget.value as ParentStudentRelationship)
-          }
-        >
-          <option value="dependent">Someone I manage</option>
-          <option value="self">Myself</option>
-        </select>
-      </label>
-      <p>{STUDENT_ACTUAL_NAME_INSTRUCTIONS[relationship]}</p>
-      <ProfileFields disabled={disabled} />
-      <CredentialFields disabled={disabled} />
-      <button type="submit" disabled={disabled}>
+          passwordId={passwordId}
+          confirmationId={confirmationId}
+          passwordErrorId={passwordErrorId}
+          confirmationErrorId={confirmationErrorId}
+          password={password}
+          passwordConfirmation={passwordConfirmation}
+          mode="create"
+          credentialState={credentials}
+          passwordInputRef={passwordInputRef}
+          confirmationInputRef={confirmationInputRef}
+          onPasswordChange={setPassword}
+          onPasswordConfirmationChange={setPasswordConfirmation}
+        />
+      </div>
+      <p className="parent-student-form__enrollment" role="status">
+        Creating a Student adds them to the recurring 7:00 PM class.
+      </p>
+      <button type="submit" className="button-primary" disabled={disabled}>
         Create Student
       </button>
     </form>
@@ -316,10 +377,15 @@ function StudentManagementForms({
   onReset: (password: string, passwordConfirmation: string) => void;
 }) {
   return (
-    <section aria-labelledby="manage-student-heading" data-household-revision={revision}>
+    <section
+      className="parent-student-management"
+      aria-labelledby="manage-student-heading"
+      data-household-revision={revision}
+    >
       <h2 id="manage-student-heading">Manage {student.display_name ?? student.actual_name}</h2>
       <p>{STUDENT_ACTUAL_NAME_INSTRUCTIONS[student.relationship]}</p>
       <form
+        className="parent-student-form"
         onSubmit={(event) => {
           event.preventDefault();
           onUpdate(profileForm(new FormData(event.currentTarget)));
@@ -330,27 +396,77 @@ function StudentManagementForms({
           Save Student
         </button>
       </form>
-      <button type="button" disabled={disabled} onClick={onLifecycle}>
-        {student.state === 'active' ? 'Archive Student' : 'Restore Student'}
-      </button>
-      {student.state === 'active' ? (
-        <form
-          aria-labelledby="reset-password-heading"
-          onSubmit={(event) => {
-            event.preventDefault();
-            const form = credentialForm(new FormData(event.currentTarget));
-            onReset(form.password, form.passwordConfirmation);
-          }}
-        >
-          <h3 id="reset-password-heading">Reset Student password</h3>
-          <p>The existing password is never displayed.</p>
-          <CredentialFields disabled={disabled} />
-          <button type="submit" disabled={disabled}>
-            Reset password
-          </button>
-        </form>
-      ) : null}
+      <details className="parent-student-management__security">
+        <summary>Student access and PIN controls</summary>
+        <p>These actions affect this Student only. The existing credential is never displayed.</p>
+        <button type="button" disabled={disabled} onClick={onLifecycle}>
+          {student.state === 'active' ? 'Archive Student' : 'Restore Student'}
+        </button>
+        {student.state === 'active' ? (
+          <StudentPasswordResetForm disabled={disabled} onReset={onReset} />
+        ) : null}
+      </details>
     </section>
+  );
+}
+
+function StudentPasswordResetForm({
+  disabled,
+  onReset,
+}: {
+  disabled: boolean;
+  onReset: (password: string, passwordConfirmation: string) => void;
+}) {
+  const passwordId = useId();
+  const confirmationId = useId();
+  const passwordErrorId = useId();
+  const confirmationErrorId = useId();
+  const passwordInputRef = useRef<HTMLInputElement>(null);
+  const confirmationInputRef = useRef<HTMLInputElement>(null);
+  const [password, setPassword] = useState('');
+  const [passwordConfirmation, setPasswordConfirmation] = useState('');
+  const credentials = studentCredentialState(password, passwordConfirmation);
+
+  return (
+    <form
+      className="parent-student-form"
+      aria-labelledby="reset-pin-heading"
+      noValidate
+      onSubmit={(event) => {
+        event.preventDefault();
+        if (
+          !submitStudentCredentials({
+            password,
+            passwordConfirmation,
+            focusPassword: () => passwordInputRef.current?.focus(),
+            focusConfirmation: () => confirmationInputRef.current?.focus(),
+          })
+        ) {
+          return;
+        }
+        onReset(password, passwordConfirmation);
+      }}
+    >
+      <h3 id="reset-pin-heading">Reset Student PIN</h3>
+      <CredentialFields
+        disabled={disabled}
+        passwordId={passwordId}
+        confirmationId={confirmationId}
+        passwordErrorId={passwordErrorId}
+        confirmationErrorId={confirmationErrorId}
+        password={password}
+        passwordConfirmation={passwordConfirmation}
+        mode="reset"
+        credentialState={credentials}
+        passwordInputRef={passwordInputRef}
+        confirmationInputRef={confirmationInputRef}
+        onPasswordChange={setPassword}
+        onPasswordConfirmationChange={setPasswordConfirmation}
+      />
+      <button type="submit" disabled={disabled}>
+        Reset PIN
+      </button>
+    </form>
   );
 }
 
@@ -401,33 +517,107 @@ function ProfileFields({
   );
 }
 
-function CredentialFields({ disabled }: { disabled: boolean }) {
+function CredentialFields({
+  disabled,
+  passwordId,
+  confirmationId,
+  passwordErrorId,
+  confirmationErrorId,
+  password,
+  passwordConfirmation,
+  mode,
+  credentialState,
+  passwordInputRef,
+  confirmationInputRef,
+  onPasswordChange,
+  onPasswordConfirmationChange,
+}: {
+  disabled: boolean;
+  passwordId?: string;
+  confirmationId?: string;
+  passwordErrorId?: string;
+  confirmationErrorId?: string;
+  password?: string;
+  passwordConfirmation?: string;
+  mode: CredentialMode;
+  credentialState: StudentCredentialState;
+  passwordInputRef?: React.RefObject<HTMLInputElement | null>;
+  confirmationInputRef?: React.RefObject<HTMLInputElement | null>;
+  onPasswordChange?: (value: string) => void;
+  onPasswordConfirmationChange?: (value: string) => void;
+}) {
   return (
     <>
-      <label>
-        New password
+      <div className="parent-student-form__credential-field">
+        <label htmlFor={passwordId}>New six-digit Student PIN</label>
         <input
+          id={passwordId}
           name="new_password"
           type="password"
           required
-          minLength={12}
-          maxLength={128}
+          minLength={STUDENT_PIN_LENGTH}
+          maxLength={STUDENT_PIN_LENGTH}
+          inputMode="numeric"
+          pattern="[0-9]{6}"
           disabled={disabled}
           autoComplete="new-password"
+          ref={passwordInputRef}
+          aria-invalid={credentialState.passwordLengthInvalid || undefined}
+          aria-describedby={credentialState.passwordLengthInvalid ? passwordErrorId : undefined}
+          {...(onPasswordChange
+            ? {
+                value: password,
+                onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
+                  onPasswordChange(event.currentTarget.value),
+              }
+            : {})}
         />
-      </label>
-      <label>
-        Confirm new password
+        {credentialState.passwordLengthInvalid ? (
+          <p id={passwordErrorId} className="parent-student-form__field-error" role="alert">
+            {credentialLengthErrorCopy(mode)}
+          </p>
+        ) : null}
+      </div>
+      <div className="parent-student-form__credential-field">
+        <label htmlFor={confirmationId}>Confirm Student PIN</label>
         <input
+          id={confirmationId}
           name="password_confirmation"
           type="password"
           required
-          minLength={12}
-          maxLength={128}
+          minLength={STUDENT_PIN_LENGTH}
+          maxLength={STUDENT_PIN_LENGTH}
+          inputMode="numeric"
+          pattern="[0-9]{6}"
           disabled={disabled}
           autoComplete="new-password"
+          ref={confirmationInputRef}
+          aria-invalid={
+            credentialState.confirmationLengthInvalid ||
+            credentialState.hasPasswordMismatch ||
+            undefined
+          }
+          aria-describedby={
+            credentialState.confirmationLengthInvalid || credentialState.hasPasswordMismatch
+              ? confirmationErrorId
+              : undefined
+          }
+          {...(onPasswordConfirmationChange
+            ? {
+                value: passwordConfirmation,
+                onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
+                  onPasswordConfirmationChange(event.currentTarget.value),
+              }
+            : {})}
         />
-      </label>
+        {credentialState.confirmationLengthInvalid || credentialState.hasPasswordMismatch ? (
+          <p id={confirmationErrorId} className="parent-student-form__field-error" role="alert">
+            {credentialState.confirmationLengthInvalid
+              ? credentialLengthErrorCopy(mode)
+              : credentialMismatchErrorCopy(mode)}
+          </p>
+        ) : null}
+      </div>
     </>
   );
 }
@@ -436,20 +626,78 @@ function CredentialHandoff({ handoff }: { handoff: StudentCredentialHandoff }) {
   return (
     <section aria-labelledby="credential-handoff-heading">
       <h2 id="credential-handoff-heading">Save credentials for {handoff.student_label}</h2>
-      <p>This password is shown only now. Copy or print it before leaving this page.</p>
+      <p>This PIN is shown only now. Copy or print it before leaving this page.</p>
       <dl>
         <dt>Username</dt>
         <dd>{handoff.username}</dd>
-        <dt>New password</dt>
+        <dt>New PIN</dt>
         <dd>{handoff.new_password}</dd>
       </dl>
-      <p>Credentials are not emailed. You can reset them later.</p>
+      <p>Credentials are not emailed. You can reset the PIN later.</p>
     </section>
   );
 }
 
 type ProfileForm = { actualName: string; displayName: string; username: string };
 type CredentialForm = { password: string; passwordConfirmation: string };
+
+type CredentialMode = 'create' | 'reset';
+
+export type StudentCredentialState = {
+  confirmationLengthInvalid: boolean;
+  hasPasswordMismatch: boolean;
+  passwordLengthInvalid: boolean;
+  ready: boolean;
+};
+
+export function studentCredentialState(
+  password: string,
+  passwordConfirmation: string,
+): StudentCredentialState {
+  const confirmationStarted = passwordConfirmation.length > 0;
+  const passwordsMatch = password === passwordConfirmation;
+  const passwordLengthValid = isStudentPin(password);
+  const confirmationLengthValid = isStudentPin(passwordConfirmation);
+  return {
+    confirmationLengthInvalid: confirmationStarted && !confirmationLengthValid,
+    hasPasswordMismatch: confirmationStarted && !passwordsMatch,
+    passwordLengthInvalid: password.length > 0 && !passwordLengthValid,
+    ready: passwordLengthValid && confirmationLengthValid && passwordsMatch,
+  };
+}
+
+export function credentialLengthErrorCopy(mode: CredentialMode) {
+  return mode === 'create'
+    ? 'Enter exactly six numeric digits before creating this Student.'
+    : 'Enter exactly six numeric digits before resetting this Student PIN.';
+}
+
+export function credentialMismatchErrorCopy(mode: CredentialMode) {
+  return mode === 'create'
+    ? 'Student PINs must match before creating this Student.'
+    : 'Student PINs must match before resetting this Student PIN.';
+}
+
+export function submitStudentCredentials({
+  password,
+  passwordConfirmation,
+  focusPassword,
+  focusConfirmation,
+}: {
+  password: string;
+  passwordConfirmation: string;
+  focusPassword: () => void;
+  focusConfirmation: () => void;
+}) {
+  const credentials = studentCredentialState(password, passwordConfirmation);
+  if (credentials.ready) return true;
+  if (password.length === 0 || credentials.passwordLengthInvalid) {
+    focusPassword();
+  } else {
+    focusConfirmation();
+  }
+  return false;
+}
 
 function profileForm(data: FormData): ProfileForm {
   return {

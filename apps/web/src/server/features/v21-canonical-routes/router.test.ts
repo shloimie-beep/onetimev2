@@ -27,19 +27,31 @@ describe('v2.1 canonical route server registration', () => {
     );
     expect(registrations.every(({ path }) => !path.includes('*'))).toBe(true);
     expect(new Set(registrations.map(({ path }) => path)).size).toBe(75);
-    expect(CANONICAL_READY_PROTECTED_ROUTES).toHaveLength(19);
+    expect(CANONICAL_READY_PROTECTED_ROUTES).toHaveLength(75);
     expect(
       CANONICAL_PROTECTED_ROUTES.filter(({ readiness }) => readiness !== 'ready'),
-    ).toHaveLength(56);
+    ).toHaveLength(0);
   });
 
   it('binds exact shell and role semantics', () => {
     expect(
       CANONICAL_PROTECTED_ROUTES.find(({ routeId }) => routeId === 'RT-ADM-002'),
-    ).toMatchObject({ pathname: '/app/search', shell: 'admin', roles: ['admin'] });
+    ).toMatchObject({
+      pathname: '/app/search',
+      shell: 'admin',
+      roles: ['admin'],
+      readiness: 'ready',
+      handlerDisposition: 'mounted',
+    });
     expect(
       CANONICAL_PROTECTED_ROUTES.find(({ routeId }) => routeId === 'RT-PAR-030'),
-    ).toMatchObject({ pathname: '/app/parent/billing', shell: 'parent', roles: ['parent'] });
+    ).toMatchObject({
+      pathname: '/app/parent/billing',
+      shell: 'parent',
+      roles: ['parent'],
+      readiness: 'ready',
+      handlerDisposition: 'mounted',
+    });
     expect(
       CANONICAL_READY_PROTECTED_ROUTES.find(({ routeId }) => routeId === 'RT-PAR-001'),
     ).toMatchObject({
@@ -59,6 +71,51 @@ describe('v2.1 canonical route server registration', () => {
       handlerDisposition: 'mounted',
     });
     expect(
+      CANONICAL_READY_PROTECTED_ROUTES.find(({ routeId }) => routeId === 'RT-ADM-063'),
+    ).toMatchObject({
+      pathname: '/app/tickets/:ticketId',
+      shell: 'admin',
+      roles: ['admin'],
+      readiness: 'ready',
+      handlerDisposition: 'bounded-alias',
+    });
+    expect(
+      CANONICAL_READY_PROTECTED_ROUTES.find(({ routeId }) => routeId === 'RT-ADM-015'),
+    ).toMatchObject({
+      pathname: '/app/users/:userId',
+      shell: 'admin',
+      roles: ['admin'],
+      readiness: 'ready',
+      handlerDisposition: 'bounded-alias',
+    });
+    expect(
+      CANONICAL_READY_PROTECTED_ROUTES.find(({ routeId }) => routeId === 'RT-ADM-017'),
+    ).toMatchObject({
+      pathname: '/app/students/:studentId',
+      shell: 'admin',
+      roles: ['admin'],
+      readiness: 'ready',
+      handlerDisposition: 'bounded-alias',
+    });
+    expect(
+      CANONICAL_READY_PROTECTED_ROUTES.find(({ routeId }) => routeId === 'RT-ADM-023'),
+    ).toMatchObject({
+      pathname: '/app/content/:contentId/review',
+      shell: 'admin',
+      roles: ['admin'],
+      readiness: 'ready',
+      handlerDisposition: 'mounted',
+    });
+    expect(
+      CANONICAL_READY_PROTECTED_ROUTES.find(({ routeId }) => routeId === 'RT-ADM-033'),
+    ).toMatchObject({
+      pathname: '/app/classroom/classes/:classId',
+      shell: 'admin',
+      roles: ['admin'],
+      readiness: 'ready',
+      handlerDisposition: 'bounded-alias',
+    });
+    expect(
       CANONICAL_READY_PROTECTED_ROUTES.find(({ routeId }) => routeId === 'RT-PAR-070'),
     ).toMatchObject({
       pathname: '/app/parent/account',
@@ -68,11 +125,58 @@ describe('v2.1 canonical route server registration', () => {
       handlerDisposition: 'mounted',
     });
     expect(
-      CANONICAL_PROTECTED_ROUTES.find(({ routeId }) => routeId === 'RT-STU-012'),
+      CANONICAL_READY_PROTECTED_ROUTES.find(({ routeId }) => routeId === 'RT-PAR-011'),
+    ).toMatchObject({
+      pathname: '/app/parent/classes/:occurrenceId',
+      shell: 'parent',
+      roles: ['parent'],
+      readiness: 'ready',
+      handlerDisposition: 'mounted',
+    });
+    expect(
+      CANONICAL_READY_PROTECTED_ROUTES.find(({ routeId }) => routeId === 'RT-STU-011'),
+    ).toMatchObject({
+      pathname: '/app/student/classes/:occurrenceId',
+      shell: 'student',
+      roles: ['student'],
+      readiness: 'ready',
+      handlerDisposition: 'mounted',
+    });
+    expect(
+      CANONICAL_READY_PROTECTED_ROUTES.find(({ routeId }) => routeId === 'RT-STU-021'),
+    ).toMatchObject({
+      pathname: '/app/student/library/:contentId',
+      shell: 'student',
+      roles: ['student'],
+      readiness: 'ready',
+      handlerDisposition: 'mounted',
+    });
+    expect(
+      CANONICAL_READY_PROTECTED_ROUTES.find(({ routeId }) => routeId === 'RT-STU-012'),
     ).toMatchObject({
       pathname: '/app/student/class/:occurrenceId',
       shell: 'student',
       roles: ['student'],
+      readiness: 'ready',
+      handlerDisposition: 'mounted',
+    });
+    expect(
+      CANONICAL_READY_PROTECTED_ROUTES.find(({ routeId }) => routeId === 'RT-STU-071'),
+    ).toMatchObject({
+      pathname: '/app/student/privacy',
+      shell: 'student',
+      roles: ['student'],
+      readiness: 'ready',
+      handlerDisposition: 'mounted',
+    });
+    expect(
+      CANONICAL_READY_PROTECTED_ROUTES.find(({ routeId }) => routeId === 'RT-STU-072'),
+    ).toMatchObject({
+      pathname: '/app/student/data-rights',
+      shell: 'student',
+      roles: ['student'],
+      readiness: 'ready',
+      handlerDisposition: 'mounted',
     });
   });
 });

@@ -87,27 +87,42 @@ describe('Parent and Student portal navigation and account security', () => {
     expect(portalEntry).toContain('autoComplete="current-password"');
     expect(portalEntry).toContain('autoComplete="new-password"');
     expect(portalEntry).toContain("if (role === 'student')");
-    expect(portalEntry).toContain('Student passwords are managed by a Parent or Administrator.');
+    expect(portalEntry).toContain(
+      'Student PINs and legacy credentials are managed by a Parent or Administrator.',
+    );
+    expect(portalEntry).toContain('<span>Six-digit Student PIN</span>');
+    expect(portalEntry).toContain('inputMode="numeric"');
+    expect(portalEntry).toContain('pattern="[0-9]{6}"');
     expect(liveEntry).toContain("headers: { 'x-csrf-token': csrfToken }");
   });
 
-  it('advertises mounted Student routes while isolating support callbacks', () => {
+  it('keeps every adult password surface aligned to the six-character minimum', () => {
+    const appSource = readFileSync('apps/web/src/server/app.ts', 'utf8');
+
+    expect(appSource).toContain(".min(6, 'At least 6 characters.')");
+    expect(appSource).toContain("? 'Choose a different password with at least 6 characters.'");
+    expect(appSource.match(/minlength="6" maxlength="128"/gu)).toHaveLength(4);
+    expect(appSource).not.toContain('Use at least 10 characters');
+    expect(appSource).not.toContain('Use at least one letter and one number');
+  });
+
+  it('keeps technical support Parent-scoped and removes Student submission', () => {
     const portalEntry = readFileSync('apps/web/src/client/app/portal-entry.tsx', 'utf8');
     const portalFeatures = readFileSync(
       'apps/web/src/client/features/portals/PortalFeatures.tsx',
       'utf8',
     );
 
-    expect(portalEntry).toContain("window.location.assign('/app/student/support')");
-    expect(portalEntry).toContain('basePath="/app/student/support"');
-    expect(portalEntry).not.toContain('/app/parent/support');
+    expect(portalEntry).toContain('<StudentParentSupportBoundary />');
+    expect(portalEntry).toContain('Ask your Parent for help');
+    expect(portalEntry).toContain('basePath="/app/parent/support"');
+    expect(portalEntry).not.toContain('basePath="/app/student/support"');
     expect(portalEntry).not.toContain("window.location.assign('/app/support')");
-    expect(portalEntry).toContain("href: '/app/student/questions'");
-    expect(portalEntry).toContain("href: '/app/student/updates'");
+    expect(portalEntry).toContain(
+      "{ id: 'questions', label: 'Questions', href: '/app/student/questions' }",
+    );
+    expect(portalEntry).toContain("if (category === 'Updates') return `/app/${role}/updates`;");
     expect(portalEntry).not.toContain('Support remains available while learning access is paused.');
     expect(portalFeatures).not.toContain('onPreviewSupport(selectedLearner.learner_key)');
-    expect(portalFeatures).toContain(
-      'Parent support routes are isolated; this callback is ignored.',
-    );
   });
 });

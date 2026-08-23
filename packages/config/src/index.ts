@@ -24,6 +24,14 @@ const numberFromString = z
     return parsed;
   });
 
+const boundedIntegerFromString = (minimum: number, maximum: number, defaultValue: number) =>
+  z
+    .union([z.number(), z.string()])
+    .optional()
+    .default(defaultValue)
+    .transform((value) => Number(value))
+    .pipe(z.number().int().min(minimum).max(maximum));
+
 const optionalTrimmedString = (minimum: number, maximum: number) =>
   z.preprocess(
     (value) => (typeof value === 'string' && value.trim() === '' ? undefined : value),
@@ -34,6 +42,21 @@ const optionalNonblankString = z.preprocess(
   (value) => (typeof value === 'string' && value.trim() === '' ? undefined : value),
   z.string().trim().min(1).optional(),
 );
+
+const optionalReceiptBoolean = z.preprocess(
+  (value) => (typeof value === 'string' && value.trim() === '' ? undefined : value),
+  z
+    .union([z.boolean(), z.literal('true'), z.literal('false')])
+    .optional()
+    .transform((value) => (value === undefined ? undefined : value === true || value === 'true')),
+);
+
+const optionalIsoDateTime = z.preprocess(
+  (value) => (typeof value === 'string' && value.trim() === '' ? undefined : value),
+  z.iso.datetime({ offset: true }).optional(),
+);
+
+export const ZOOM_PRODUCTION_BASIC_BINDING_RECEIPT_MAX_AGE_MS = 31 * 24 * 60 * 60_000;
 
 function parseUniqueCsv(value: string | undefined) {
   if (!value) return [];
@@ -174,6 +197,7 @@ const envSchema = z.object({
   DELIVERY_ENVIRONMENT: deliveryEnvironmentSchema.optional(),
   PORT: numberFromString.default(3000),
   PUBLIC_BASE_URL: z.url().default('https://join.onetimeonetime.com'),
+  APP_BASE_URL: z.url().default('https://app.onetimeonetime.com'),
   APP_VERSION: z.string().min(1).default('local'),
   COMMIT_SHA: z.string().min(1).default('local'),
   RAILWAY_DEPLOYMENT_ID: optionalTrimmedString(1, 160),
@@ -190,7 +214,7 @@ const envSchema = z.object({
   OPERATIONS_PROBE_TOKEN: z.string().min(24).optional(),
   OPERATIONS_WORKER_HEARTBEAT_TTL_MS: numberFromString.default(90_000),
   ONE_TIME_ACCOUNT_KEY: z.string().min(1).default('one_time'),
-  ONE_TIME_PRODUCT_KEY: z.string().min(1).default('one_time_mishnah_class'),
+  ONE_TIME_PRODUCT_KEY: z.string().min(1).default('one_time_mishnayos'),
   ONE_TIME_OWNER_INTERNAL_LABEL: z.string().min(1).default('Rabbi'),
   ONE_TIME_ADMIN_CUSTOMER_LABEL: z.string().min(1).default('Admin'),
   LEAD_RATE_LIMIT_WINDOW_MS: numberFromString.default(60_000),
@@ -216,6 +240,27 @@ const envSchema = z.object({
     (value) => (typeof value === 'string' && value.trim() === '' ? undefined : value),
     oneTimeVerificationEnvironmentSchema.optional(),
   ),
+  ONE_TIME_CONTENT_MEDIA_MODE: z
+    .enum(['off', 'synthetic_canary', 'provider_canary', 'production_broad'])
+    .default('off'),
+  ONE_TIME_CONTENT_MEDIA_AUTHORIZATION_ID: optionalTrimmedString(8, 160),
+  ONE_TIME_CONTENT_CANARY_ID: optionalTrimmedString(8, 160),
+  ONE_TIME_CONTENT_MEDIA_BATCH_SIZE: boundedIntegerFromString(1, 10, 2),
+  ONE_TIME_CONTENT_MEDIA_CONCURRENCY: boundedIntegerFromString(1, 4, 1),
+  CONTENT_S3_BUCKET: optionalTrimmedString(3, 255),
+  CONTENT_S3_KMS_KEY_ARN: optionalTrimmedString(20, 500),
+  CONTENT_S3_STORAGE_CLASS: z.enum(['STANDARD', 'INTELLIGENT_TIERING']).default('STANDARD'),
+  AWS_REGION: optionalTrimmedString(3, 80),
+  GOOGLE_DRIVE_FOLDER_ID: optionalTrimmedString(1, 300),
+  GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON: optionalTrimmedString(2, 20_000),
+  CONTENT_FFMPEG_PATH: optionalTrimmedString(1, 500),
+  CONTENT_FFPROBE_PATH: optionalTrimmedString(1, 500),
+  OPENAI_API_KEY: optionalTrimmedString(8, 500),
+  OPENAI_PROJECT_ID: optionalTrimmedString(3, 200),
+  OPENAI_ORGANIZATION_ID: optionalTrimmedString(3, 200),
+  VIMEO_ACCESS_TOKEN: optionalTrimmedString(8, 500),
+  VIMEO_ACCOUNT_ID: optionalTrimmedString(1, 200),
+  VIMEO_WEBHOOK_SECRET: optionalTrimmedString(16, 500),
   ONE_TIME_FIRST_CLASS_AT: z.preprocess(
     (value) => (typeof value === 'string' && value.trim() === '' ? undefined : value),
     z.iso.datetime({ offset: true }).optional(),
@@ -265,6 +310,10 @@ const envSchema = z.object({
   ENABLE_REAL_WHATSAPP_TRANSPORT: booleanFromString,
   ENABLE_REAL_TELEGRAM_TRANSPORT: booleanFromString,
   ENABLE_PAYMENT_TRANSPORT: booleanFromString,
+  ONE_TIME_GHL_PAYMENT_LINK: z.preprocess(
+    (value) => (typeof value === 'string' && value.trim() === '' ? undefined : value),
+    z.url().optional(),
+  ),
   ONE_TIME_TELEGRAM_WEBHOOK_ENABLED: booleanFromString,
   ONE_TIME_TELEGRAM_WEBHOOK_SECRET: z.string().min(16).optional(),
   ONE_TIME_TELEGRAM_WEBHOOK_SECRET_CONFIGURED: booleanFromString,
@@ -313,16 +362,44 @@ const envSchema = z.object({
   ZOOM_HOST_USER_ID: z.string().optional(),
   ZOOM_REAL_CONTROL_MEETING_ID: z.string().optional(),
   ZOOM_REAL_CONTROL_MEETING_PASSCODE: z.string().optional(),
+  // Digest-only receipt from a separately authorized, read-only provider inspection.
+  // It never contains the recurring meeting reference or a join URL.
+  ZOOM_PRODUCTION_BASIC_BINDING_ACCOUNT_MATCHES: optionalReceiptBoolean,
+  ZOOM_PRODUCTION_BASIC_BINDING_HOST_MATCHES: optionalReceiptBoolean,
+  ZOOM_PRODUCTION_BASIC_BINDING_REGISTRATION_REQUIRED: optionalReceiptBoolean,
+  ZOOM_PRODUCTION_BASIC_BINDING_MEETING_IS_RECURRING: optionalReceiptBoolean,
+  ZOOM_PRODUCTION_BASIC_BINDING_TIMEZONE: optionalTrimmedString(1, 80),
+  ZOOM_PRODUCTION_BASIC_BINDING_WEEKLY_DAYS: optionalTrimmedString(1, 40),
+  ZOOM_PRODUCTION_BASIC_BINDING_FIRST_OCCURRENCE_AT: optionalIsoDateTime,
+  ZOOM_PRODUCTION_BASIC_BINDING_JOIN_BEFORE_HOST: optionalReceiptBoolean,
+  ZOOM_PRODUCTION_BASIC_BINDING_PARTICIPANT_VIDEO: optionalReceiptBoolean,
+  ZOOM_PRODUCTION_BASIC_BINDING_AUTO_RECORDING: optionalTrimmedString(1, 40),
+  ZOOM_PRODUCTION_BASIC_BINDING_MEETING_REF_DIGEST: optionalTrimmedString(64, 64).refine(
+    (value) => value === undefined || /^[a-f0-9]{64}$/u.test(value),
+    'Expected a 64-character lowercase hexadecimal meeting reference digest',
+  ),
+  ZOOM_PRODUCTION_BASIC_BINDING_CHECKED_AT: optionalIsoDateTime,
+  ZOOM_PRODUCTION_BASIC_BINDING_EXPIRES_AT: optionalIsoDateTime,
   HIGHLEVEL_EVENT_SYNC_MODE: z.enum(['disabled', 'mock', 'provider']).default('disabled'),
   HIGHLEVEL_API_BASE_URL: z.url().default('https://services.leadconnectorhq.com'),
   HIGHLEVEL_API_VERSION: z.string().min(1).max(80).default('2021-07-28'),
-  HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN: optionalTrimmedString(8, 400),
+  HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN: optionalTrimmedString(8, 400),
   HIGHLEVEL_LOCATION_ID: z.string().min(1).max(160).default('pBSnOK2nkdxp6gf9Rg3o'),
   HIGHLEVEL_CANARY_RUN_ID: optionalTrimmedString(8, 160),
   HIGHLEVEL_CANARY_DELIVERY_KEYS: optionalTrimmedString(8, 4000),
   HIGHLEVEL_CANARY_BUDGET: numberFromString.default(0),
   HIGHLEVEL_PROVIDER_TIMEOUT_MS: numberFromString.default(15_000),
   HIGHLEVEL_ROW_LEASE_MS: numberFromString.default(120_000),
+  FAMILY_SIGNUP_GHL_MODE: z.enum(['disabled', 'provider_canary']).default('disabled'),
+  FAMILY_SIGNUP_GHL_OT01_PROOF_ID: optionalTrimmedString(8, 160),
+  FAMILY_SIGNUP_GHL_CANARY_RUN_ID: optionalTrimmedString(8, 160),
+  FAMILY_SIGNUP_GHL_CANARY_INTENT_IDS: optionalTrimmedString(8, 4_000),
+  FAMILY_SIGNUP_GHL_CANARY_BUDGET: numberFromString.default(0),
+  FAMILY_SIGNUP_GHL_BATCH_SIZE: numberFromString.default(1),
+  ONE_TIME_OT16_TRANSPORT_MODE: z.enum(['disabled', 'canary', 'broad']).default('disabled'),
+  ONE_TIME_OT16_AUTHORIZATION_ID: optionalTrimmedString(8, 160),
+  ONE_TIME_OT16_CANARY_OPERATION_IDS: optionalTrimmedString(1, 4_000),
+  ONE_TIME_OT16_PER_RUN_BUDGET: numberFromString.default(0),
   HIGHLEVEL_ACTIONS_MODE: z.enum(['disabled', 'enabled']).default('disabled'),
   HIGHLEVEL_ACTION_KEY_ID: optionalTrimmedString(1, 120),
   HIGHLEVEL_ACTION_SECRET: optionalTrimmedString(24, 400),
@@ -352,8 +429,9 @@ const envSchema = z.object({
 
 export type AppConfig = ReturnType<typeof loadConfig>;
 
-export function loadConfig(source: NodeJS.ProcessEnv) {
+export function loadConfig(source: NodeJS.ProcessEnv, options: { now?: Date } = {}) {
   const parsed = envSchema.parse(source);
+  const configNow = options.now ?? new Date();
   const parentStudentServiceAccountPolicyConfigured = Boolean(
     parsed.PARENT_STUDENT_SERVICE_ACCOUNT_VERSION &&
     parsed.PARENT_STUDENT_SERVICE_ACCOUNT_EVIDENCE_REFERENCE,
@@ -375,6 +453,80 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
   const canonicalZoomS2sAccountId = parsed.ZOOM_S2S_ACCOUNT_ID?.trim() || undefined;
   const legacyZoomS2sAccountId = parsed.ZOOM_ACCOUNT_ID?.trim() || undefined;
   const zoomS2sAccountId = canonicalZoomS2sAccountId ?? legacyZoomS2sAccountId;
+  const zoomProductionBasicBindingReceiptValues = [
+    parsed.ZOOM_PRODUCTION_BASIC_BINDING_ACCOUNT_MATCHES,
+    parsed.ZOOM_PRODUCTION_BASIC_BINDING_HOST_MATCHES,
+    parsed.ZOOM_PRODUCTION_BASIC_BINDING_REGISTRATION_REQUIRED,
+    parsed.ZOOM_PRODUCTION_BASIC_BINDING_MEETING_IS_RECURRING,
+    parsed.ZOOM_PRODUCTION_BASIC_BINDING_TIMEZONE,
+    parsed.ZOOM_PRODUCTION_BASIC_BINDING_WEEKLY_DAYS,
+    parsed.ZOOM_PRODUCTION_BASIC_BINDING_FIRST_OCCURRENCE_AT,
+    parsed.ZOOM_PRODUCTION_BASIC_BINDING_JOIN_BEFORE_HOST,
+    parsed.ZOOM_PRODUCTION_BASIC_BINDING_PARTICIPANT_VIDEO,
+    parsed.ZOOM_PRODUCTION_BASIC_BINDING_AUTO_RECORDING,
+    parsed.ZOOM_PRODUCTION_BASIC_BINDING_MEETING_REF_DIGEST,
+    parsed.ZOOM_PRODUCTION_BASIC_BINDING_CHECKED_AT,
+    parsed.ZOOM_PRODUCTION_BASIC_BINDING_EXPIRES_AT,
+  ];
+  const zoomProductionBasicBindingReceiptConfigured = zoomProductionBasicBindingReceiptValues.some(
+    (value) => value !== undefined,
+  );
+  if (
+    zoomProductionBasicBindingReceiptConfigured &&
+    zoomProductionBasicBindingReceiptValues.some((value) => value === undefined)
+  ) {
+    throw new Error(
+      'ZOOM_PRODUCTION_BASIC_BINDING receipt requires account, host, registration, recurrence schedule, meeting policy, digest, checked_at, and expires_at together.',
+    );
+  }
+  const zoomProductionBasicCheckedAt = Date.parse(
+    parsed.ZOOM_PRODUCTION_BASIC_BINDING_CHECKED_AT ?? '',
+  );
+  const zoomProductionBasicExpiresAt = Date.parse(
+    parsed.ZOOM_PRODUCTION_BASIC_BINDING_EXPIRES_AT ?? '',
+  );
+  if (
+    zoomProductionBasicBindingReceiptConfigured &&
+    (parsed.ZOOM_PRODUCTION_BASIC_BINDING_ACCOUNT_MATCHES !== true ||
+      parsed.ZOOM_PRODUCTION_BASIC_BINDING_HOST_MATCHES !== true ||
+      parsed.ZOOM_PRODUCTION_BASIC_BINDING_REGISTRATION_REQUIRED !== false ||
+      parsed.ZOOM_PRODUCTION_BASIC_BINDING_MEETING_IS_RECURRING !== true ||
+      parsed.ZOOM_PRODUCTION_BASIC_BINDING_TIMEZONE !== 'Asia/Jerusalem' ||
+      parsed.ZOOM_PRODUCTION_BASIC_BINDING_WEEKLY_DAYS !== '1,2,3,4,5' ||
+      parsed.ZOOM_PRODUCTION_BASIC_BINDING_FIRST_OCCURRENCE_AT !== '2026-08-16T19:00:00+03:00' ||
+      parsed.ZOOM_PRODUCTION_BASIC_BINDING_JOIN_BEFORE_HOST !== false ||
+      parsed.ZOOM_PRODUCTION_BASIC_BINDING_PARTICIPANT_VIDEO !== false ||
+      parsed.ZOOM_PRODUCTION_BASIC_BINDING_AUTO_RECORDING !== 'none' ||
+      zoomProductionBasicCheckedAt > configNow.getTime() ||
+      zoomProductionBasicCheckedAt <
+        configNow.getTime() - ZOOM_PRODUCTION_BASIC_BINDING_RECEIPT_MAX_AGE_MS ||
+      zoomProductionBasicExpiresAt <= configNow.getTime() ||
+      zoomProductionBasicExpiresAt - zoomProductionBasicCheckedAt >
+        ZOOM_PRODUCTION_BASIC_BINDING_RECEIPT_MAX_AGE_MS ||
+      (parsed.ONE_TIME_FREE_ACCESS_EXPIRES_AT !== undefined &&
+        zoomProductionBasicExpiresAt > Date.parse(parsed.ONE_TIME_FREE_ACCESS_EXPIRES_AT)))
+  ) {
+    throw new Error(
+      'ZOOM_PRODUCTION_BASIC_BINDING receipt must verify the exact recurring meeting, registration off, 7 PM Jerusalem schedule, and safe meeting policy, with a current validity window no longer than 31 days or the configured free-access period.',
+    );
+  }
+  const zoomProductionBasicVerifiedBinding = zoomProductionBasicBindingReceiptConfigured
+    ? {
+        account_matches: true as const,
+        host_matches: true as const,
+        registration_required: false as const,
+        meeting_is_recurring: true as const,
+        timezone: 'Asia/Jerusalem' as const,
+        weekly_days: [1, 2, 3, 4, 5] as const,
+        first_occurrence_at: '2026-08-16T19:00:00+03:00' as const,
+        join_before_host: false as const,
+        participant_video: false as const,
+        auto_recording: 'none' as const,
+        meeting_ref_digest: parsed.ZOOM_PRODUCTION_BASIC_BINDING_MEETING_REF_DIGEST!,
+        checked_at: parsed.ZOOM_PRODUCTION_BASIC_BINDING_CHECKED_AT!,
+        expires_at: parsed.ZOOM_PRODUCTION_BASIC_BINDING_EXPIRES_AT!,
+      }
+    : undefined;
   const guardedStripeTestTransport =
     parsed.ENABLE_PAYMENT_TRANSPORT && parsed.LIVE_STRIPE_CHARGES_AUTHORIZED === 'NO';
   const realTransportsEnabled =
@@ -406,6 +558,61 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
   }
   const oneTimeVerificationWritesAllowed =
     oneTimeVerificationEnvironmentId !== 'production_read_only';
+  const contentMediaMode = parsed.ONE_TIME_CONTENT_MEDIA_MODE;
+  const contentMediaEnabled = contentMediaMode !== 'off';
+  const contentMediaProviderCanary = contentMediaMode === 'provider_canary';
+  const contentMediaProductionBroad = contentMediaMode === 'production_broad';
+  if (
+    ['synthetic_canary', 'provider_canary'].includes(contentMediaMode) &&
+    (!parsed.ONE_TIME_CONTENT_MEDIA_AUTHORIZATION_ID || !parsed.ONE_TIME_CONTENT_CANARY_ID)
+  ) {
+    throw new Error(
+      'Content media execution requires an exact authorization ID and one-recording canary ID.',
+    );
+  }
+  if (contentMediaProductionBroad && !parsed.ONE_TIME_CONTENT_MEDIA_AUTHORIZATION_ID) {
+    throw new Error('Content media production broad execution requires an exact authorization ID.');
+  }
+  if (
+    contentMediaMode === 'synthetic_canary' &&
+    !['test', 'isolated_staging'].includes(oneTimeRuntimeEnvironment)
+  ) {
+    throw new Error('Synthetic content media canary is limited to test or isolated_staging.');
+  }
+  if (
+    contentMediaProviderCanary &&
+    (oneTimeRuntimeEnvironment !== 'production' ||
+      oneTimeVerificationEnvironmentId !== 'production_operator_canary')
+  ) {
+    throw new Error(
+      'Content media provider canary requires the production_operator_canary environment.',
+    );
+  }
+  if (
+    contentMediaProductionBroad &&
+    (oneTimeRuntimeEnvironment !== 'production' ||
+      oneTimeVerificationEnvironmentId !== 'production_broad')
+  ) {
+    throw new Error('Content media production broad requires the production_broad environment.');
+  }
+  const contentMediaProvidersReady = Boolean(
+    parsed.CONTENT_S3_BUCKET &&
+    /^[a-z0-9](?:[a-z0-9-]{1,61}[a-z0-9])$/u.test(parsed.CONTENT_S3_BUCKET) &&
+    parsed.CONTENT_S3_KMS_KEY_ARN &&
+    parsed.AWS_REGION === 'eu-central-1' &&
+    parsed.CONTENT_FFMPEG_PATH &&
+    parsed.CONTENT_FFPROBE_PATH &&
+    parsed.OPENAI_API_KEY &&
+    parsed.OPENAI_PROJECT_ID &&
+    parsed.VIMEO_ACCESS_TOKEN &&
+    parsed.VIMEO_ACCOUNT_ID &&
+    parsed.VIMEO_WEBHOOK_SECRET,
+  );
+  if (contentMediaProviderCanary && !contentMediaProvidersReady) {
+    throw new Error(
+      'Content media provider canary requires exact S3, processing, OpenAI, and Vimeo configuration.',
+    );
+  }
   if (
     ['production_operator_canary', 'production_broad'].includes(oneTimeVerificationEnvironmentId) &&
     !parsed.ONE_TIME_FREE_ACCESS_EXPIRES_AT
@@ -441,15 +648,25 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     throw new Error('Delivery provider mode is limited to test or isolated_staging.');
   }
 
-  if (parsed.ZOOM_CLASSROOM_CANARY_ENABLED && !runtime.allowsProviderActions) {
-    throw new Error('Zoom canary execution is limited to test or isolated_staging.');
+  const zoomProductionOperatorCanary =
+    oneTimeRuntimeEnvironment === 'production' &&
+    oneTimeVerificationEnvironmentId === 'production_operator_canary' &&
+    Boolean(parsed.ZOOM_CLASSROOM_CANARY_LEARNER_KEY);
+  if (
+    parsed.ZOOM_CLASSROOM_CANARY_ENABLED &&
+    !runtime.allowsProviderActions &&
+    !zoomProductionOperatorCanary
+  ) {
+    throw new Error(
+      'Zoom canary execution requires test, isolated_staging, or an exact production operator learner.',
+    );
   }
 
   if (
     parsed.HIGHLEVEL_EVENT_SYNC_MODE === 'provider' &&
-    !parsed.HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN
+    !parsed.HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN
   ) {
-    throw new Error('HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN is required for provider event sync.');
+    throw new Error('HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN is required for provider event sync.');
   }
 
   const highLevelCanaryDeliveryKeys = parseUniqueCsv(parsed.HIGHLEVEL_CANARY_DELIVERY_KEYS);
@@ -465,6 +682,62 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     throw new Error(
       'HighLevel event sync requires an exact canary run ID, delivery-key allowlist, and sufficient positive budget.',
     );
+  }
+  const familySignupGhlCanaryIntentIds = parseUniqueCsv(parsed.FAMILY_SIGNUP_GHL_CANARY_INTENT_IDS);
+  if (parsed.FAMILY_SIGNUP_GHL_MODE === 'provider_canary') {
+    if (
+      oneTimeRuntimeEnvironment !== 'production' ||
+      oneTimeVerificationEnvironmentId !== 'production_operator_canary'
+    ) {
+      throw new Error(
+        'Family-signup HighLevel provider canary requires production_operator_canary.',
+      );
+    }
+    if (
+      !parsed.HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN ||
+      !parsed.FAMILY_SIGNUP_GHL_OT01_PROOF_ID ||
+      !parsed.FAMILY_SIGNUP_GHL_CANARY_RUN_ID ||
+      familySignupGhlCanaryIntentIds.length !== 1 ||
+      parsed.FAMILY_SIGNUP_GHL_CANARY_BUDGET !== 1 ||
+      parsed.FAMILY_SIGNUP_GHL_BATCH_SIZE !== 1
+    ) {
+      throw new Error(
+        'Family-signup HighLevel provider canary requires OT-01 proof, one exact intent, and a one-effect batch budget.',
+      );
+    }
+  }
+  const oneTimeOt16CanaryOperationIds = parseUniqueCsv(parsed.ONE_TIME_OT16_CANARY_OPERATION_IDS);
+  if (parsed.ONE_TIME_OT16_TRANSPORT_MODE !== 'disabled') {
+    if (
+      !parsed.ONE_TIME_OT16_AUTHORIZATION_ID ||
+      !parsed.HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN ||
+      !Number.isInteger(parsed.ONE_TIME_OT16_PER_RUN_BUDGET) ||
+      parsed.ONE_TIME_OT16_PER_RUN_BUDGET < 1 ||
+      parsed.ONE_TIME_OT16_PER_RUN_BUDGET > 100
+    ) {
+      throw new Error(
+        'OT-16 transport requires an exact authorization ID, HighLevel token, and a positive bounded per-run budget.',
+      );
+    }
+    if (
+      parsed.ONE_TIME_OT16_TRANSPORT_MODE === 'canary' &&
+      (oneTimeOt16CanaryOperationIds.length < 1 ||
+        oneTimeOt16CanaryOperationIds.length > 2 ||
+        oneTimeOt16CanaryOperationIds.length > parsed.ONE_TIME_OT16_PER_RUN_BUDGET ||
+        oneTimeOt16CanaryOperationIds.some((operationId) => !/^[a-f0-9]{64}$/u.test(operationId)))
+    ) {
+      throw new Error(
+        'OT-16 canary transport requires one or two exact SHA-256 operation IDs within its per-run budget.',
+      );
+    }
+    if (
+      parsed.ONE_TIME_OT16_TRANSPORT_MODE === 'broad' &&
+      oneTimeOt16CanaryOperationIds.length > 0
+    ) {
+      throw new Error('OT-16 broad transport cannot retain a canary operation allowlist.');
+    }
+  } else if (oneTimeOt16CanaryOperationIds.length > 0) {
+    throw new Error('OT-16 canary operation IDs require canary transport mode.');
   }
 
   if (parsed.HIGHLEVEL_ROW_LEASE_MS <= parsed.HIGHLEVEL_PROVIDER_TIMEOUT_MS * 2 + 5_000) {
@@ -598,6 +871,7 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     isProduction: runtime.isProductionRuntime,
     port: parsed.PORT,
     publicBaseUrl: parsed.PUBLIC_BASE_URL,
+    applicationBaseUrl: parsed.APP_BASE_URL,
     appVersion: parsed.APP_VERSION,
     commitSha: parsed.COMMIT_SHA,
     railwayDeploymentId: parsed.RAILWAY_DEPLOYMENT_ID,
@@ -617,6 +891,7 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     accountKey: parsed.ONE_TIME_ACCOUNT_KEY,
     productKey: parsed.ONE_TIME_PRODUCT_KEY,
     paymentHistorySystemOfRecord: 'highlevel' as const,
+    oneTimeGhlPaymentLink: parsed.ONE_TIME_GHL_PAYMENT_LINK,
     legacyBillingRuntimeEnabled: false,
     ownerInternalLabel: parsed.ONE_TIME_OWNER_INTERNAL_LABEL,
     adminCustomerLabel: parsed.ONE_TIME_ADMIN_CUSTOMER_LABEL,
@@ -649,6 +924,32 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     oneTimeRuntimeTier,
     oneTimeVerificationEnvironmentId,
     oneTimeVerificationWritesAllowed,
+    contentMediaMode,
+    contentMediaEnabled,
+    contentMediaProviderCanary,
+    contentMediaProductionBroad,
+    contentMediaProvidersReady,
+    contentMediaAuthorizationId: parsed.ONE_TIME_CONTENT_MEDIA_AUTHORIZATION_ID,
+    contentMediaCanaryId: parsed.ONE_TIME_CONTENT_CANARY_ID,
+    contentMediaBatchSize: parsed.ONE_TIME_CONTENT_MEDIA_BATCH_SIZE,
+    contentMediaConcurrency: parsed.ONE_TIME_CONTENT_MEDIA_CONCURRENCY,
+    contentS3Bucket: parsed.CONTENT_S3_BUCKET,
+    contentS3KmsKeyArn: parsed.CONTENT_S3_KMS_KEY_ARN,
+    contentS3StorageClass: parsed.CONTENT_S3_STORAGE_CLASS,
+    contentAwsRegion: parsed.AWS_REGION,
+    contentDriveFolderId: parsed.GOOGLE_DRIVE_FOLDER_ID,
+    contentDriveServiceAccountJson: parsed.GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON,
+    contentDriveConfigured: Boolean(
+      parsed.GOOGLE_DRIVE_FOLDER_ID && parsed.GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON,
+    ),
+    contentFfmpegPath: parsed.CONTENT_FFMPEG_PATH,
+    contentFfprobePath: parsed.CONTENT_FFPROBE_PATH,
+    contentOpenAiApiKey: parsed.OPENAI_API_KEY,
+    contentOpenAiProjectId: parsed.OPENAI_PROJECT_ID,
+    contentOpenAiOrganizationId: parsed.OPENAI_ORGANIZATION_ID,
+    contentVimeoAccessToken: parsed.VIMEO_ACCESS_TOKEN,
+    contentVimeoAccountId: parsed.VIMEO_ACCOUNT_ID,
+    contentVimeoWebhookSecret: parsed.VIMEO_WEBHOOK_SECRET,
     oneTimeFirstClassAt: parsed.ONE_TIME_FIRST_CLASS_AT,
     oneTimeFreeAccessExpiresAt: parsed.ONE_TIME_FREE_ACCESS_EXPIRES_AT,
     learningAliasHmacKey: parsed.LEARNING_ALIAS_HMAC_KEY,
@@ -756,6 +1057,7 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     zoomHostUserId: parsed.ZOOM_HOST_USER_ID,
     zoomRealControlMeetingId: parsed.ZOOM_REAL_CONTROL_MEETING_ID,
     zoomRealControlMeetingPasscode: parsed.ZOOM_REAL_CONTROL_MEETING_PASSCODE,
+    zoomProductionBasicVerifiedBinding,
     zoomS2sAccountIdConfigured: Boolean(canonicalZoomS2sAccountId),
     zoomS2sClientIdConfigured: Boolean(parsed.ZOOM_S2S_CLIENT_ID),
     zoomS2sClientSecretConfigured: Boolean(parsed.ZOOM_S2S_CLIENT_SECRET),
@@ -765,7 +1067,7 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     highLevelEventSyncMode: parsed.HIGHLEVEL_EVENT_SYNC_MODE,
     highLevelApiBaseUrl: parsed.HIGHLEVEL_API_BASE_URL,
     highLevelApiVersion: parsed.HIGHLEVEL_API_VERSION,
-    highLevelPrivateIntegrationsToken: parsed.HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN,
+    highLevelPrivateIntegrationsToken: parsed.HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN,
     highLevelLocationId: parsed.HIGHLEVEL_LOCATION_ID,
     highLevelTishaBavWorkflowId: undefined as string | undefined,
     highLevelCanaryRunId: parsed.HIGHLEVEL_CANARY_RUN_ID,
@@ -773,6 +1075,16 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     highLevelCanaryBudget: parsed.HIGHLEVEL_CANARY_BUDGET,
     highLevelProviderTimeoutMs: parsed.HIGHLEVEL_PROVIDER_TIMEOUT_MS,
     highLevelRowLeaseMs: parsed.HIGHLEVEL_ROW_LEASE_MS,
+    familySignupGhlMode: parsed.FAMILY_SIGNUP_GHL_MODE,
+    familySignupGhlOt01ProofId: parsed.FAMILY_SIGNUP_GHL_OT01_PROOF_ID,
+    familySignupGhlCanaryRunId: parsed.FAMILY_SIGNUP_GHL_CANARY_RUN_ID,
+    familySignupGhlCanaryIntentIds,
+    familySignupGhlCanaryBudget: parsed.FAMILY_SIGNUP_GHL_CANARY_BUDGET,
+    familySignupGhlBatchSize: parsed.FAMILY_SIGNUP_GHL_BATCH_SIZE,
+    oneTimeOt16TransportMode: parsed.ONE_TIME_OT16_TRANSPORT_MODE,
+    oneTimeOt16AuthorizationId: parsed.ONE_TIME_OT16_AUTHORIZATION_ID,
+    oneTimeOt16CanaryOperationIds,
+    oneTimeOt16PerRunBudget: parsed.ONE_TIME_OT16_PER_RUN_BUDGET,
     highLevelActionsMode: parsed.HIGHLEVEL_ACTIONS_MODE,
     highLevelActionKeyId: parsed.HIGHLEVEL_ACTION_KEY_ID,
     highLevelActionSecret: parsed.HIGHLEVEL_ACTION_SECRET,

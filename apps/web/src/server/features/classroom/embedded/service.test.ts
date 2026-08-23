@@ -14,17 +14,25 @@ const NOW = new Date('2026-07-28T17:00:00.000Z');
 describe('embedded classroom service', () => {
   it('issues and rechecks a 60-second launch grant before redemption', async () => {
     const repository = repositoryFixture();
+    const resolver = contextResolver();
     const service = createEmbeddedClassroomService({
       repository,
-      context_resolver: contextResolver(),
+      context_resolver: resolver,
       sdk_bootstrap: {
         createEphemeralBootstrap: vi.fn(async () => usableBootstrap()),
       },
     });
 
-    await expect(service.bootstrap({ ...command(), grant_id: 'grant-1' })).resolves.toEqual(
+    await expect(
+      service.bootstrap({ ...command(), grant_id: 'grant-1', occurrence_id: 'occurrence-1' }),
+    ).resolves.toEqual(
       expect.objectContaining({ disposition: 'ready', safe_code: 'join_allowed' }),
     );
+    expect(resolver.resolveForIssue).toHaveBeenCalledWith({
+      scope: command().scope,
+      actor: command().actor,
+      occurrence_id: 'occurrence-1',
+    });
     expect(repository.insertLaunchGrant).toHaveBeenCalledWith(
       expect.objectContaining({
         grant_id: 'grant-1',
@@ -123,7 +131,7 @@ describe('embedded classroom service', () => {
       name: 'a non-classroom leave path',
       mutate: () => ({
         ...usableBootstrap(),
-        leave_path: '/app/student' as '/app/classroom',
+        leave_path: '/app/classroom' as '/app/student',
       }),
     },
     {
@@ -442,7 +450,7 @@ function usableBootstrap() {
     customer_key: 'customer-key',
     participant_display_name: 'Student One',
     recording_capture_active: true,
-    leave_path: '/app/classroom' as const,
+    leave_path: '/app/student' as const,
     issued_at: NOW.toISOString(),
     expires_at: '2026-07-28T17:00:45.000Z',
     role: 0 as const,

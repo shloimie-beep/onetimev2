@@ -4,7 +4,16 @@ import { describe, expect, it, vi } from 'vitest';
 import type { JobScope } from '../../../../../../../packages/contracts/src/jobs/index.ts';
 import type { PortalActorContext } from '../../../../../../../packages/contracts/src/portals/index.ts';
 import {
+  createMemoryPool,
+  runMigrations,
+  type DbPool,
+  type Queryable,
+} from '../../../../../../../packages/db/src/index.ts';
+import {
   createEmbeddedClassroomRequestIdentityResolver,
+  createPostgresAdminAttendanceRecordReader,
+  createPostgresAdminAttendanceSubjectResolver,
+  createUnavailableAdminAttendanceRecordReader,
   createUnavailableAdminAttendanceSubjectResolver,
   createUnavailableEmbeddedJoinContextResolver,
   createUnavailableMeetingSdkBootstrapPort,
@@ -117,6 +126,124 @@ describe('P18 embedded-classroom adapters', () => {
     await expect(
       adminResolver.resolveAdmin(requestFixture({ origin: PUBLIC_ORIGIN })),
     ).resolves.toEqual({ scope: SCOPE, admin_id: 'admin-canonical' });
+    await expect(adminResolver.resolveAdminRead?.(requestFixture({}))).resolves.toEqual({
+      scope: SCOPE,
+      admin_id: 'admin-canonical',
+    });
+  });
+
+  it('resolves an exact non-revoked local roster binding for audited corrections', async () => {
+    const query = vi.fn(async () => ({
+      rows: [
+        {
+          registrant_id: 'registrant-canonical',
+          scheduled_start_at: new Date('2026-08-06T16:00:00.000Z'),
+          scheduled_end_at: '2026-08-06T17:00:00.000Z',
+        },
+      ],
+      rowCount: 1,
+    }));
+    const resolver = createPostgresAdminAttendanceSubjectResolver({
+      pool: { query } as unknown as Queryable,
+      accountKey: 'account-canonical',
+    });
+
+    await expect(
+      resolver.resolve({
+        scope: SCOPE,
+        admin_id: 'admin-canonical',
+        occurrence_id: 'occurrence-canonical',
+        student_id: 'student-canonical',
+      }),
+    ).resolves.toEqual({
+      scope: SCOPE,
+      occurrence_id: 'occurrence-canonical',
+      student_id: 'student-canonical',
+      registrant_id: 'registrant-canonical',
+      scheduled_start_at: '2026-08-06T16:00:00.000Z',
+      scheduled_end_at: '2026-08-06T17:00:00.000Z',
+    });
+    expect(query).toHaveBeenCalledWith(
+      expect.stringContaining("registrant.registrant_state <> 'revoked'"),
+      ['account-canonical', 'one_time_mishnayos', 'occurrence-canonical', 'student-canonical'],
+    );
+  });
+
+  it('fails attendance subject resolution closed for ambiguity or invalid windows', async () => {
+    for (const rows of [
+      [],
+      [
+        {
+          registrant_id: 'registrant-a',
+          scheduled_start_at: '2026-08-06T16:00:00.000Z',
+          scheduled_end_at: '2026-08-06T17:00:00.000Z',
+        },
+        {
+          registrant_id: 'registrant-b',
+          scheduled_start_at: '2026-08-06T16:00:00.000Z',
+          scheduled_end_at: '2026-08-06T17:00:00.000Z',
+        },
+      ],
+      [
+        {
+          registrant_id: 'registrant-a',
+          scheduled_start_at: '2026-08-06T17:00:00.000Z',
+          scheduled_end_at: '2026-08-06T16:00:00.000Z',
+        },
+      ],
+    ]) {
+      const resolver = createPostgresAdminAttendanceSubjectResolver({
+        pool: { query: async () => ({ rows, rowCount: rows.length }) } as unknown as Queryable,
+        accountKey: 'account-canonical',
+      });
+      await expect(
+        resolver.resolve({
+          scope: SCOPE,
+          admin_id: 'admin-canonical',
+          occurrence_id: 'occurrence-canonical',
+          student_id: 'student-canonical',
+        }),
+      ).resolves.toBeNull();
+    }
+  });
+
+  it('projects Admin attendance reads from the canonical P18 repository scope', async () => {
+    const query = vi.fn(async () => ({ rows: [], rowCount: 0 }));
+    const reader = createPostgresAdminAttendanceRecordReader({
+      pool: { query } as unknown as DbPool,
+      accountKey: 'account-canonical',
+    });
+    await expect(reader.list({ scope: SCOPE, admin_id: 'admin-canonical' })).resolves.toEqual([]);
+    expect(query).toHaveBeenCalledWith(
+      expect.stringContaining('classroom_attendance_projection_v21'),
+      ['account-canonical', 'one_time_mishnayos', 'isolated_staging', 'ci'],
+    );
+  });
+
+  it('executes the canonical Admin attendance read against the migrated database', async () => {
+    const pool = createMemoryPool();
+    await runMigrations(pool);
+    try {
+      const reader = createPostgresAdminAttendanceRecordReader({
+        pool,
+        accountKey: 'account-canonical',
+      });
+      await expect(reader.list({ scope: SCOPE, admin_id: 'admin-canonical' })).resolves.toEqual([]);
+      const subjectResolver = createPostgresAdminAttendanceSubjectResolver({
+        pool,
+        accountKey: 'account-canonical',
+      });
+      await expect(
+        subjectResolver.resolve({
+          scope: SCOPE,
+          admin_id: 'admin-canonical',
+          occurrence_id: 'occurrence-canonical',
+          student_id: 'student-canonical',
+        }),
+      ).resolves.toBeNull();
+    } finally {
+      await pool.end();
+    }
   });
 
   it('domain-separates raw exchange material and canonicalizes attendance evidence', () => {
@@ -154,6 +281,9 @@ describe('P18 embedded-classroom adapters', () => {
     ).resolves.toBeNull();
     await expect(
       createUnavailableAdminAttendanceSubjectResolver().resolve({} as never),
+    ).resolves.toBeNull();
+    await expect(
+      createUnavailableAdminAttendanceRecordReader().list({} as never),
     ).resolves.toBeNull();
   });
 });

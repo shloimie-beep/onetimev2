@@ -101,8 +101,8 @@ async function run() {
   const secretKey = text(process.env.ONE_TIME_STRIPE_TEST_SECRET_KEY);
   if (!secretKey) {
     result.missing.push('secret_key');
-  } else if (!/^sk_test_[A-Za-z0-9_]+$/.test(secretKey)) {
-    result.failures.push('ONE_TIME_STRIPE_TEST_SECRET_KEY must be a Stripe test secret key.');
+  } else if (!/^(?:sk|rk)_test_[A-Za-z0-9_]+$/.test(secretKey)) {
+    result.failures.push('ONE_TIME_STRIPE_TEST_SECRET_KEY must be a Stripe test server key.');
   }
   if (secretKey && /sk_live_|rk_live_|pk_live_|livemode/i.test(secretKey)) {
     result.failures.push('Live-like Stripe key shape rejected.');

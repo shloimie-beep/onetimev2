@@ -13,10 +13,13 @@ type OpsRouteDeps = {
   app: express.Express;
   config: AppConfig;
   pool: DbPool;
-  sessionFromRequest: (req: Request) => Promise<AuthenticatedSession | null>;
+  sessionFromRequest: (req: Request) => Promise<OpsSessionResolution>;
   setPrivateNoStore: (res: Response) => void;
   clock?: () => Date;
 };
+
+type OpsSessionResolution =
+  { status: 'resolved'; session: AuthenticatedSession } | { status: 'missing' | 'unavailable' };
 
 export function registerOpsRoutes(deps: OpsRouteDeps) {
   deps.app.get('/api/internal/ops/diagnostics', async (req, res) => {
@@ -58,8 +61,15 @@ export function registerOpsRoutes(deps: OpsRouteDeps) {
 
   deps.app.get('/api/v1/ops/diagnostics', async (req, res) => {
     deps.setPrivateNoStore(res);
-    const session = await deps.sessionFromRequest(req);
-    if (!session || !['owner', 'admin'].includes(session.user.role)) {
+    const resolution = await deps.sessionFromRequest(req);
+    if (resolution.status === 'unavailable') {
+      res.status(503).json({ success: false, code: 'OPS_DIAGNOSTICS_UNAVAILABLE' });
+      return;
+    }
+    if (
+      resolution.status !== 'resolved' ||
+      !['owner', 'admin'].includes(resolution.session.user.role)
+    ) {
       res.status(403).json({ success: false, code: 'OPS_OWNER_DIAGNOSTICS_FORBIDDEN' });
       return;
     }
@@ -99,8 +109,10 @@ async function canReadOps(req: Request, deps: OpsRouteDeps) {
   if (deps.config.operationsProbeToken && header === deps.config.operationsProbeToken) {
     return true;
   }
-  const session = await deps.sessionFromRequest(req);
-  return Boolean(session && ['owner', 'admin'].includes(session.user.role));
+  const resolution = await deps.sessionFromRequest(req);
+  return Boolean(
+    resolution.status === 'resolved' && ['owner', 'admin'].includes(resolution.session.user.role),
+  );
 }
 
 function prometheusSnapshot(snapshot: Awaited<ReturnType<typeof collectOpsHealthSnapshot>>) {

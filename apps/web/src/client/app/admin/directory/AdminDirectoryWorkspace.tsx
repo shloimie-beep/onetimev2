@@ -165,6 +165,9 @@ export function AdminDirectoryWorkspace(props: {
   const pagedAdults = takePage(adults);
   const pagedHouseholds = takePage(households);
   const pagedStudents = takePage(students);
+  const parentNameByAdultId = new Map(
+    props.adults.map(({ adult }) => [adult.adultId, adult.displayName]),
+  );
 
   const updateQuery = (patch: Partial<DirectoryQuery>) =>
     props.onNavigate(directoryUrl(props.url, { ...patch, page: patch.page ?? 1 }));
@@ -340,6 +343,7 @@ export function AdminDirectoryWorkspace(props: {
                 <thead>
                   <tr>
                     <th scope="col">Household</th>
+                    <th scope="col">Parent</th>
                     <th scope="col">Type</th>
                     <th scope="col">Student seats</th>
                     <th scope="col">Status</th>
@@ -350,8 +354,17 @@ export function AdminDirectoryWorkspace(props: {
                   {pagedHouseholds.map((household) => (
                     <tr key={household.householdId}>
                       <th scope="row" dir="auto">
-                        {household.displayName}
+                        <button
+                          type="button"
+                          className="admin-directory__record-link"
+                          onClick={() => props.onEdit('household', household.householdId)}
+                        >
+                          {household.displayName}
+                        </button>
                       </th>
+                      <td dir="auto">
+                        {parentNameByAdultId.get(household.ownerAdultId) ?? 'Parent unavailable'}
+                      </td>
                       <td>{household.classification}</td>
                       <td>
                         {household.activeSeatCount} of {household.seatLimit}

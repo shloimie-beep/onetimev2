@@ -200,6 +200,7 @@
     "/school/received": "public-marketing",
     "/privacy": "public-marketing",
     "/terms": "public-marketing",
+    "/cancellation-refund": "public-marketing",
     "/login": "auth",
     "/forgot-password": "auth",
     "/setup/:token": "auth",

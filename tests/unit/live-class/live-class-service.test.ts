@@ -36,6 +36,7 @@ const realZoomHostEnv = {
   ZOOM_REAL_CONTROL_MEETING_PASSCODE: 'passcode_test',
   ZOOM_CLASSROOM_CANARY_ENABLED: 'true',
   ZOOM_CLASSROOM_CANARY_LEARNER_KEY: 'full_app_preview_student_1',
+  APP_BASE_URL: 'https://isolated-pr.example.test',
 } as const;
 
 beforeEach(async () => {
@@ -59,6 +60,47 @@ beforeEach(async () => {
 
 afterEach(async () => {
   await pool.end();
+});
+
+describe('live class occurrence resolution', () => {
+  it('reuses an existing same-date occurrence when its historical key differs', async () => {
+    const historicalOccurrenceKey = 'historical-occurrence-key';
+    await pool.query(
+      `INSERT INTO onetime.class_series
+         (class_series_key, account_key, product_key, title, timezone, local_start_time,
+          reminder_local_time)
+       VALUES ('class_series_one_time_daily', $1, $2, 'Historical class',
+          'Asia/Jerusalem', '19:00', '18:30')`,
+      [config.accountKey, config.productKey],
+    );
+    await pool.query(
+      `INSERT INTO onetime.class_occurrences
+         (occurrence_key, account_key, product_key, class_series_key, local_class_date,
+          starts_at, reminder_due_at, joinable_until, occurrence_state, reminder_state,
+          access_state, join_opens_at, scheduled_ends_at, join_closes_at)
+       VALUES ($1, $2, $3, 'class_series_one_time_daily', '2027-07-21',
+          '2027-07-21T16:00:00.000Z', '2027-07-21T15:30:00.000Z',
+          '2027-07-21T17:15:00.000Z', 'scheduled', 'pending', 'ready',
+          '2027-07-21T15:45:00.000Z', '2027-07-21T17:00:00.000Z',
+          '2027-07-21T17:15:00.000Z')`,
+      [historicalOccurrenceKey, config.accountKey, config.productKey],
+    );
+
+    const session = await repository.ensureLiveSession({
+      actor: rabbiActor(),
+      now,
+      expires_at: new Date(now.getTime() + 60 * 60_000),
+    });
+
+    expect(session.occurrence_key).toBe(historicalOccurrenceKey);
+    const stage = await pool.query(
+      `SELECT occurrence_key
+         FROM onetime.live_class_stage_sessions
+        WHERE account_key = $1 AND product_key = $2`,
+      [config.accountKey, config.productKey],
+    );
+    expect(stage.rows).toEqual([{ occurrence_key: historicalOccurrenceKey }]);
+  });
 });
 
 describe('live class question lifecycle', () => {
@@ -255,7 +297,8 @@ describe('live class question lifecycle', () => {
     });
     const providerOffConfig = loadConfig({
       NODE_ENV: 'test',
-      PUBLIC_BASE_URL: 'https://isolated-pr.example.test',
+      PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
+      APP_BASE_URL: 'https://isolated-pr.example.test',
       ONE_TIME_RUNTIME_ENVIRONMENT: 'isolated_staging',
       ZOOM_CLASSROOM_ENABLED: 'true',
       ZOOM_CLASSROOM_PROVIDER_MODE: 'real',
@@ -380,7 +423,7 @@ describe('live class question lifecycle', () => {
     );
     const realConfig = loadConfig({
       NODE_ENV: 'test',
-      PUBLIC_BASE_URL: 'https://isolated-pr.example.test',
+      PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
       ...realZoomHostEnv,
     });
     const realService = createLiveClassService({
@@ -451,7 +494,7 @@ describe('live class question lifecycle', () => {
   it('refuses Admin-minted learner join material for every fictional Student', async () => {
     const realConfig = loadConfig({
       NODE_ENV: 'test',
-      PUBLIC_BASE_URL: 'https://isolated-pr.example.test',
+      PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
       LIVE_CLASS_FAKE_ADAPTER_ENABLED: 'true',
       ...realZoomHostEnv,
     });

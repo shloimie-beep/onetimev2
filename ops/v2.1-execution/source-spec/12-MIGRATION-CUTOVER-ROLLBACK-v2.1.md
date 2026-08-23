@@ -186,7 +186,7 @@ A valid Family signup performs one local database transaction that:
 4. creates or reuses the local adult identity;
 5. creates one household;
 6. creates or extends one active human login with the `parent` role and sole household-owner membership;
-7. before `2026-09-13T19:24:00+03:00`, grants access from the fixed free-period source; at or after that instant, records inactive access pending standard checkout;
+7. before `2026-09-11T18:00:00+03:00`, grants access from the fixed free-period source; at or after that instant, records inactive access pending standard checkout;
 8. records source/provenance;
 9. commits the durable GHL projection intent and any applicable welcome intent.
 

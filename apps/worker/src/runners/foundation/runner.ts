@@ -20,6 +20,7 @@ export interface FoundationRunnerOptions {
   dispatch_timeout_ms: number;
   random: () => number;
   clock: () => Date;
+  job_ids?: readonly string[];
 }
 
 export interface FoundationRunSummary {
@@ -47,6 +48,7 @@ export async function runFoundationJobBatch(input: {
     limit: input.options.batch_size,
     scope: input.options.scope,
     operation_types: [...handlers.keys()].sort(),
+    ...(input.options.job_ids ? { job_ids: input.options.job_ids } : {}),
   });
   summary.claimed = claimed.length;
 

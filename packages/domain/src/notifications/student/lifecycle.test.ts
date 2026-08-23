@@ -5,12 +5,12 @@ import type {
   StudentNotificationEvent,
 } from '../../../../contracts/src/notifications/student/index.ts';
 import { StudentNotificationError } from './errors.ts';
+import { shouldPlayForegroundNotificationSound } from './foreground-sound.ts';
 import {
   buildStudentNotification,
   canOpenStudentNotificationAction,
   isApprovedStudentNotificationRoute,
   projectStudentNotification,
-  shouldPlayForegroundNotificationSound,
   supersedeStudentNotification,
 } from './lifecycle.ts';
 

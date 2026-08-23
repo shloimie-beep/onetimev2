@@ -4,22 +4,24 @@ import path from 'node:path';
 import pg from 'pg';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { createApp } from '../../../apps/web/src/server/app.ts';
+import { createDbBackedTestAdultSessionRepository } from '../../support/pgmem-v21-parent-session-repository.ts';
 import {
   createPostgresV21AdultSessionRuntime,
   createV21AdultSessionRuntime,
 } from '../../../apps/web/src/server/features/auth/v21-adult-session.ts';
 import { loadConfig, type AppConfig } from '../../../packages/config/src/index.ts';
-import { ADULT_SESSION_POLICY } from '../../../packages/contracts/src/accounts/v21-household-identity.ts';
 import { createMemoryPool, runMigrations, type DbPool } from '../../../packages/db/src/index.ts';
-import type {
-  ResolvedV21ParentSession,
-  V21AdultSessionRepository,
-} from '../../../packages/db/src/accounts/v21-household-identity-repository.ts';
-import { createPostgresV21AdultSessionRepository } from '../../../packages/db/src/accounts/v21-household-identity-repository.ts';
+import type { V21AdultSessionRepository } from '../../../packages/db/src/accounts/v21-household-identity-repository.ts';
 import {
+  changeV21AdultPassword,
+  createPostgresV21AdultSessionRepository,
+} from '../../../packages/db/src/accounts/v21-household-identity-repository.ts';
+import {
+  completePasswordReset,
   createAccountUser,
   createSession,
   getSessionUserByKey,
+  requestPasswordReset,
 } from '../../../packages/domain/src/index.ts';
 
 type SignupProjection = {
@@ -27,6 +29,10 @@ type SignupProjection = {
   human_account_id: string;
   household_id: string;
   access_state: 'free' | 'inactive';
+  access_branch:
+    'immediate_free' | 'inactive_checkout' | 'inactive_identity_review' | 'inactive_support';
+  checkout_required: boolean;
+  checkout_blocked_by_identity_review: boolean;
 };
 
 type SignupResult = {
@@ -44,6 +50,7 @@ let server: ReturnType<ReturnType<typeof createApp>['listen']>;
 let baseUrl: string;
 let now: Date;
 let repositoryUnavailable: boolean;
+let lastPgMemQueryFailure: string;
 
 beforeEach(async () => {
   config = loadConfig({
@@ -53,6 +60,8 @@ beforeEach(async () => {
     COMMIT_SHA: 'test',
     OUTBOX_TRANSPORT_MODE: 'sink',
     AUTH_CSRF_SECRET: 'v21-family-parent-composition-test-secret',
+    ONE_TIME_LIFECYCLE_DELIVERY_KEY:
+      'v21-family-parent-composition-lifecycle-delivery-key-for-tests',
     ONE_TIME_FREE_ACCESS_EXPIRES_AT: '2026-09-13T16:24:00.000Z',
     PARENT_STUDENT_SERVICE_ACCOUNT_VERSION: 'test-only-parent-student-service-v1',
     PARENT_STUDENT_SERVICE_ACCOUNT_EVIDENCE_REFERENCE:
@@ -60,6 +69,7 @@ beforeEach(async () => {
   });
   const memoryPool = createMemoryPool();
   await runMigrations(memoryPool);
+  await seedCanonicalParentLearningClass(memoryPool, config);
   pool = pgMemCompatiblePool(memoryPool);
   distDir = await mkdtemp(path.join(tmpdir(), 'v21-family-parent-composition-'));
   await mkdir(path.join(distDir, 'app'), { recursive: true });
@@ -70,9 +80,19 @@ beforeEach(async () => {
   );
   now = new Date('2026-09-13T16:23:59.000Z');
   repositoryUnavailable = false;
+  lastPgMemQueryFailure = '';
   const repository = createDbBackedTestAdultSessionRepository(pool);
   const v21AdultSessionRuntime = createV21AdultSessionRuntime({
     repository: availabilityGuardedRepository(repository, () => repositoryUnavailable),
+    repositoryFactory: (db) =>
+      availabilityGuardedRepository(
+        createDbBackedTestAdultSessionRepository(db as DbPool),
+        () => repositoryUnavailable,
+      ),
+    passwordChanger: async (input) => {
+      if (repositoryUnavailable) throw new Error('simulated adult-session repository outage');
+      return changeV21AdultPassword(pool, input);
+    },
     hmacSecret: config.authCsrfSecret,
     clock: () => new Date(now),
   });
@@ -120,6 +140,158 @@ function availabilityGuardedRepository(
 }
 
 describe('I36 central Family-signup and Parent-session composition', () => {
+  it('returns no authenticated success or cookie when the transaction-bound Parent session cannot be established', async () => {
+    const bootstrapResponse = await fetch(`${baseUrl}/api/v1/signup/family/bootstrap`);
+    expect(bootstrapResponse.status).toBe(200);
+    const bootstrap = (await bootstrapResponse.json()) as {
+      idempotency_key: string;
+      csrf_token: string;
+    };
+    const csrfCookie = bootstrapResponse.headers
+      .getSetCookie()
+      .find((value) => value.startsWith('ot_family_signup_csrf='))
+      ?.split(';')[0];
+    if (!csrfCookie) throw new Error('missing failed-signup CSRF cookie');
+
+    repositoryUnavailable = true;
+    const response = await fetch(`${baseUrl}/api/v1/signup/family`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        cookie: csrfCookie,
+        origin: config.publicBaseUrl,
+        'x-csrf-token': bootstrap.csrf_token,
+      },
+      body: JSON.stringify({
+        classification: 'family',
+        idempotency_key: bootstrap.idempotency_key,
+        first_name: 'Atomic',
+        last_name: 'Rollback',
+        email: 'atomic-session-rollback@example.test',
+        password: 'correct horse battery staple',
+        password_confirmation: 'correct horse battery staple',
+        timezone: 'Asia/Jerusalem',
+        terms_accepted: true,
+        privacy_accepted: true,
+        general_marketing_consent: true,
+        parent_newsletter_consent: true,
+      }),
+    });
+    repositoryUnavailable = false;
+
+    expect(response.status).toBe(500);
+    expect(response.headers.getSetCookie()).not.toEqual(
+      expect.arrayContaining([expect.stringContaining('__Host-onetime-session=')]),
+    );
+  });
+
+  it('replaces malformed host and legacy cookies after valid credentials', async () => {
+    await submitFamily('stale-cookie-parent@example.test', 'Stale', 'Cookie');
+    const loginPage = await fetch(`${baseUrl}/login`);
+    const loginCookie = loginPage.headers
+      .getSetCookie()
+      .find((value) => value.startsWith('otcrm_csrf='))
+      ?.split(';')[0];
+    const loginCsrf = /name="csrf_token" value="([^"]+)"/u.exec(await loginPage.text())?.[1];
+    if (!loginCookie || !loginCsrf) throw new Error('missing login CSRF binding');
+
+    const recovered = await fetch(`${baseUrl}/api/v1/auth/login`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        cookie: `__Host-onetime-session=malformed; otcrm_session=malformed; ${loginCookie}`,
+      },
+      body: JSON.stringify({
+        identifier: 'stale-cookie-parent@example.test',
+        password: 'correct horse battery staple',
+        csrf_token: loginCsrf,
+      }),
+    });
+    expect(recovered.status).toBe(200);
+    await expect(recovered.json()).resolves.toMatchObject({
+      success: true,
+      session_model: 'v21',
+      return_to: '/app/parent',
+    });
+    expect(recovered.headers.getSetCookie()).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining('__Host-onetime-session='),
+        expect.stringContaining('otcrm_session='),
+      ]),
+    );
+  });
+
+  it('recovers a canonical v2.1 Parent credential once and revokes prior sessions', async () => {
+    const signup = await submitFamily(
+      'recoverable-v21-parent@example.test',
+      'Recoverable',
+      'Parent',
+    );
+    const issued = await requestPasswordReset({
+      pool,
+      config,
+      payload: {
+        idempotency_key: 'v21-parent-recovery-request-0001',
+        email: 'recoverable-v21-parent@example.test',
+      },
+      now,
+      includeLocalProofToken: true,
+    });
+    if (!('token_for_local_proof' in issued) || !issued.token_for_local_proof) {
+      throw new Error('missing local v2.1 recovery proof token');
+    }
+
+    const completed = await completePasswordReset({
+      pool,
+      config,
+      payload: {
+        token: issued.token_for_local_proof,
+        password: 'replacement horse battery staple',
+        password_confirmation: 'replacement horse battery staple',
+      },
+      now: new Date(now.getTime() + 1_000),
+    });
+    expect(completed).toMatchObject({
+      user_key: signup.projection.human_account_id,
+      role: 'parent',
+      status: 'active',
+      sessions_invalidated: 1,
+    });
+    const recovered = await pool.query(
+      `SELECT account.security_version,
+              credential.credential_version,
+              credential.credential_state,
+              session.revoked_at,
+              session.revoke_reason
+         FROM onetime.v21_human_accounts AS account
+         JOIN onetime.v21_adult_credentials AS credential
+           ON credential.human_account_id = account.human_account_id
+         JOIN onetime.v21_adult_sessions AS session
+           ON session.human_account_id = account.human_account_id
+        WHERE account.human_account_id = $1`,
+      [signup.projection.human_account_id],
+    );
+    expect(recovered.rows[0]).toMatchObject({
+      security_version: 2,
+      credential_version: 2,
+      credential_state: 'active',
+      revoked_at: expect.anything(),
+      revoke_reason: 'password_reset',
+    });
+    await expect(
+      completePasswordReset({
+        pool,
+        config,
+        payload: {
+          token: issued.token_for_local_proof,
+          password: 'another replacement password value',
+          password_confirmation: 'another replacement password value',
+        },
+        now: new Date(now.getTime() + 2_000),
+      }),
+    ).rejects.toMatchObject({ code: 'TOKEN_CONSUMED' });
+  });
+
   it('binds real P08 signup to one fail-closed v2.1 Parent middleware runtime', async () => {
     const preExpiry = await submitFamily('pre-expiry-parent@example.test', 'Pre', 'Expiry');
 
@@ -130,10 +302,15 @@ describe('I36 central Family-signup and Parent-session composition', () => {
       local_access_state: 'free',
       session_established: true,
       next_action: 'parent_overview',
-      continue_to: '/app/parent',
+      continue_to: 'https://app.onetimeonetime.com/app/parent',
       provider_effects_completed_inline: 0,
     });
     expect(preExpiry.projection.access_state).toBe('free');
+    expect(preExpiry.projection).toMatchObject({
+      access_branch: 'immediate_free',
+      checkout_required: false,
+      checkout_blocked_by_identity_review: false,
+    });
     await expectParentShell(preExpiry.hostCookie, '/app/parent', 200);
     await expectParentShell(preExpiry.hostCookie, '/select-household', 200);
     const household = await fetch(`${baseUrl}/api/app/parent/household`, {
@@ -163,16 +340,23 @@ describe('I36 central Family-signup and Parent-session composition', () => {
     expect(cutoff.response.status).toBe(202);
     expect(cutoff.body).toMatchObject({
       success: true,
-      code: 'SIGNUP_COMMITTED_CHECKOUT_HANDOFF_QUEUED',
+      code: 'SIGNUP_COMMITTED_SUPPORT_REQUIRED',
       local_access_state: 'inactive',
+      checkout_required: false,
+      checkout_handoff_state: 'not_configured',
       session_established: true,
-      next_action: 'checkout_handoff_queued',
+      next_action: 'support',
       checkout_provider: 'highlevel',
-      financial_provider: 'stripe',
       direct_stripe_mutation_by_one_time: false,
       provider_effects_completed_inline: 0,
     });
-    expect(cutoff.projection.access_state).toBe('inactive');
+    expect(cutoff.body).not.toHaveProperty('financial_provider');
+    expect(cutoff.projection).toMatchObject({
+      access_state: 'inactive',
+      access_branch: 'inactive_support',
+      checkout_required: false,
+      checkout_blocked_by_identity_review: false,
+    });
     await expectParentShell(cutoff.hostCookie, '/app/parent/account', 200);
     await expectParentShell(cutoff.hostCookie, '/select-household', 200);
     await expectParentShell(cutoff.hostCookie, '/app/parent/students', 403);
@@ -432,7 +616,237 @@ describe('I36 central Family-signup and Parent-session composition', () => {
 
     expect(denied.projection.human_account_id).not.toBe(accepted.projection.human_account_id);
   });
+
+  it('changes a fresh Family Parent to a six-character password and preserves only the rotated session', async () => {
+    const email = 'fresh-v21-password-parent@example.test';
+    const signup = await submitFamily(email, 'Fresh', 'Password');
+    const firstSessionBootstrap = await fetch(`${baseUrl}/api/v2.1/auth/session`, {
+      headers: { cookie: signup.hostCookie },
+    });
+    const firstSession = (await firstSessionBootstrap.json()) as { csrf_token: string };
+    expect(firstSessionBootstrap.status).toBe(200);
+
+    const secondLoginBinding = await loginCsrfBinding();
+    const secondLogin = await fetch(`${baseUrl}/api/v1/auth/login`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', cookie: secondLoginBinding.cookie },
+      body: JSON.stringify({
+        identifier: email,
+        password: 'correct horse battery staple',
+        csrf_token: secondLoginBinding.token,
+      }),
+    });
+    expect(secondLogin.status).toBe(200);
+    const secondHostCookie = secondLogin.headers
+      .getSetCookie()
+      .find((value) => value.startsWith('__Host-onetime-session=') && !value.includes('Max-Age=0'))
+      ?.split(';')[0];
+    if (!secondHostCookie) throw new Error('missing second v2.1 Parent session cookie');
+
+    const changed = await fetch(`${baseUrl}/api/v1/auth/password`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        cookie: signup.hostCookie,
+        'x-csrf-token': firstSession.csrf_token,
+      },
+      body: JSON.stringify({
+        current_password: 'correct horse battery staple',
+        new_password: 'Ab1234',
+      }),
+    });
+    const changedBody = (await changed.json()) as Record<string, unknown>;
+    expect(changed.status, JSON.stringify(changedBody)).toBe(200);
+    expect(changedBody).toMatchObject({
+      success: true,
+      sessions_invalidated: 1,
+      current_session_preserved: true,
+      csrf_token: expect.stringMatching(/^c1\./u),
+    });
+    expect(changedBody.csrf_token).not.toBe(firstSession.csrf_token);
+    if (typeof changedBody.csrf_token !== 'string') {
+      throw new Error('missing rotated v2.1 Parent CSRF token');
+    }
+    const rotatedHostCookie = changed.headers
+      .getSetCookie()
+      .find((value) => value.startsWith('__Host-onetime-session=') && !value.includes('Max-Age=0'))
+      ?.split(';')[0];
+    if (!rotatedHostCookie) throw new Error('missing rotated v2.1 Parent session cookie');
+
+    const persisted = await pool.query(
+      `SELECT account.security_version,
+              credential.credential_version,
+              credential.credential_state,
+              session.session_id,
+              session.security_version AS session_security_version,
+              session.revoked_at,
+              session.revoke_reason
+         FROM onetime.v21_human_accounts AS account
+         JOIN onetime.v21_adult_credentials AS credential
+           ON credential.human_account_id = account.human_account_id
+         JOIN onetime.v21_adult_sessions AS session
+           ON session.human_account_id = account.human_account_id
+        WHERE account.human_account_id = $1
+        ORDER BY session.created_at, session.session_id`,
+      [signup.projection.human_account_id],
+    );
+    expect(persisted.rows).toHaveLength(2);
+    const currentSessionId = browserSessionClaims(rotatedHostCookie).session_id;
+    const secondSessionId = browserSessionClaims(secondHostCookie).session_id;
+    expect(persisted.rows).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          security_version: 2,
+          credential_version: 2,
+          credential_state: 'active',
+          session_id: currentSessionId,
+          session_security_version: 2,
+          revoked_at: null,
+          revoke_reason: null,
+        }),
+        expect.objectContaining({
+          security_version: 2,
+          credential_version: 2,
+          credential_state: 'active',
+          session_id: secondSessionId,
+          session_security_version: 1,
+          revoked_at: expect.anything(),
+          revoke_reason: 'credential_changed',
+        }),
+      ]),
+    );
+
+    const rotatedSession = await fetch(`${baseUrl}/api/v2.1/auth/session`, {
+      headers: { cookie: rotatedHostCookie },
+    });
+    expect(rotatedSession.status).toBe(200);
+    await expectParentShell(rotatedHostCookie, '/app/parent', 200);
+
+    const learning = await fetch(`${baseUrl}/api/v1/portals/parent/learning`, {
+      headers: { cookie: rotatedHostCookie },
+    });
+    expect(learning.status, lastPgMemQueryFailure).toBe(200);
+
+    const household = await fetch(`${baseUrl}/api/app/parent/household`, {
+      headers: { cookie: rotatedHostCookie },
+    });
+    const householdBody = (await household.json()) as {
+      data?: { snapshot?: { revision?: unknown; students?: unknown[] } };
+    };
+    expect(household.status).toBe(200);
+    expect(householdBody.data?.snapshot?.students).toEqual([]);
+    let revision = householdBody.data?.snapshot?.revision;
+    if (typeof revision !== 'number') throw new Error('missing Parent household revision');
+
+    for (let index = 1; index <= 3; index += 1) {
+      const created = await fetch(`${baseUrl}/api/app/parent/students`, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          cookie: rotatedHostCookie,
+          'x-csrf-token': changedBody.csrf_token,
+          'x-idempotency-key': `rotated-parent-student-${index.toString().padStart(4, '0')}`,
+        },
+        body: JSON.stringify({
+          actual_name: `Rotated Student ${index}`,
+          display_name: null,
+          username: `rotated.student.${index}`,
+          relationship: 'dependent',
+          expected_revision: revision,
+          new_password: `00000${index}`,
+          password_confirmation: `00000${index}`,
+        }),
+      });
+      const createdBody = (await created.json()) as {
+        data?: { snapshot?: { revision?: unknown; students?: unknown[] } };
+      };
+      expect(created.status, JSON.stringify(createdBody)).toBe(201);
+      expect(createdBody.data?.snapshot?.students).toHaveLength(index);
+      revision = createdBody.data?.snapshot?.revision;
+      if (typeof revision !== 'number') throw new Error('missing updated household revision');
+    }
+
+    const fourthStudent = await fetch(`${baseUrl}/api/app/parent/students`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        cookie: rotatedHostCookie,
+        'x-csrf-token': changedBody.csrf_token,
+        'x-idempotency-key': 'rotated-parent-student-0004',
+      },
+      body: JSON.stringify({
+        actual_name: 'Rotated Student 4',
+        display_name: null,
+        username: 'rotated.student.4',
+        relationship: 'dependent',
+        expected_revision: revision,
+        new_password: '000004',
+        password_confirmation: '000004',
+      }),
+    });
+    expect(fourthStudent.status).toBe(409);
+
+    const classroomLaunch = await fetch(
+      `${baseUrl}/api/v1/portals/parent/classroom/production-basic/launch`,
+      {
+        method: 'POST',
+        headers: {
+          cookie: rotatedHostCookie,
+          'x-csrf-token': changedBody.csrf_token,
+        },
+      },
+    );
+    expect(classroomLaunch.status).toBe(503);
+    await expect(classroomLaunch.json()).resolves.toMatchObject({
+      success: false,
+      code: 'CLASSROOM_UNAVAILABLE',
+    });
+
+    const staleFirstSession = await fetch(`${baseUrl}/api/v2.1/auth/session`, {
+      headers: { cookie: signup.hostCookie },
+    });
+    expect(staleFirstSession.status).toBe(401);
+    const revokedSecondSession = await fetch(`${baseUrl}/api/v2.1/auth/session`, {
+      headers: { cookie: secondHostCookie },
+    });
+    expect(revokedSecondSession.status).toBe(401);
+
+    const oldPasswordBinding = await loginCsrfBinding();
+    const oldPasswordLogin = await fetch(`${baseUrl}/api/v1/auth/login`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', cookie: oldPasswordBinding.cookie },
+      body: JSON.stringify({
+        identifier: email,
+        password: 'correct horse battery staple',
+        csrf_token: oldPasswordBinding.token,
+      }),
+    });
+    expect(oldPasswordLogin.status).toBe(401);
+
+    const newPasswordBinding = await loginCsrfBinding();
+    const newPasswordLogin = await fetch(`${baseUrl}/api/v1/auth/login`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', cookie: newPasswordBinding.cookie },
+      body: JSON.stringify({
+        identifier: email,
+        password: 'Ab1234',
+        csrf_token: newPasswordBinding.token,
+      }),
+    });
+    expect(newPasswordLogin.status).toBe(200);
+  });
 });
+
+async function seedCanonicalParentLearningClass(db: DbPool, appConfig: AppConfig) {
+  await db.query(
+    `INSERT INTO onetime.class_series
+       (class_series_key, account_key, product_key, title, timezone, local_start_time,
+        reminder_local_time, status, series_state, is_canonical)
+     VALUES ('parent_learning_canonical_class', $1, $2, 'Parent learning canonical class',
+        'Asia/Jerusalem', '19:00', '18:30', 'active', 'active', true)`,
+    [appConfig.accountKey, appConfig.productKey],
+  );
+}
 
 async function loginCsrfBinding() {
   const loginPage = await fetch(`${baseUrl}/login`);
@@ -517,6 +931,7 @@ describe.runIf(nativeProofEnabled)(
           AUTH_CSRF_SECRET: 'i36-native-parent-session-test-secret',
           ONE_TIME_FREE_ACCESS_EXPIRES_AT: '2026-09-13T16:24:00.000Z',
         });
+        await seedCanonicalParentLearningClass(nativePool, nativeConfig);
         let nativeNow = new Date('2026-09-13T16:23:59.000Z');
         nativeDistDir = await mkdtemp(path.join(tmpdir(), 'i36-native-parent-session-'));
         await mkdir(path.join(nativeDistDir, 'app'), { recursive: true });
@@ -525,11 +940,24 @@ describe.runIf(nativeProofEnabled)(
           '<!doctype html><html><body>I36_NATIVE_PARENT_SHELL</body></html>',
           'utf8',
         );
-        const productionRuntime = createPostgresV21AdultSessionRuntime({
+        const productionRuntimeBase = createPostgresV21AdultSessionRuntime({
           db: nativePool,
           hmacSecret: nativeConfig.authCsrfSecret,
           clock: () => new Date(nativeNow),
         });
+        let forceNativeTransactionalSessionFailure = false;
+        const productionRuntime = {
+          ...productionRuntimeBase,
+          establishInTransaction: (
+            ...args: Parameters<typeof productionRuntimeBase.establishInTransaction>
+          ) =>
+            forceNativeTransactionalSessionFailure
+              ? Promise.resolve({
+                  established: false as const,
+                  safe_reason: 'session_creation_failed' as const,
+                })
+              : productionRuntimeBase.establishInTransaction(...args),
+        };
         const nativeApp = createApp({
           config: nativeConfig,
           pool: nativePool,
@@ -552,7 +980,7 @@ describe.runIf(nativeProofEnabled)(
         }
         const nativeBaseUrl = `http://127.0.0.1:${nativeAddress.port}`;
 
-        const submitNativeFamily = async (email: string) => {
+        const requestNativeFamily = async (email: string) => {
           const bootstrapResponse = await fetch(`${nativeBaseUrl}/api/v1/signup/family/bootstrap`);
           const bootstrap = (await bootstrapResponse.json()) as {
             idempotency_key: string;
@@ -582,8 +1010,8 @@ describe.runIf(nativeProofEnabled)(
               timezone: 'Asia/Jerusalem',
               terms_accepted: true,
               privacy_accepted: true,
-              general_marketing_consent: false,
-              parent_newsletter_consent: false,
+              general_marketing_consent: true,
+              parent_newsletter_consent: true,
             }),
           });
           const body = (await response.json()) as Record<string, unknown>;
@@ -591,9 +1019,21 @@ describe.runIf(nativeProofEnabled)(
             .getSetCookie()
             .find((value) => value.startsWith('__Host-onetime-session='))
             ?.split(';')[0];
+          return { response, body, hostCookie };
+        };
+        const submitNativeFamily = async (email: string) => {
+          const { response, body, hostCookie } = await requestNativeFamily(email);
           if (!hostCookie) throw new Error(`missing native host cookie: ${JSON.stringify(body)}`);
           return { response, body, hostCookie };
         };
+
+        const beforeFailedSignup = await familySignupCoreRowCounts(nativePool);
+        forceNativeTransactionalSessionFailure = true;
+        const failedSignup = await requestNativeFamily('native-session-rollback@example.test');
+        forceNativeTransactionalSessionFailure = false;
+        expect(failedSignup.response.status).toBe(500);
+        expect(failedSignup.hostCookie).toBeUndefined();
+        expect(await familySignupCoreRowCounts(nativePool)).toEqual(beforeFailedSignup);
 
         const signup = await submitNativeFamily('native-parent@example.test');
         expect(signup.response.status).toBe(201);
@@ -794,6 +1234,31 @@ describe.runIf(nativeProofEnabled)(
             expect.stringContaining('otcrm_session='),
           ]),
         );
+        const recoveredLogin = await fetch(`${nativeBaseUrl}/api/v1/auth/login`, {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json',
+            cookie: `__Host-onetime-session=malformed; otcrm_session=${encodeURIComponent(
+              legacySession.session_token,
+            )}; ${loginCookie}`,
+          },
+          body: JSON.stringify({
+            identifier: 'native-parent@example.test',
+            password: 'correct horse battery staple',
+            csrf_token: loginCsrf,
+          }),
+        });
+        expect(recoveredLogin.status).toBe(200);
+        await expect(recoveredLogin.json()).resolves.toMatchObject({
+          success: true,
+          session_model: 'v21',
+        });
+        expect(recoveredLogin.headers.getSetCookie()).toEqual(
+          expect.arrayContaining([
+            expect.stringContaining('__Host-onetime-session='),
+            expect.stringContaining('otcrm_session='),
+          ]),
+        );
 
         const cardinality = await submitNativeFamily('native-cardinality-parent@example.test');
         const cardinalityBinding = await nativePool.query(
@@ -919,7 +1384,7 @@ async function submitFamily(
       timezone: 'Asia/Jerusalem',
       terms_accepted: true,
       privacy_accepted: true,
-      general_marketing_consent: false,
+      general_marketing_consent: true,
       parent_newsletter_consent: true,
     }),
   });
@@ -940,7 +1405,10 @@ async function signupProjection(normalizedEmail: string): Promise<SignupProjecti
     `SELECT adult.adult_id,
             account.human_account_id,
             household.household_id,
-            access.current_state AS access_state
+            access.current_state AS access_state,
+            signup_access.access_branch,
+            signup_access.checkout_required,
+            signup_access.checkout_blocked_by_identity_review
        FROM onetime.v21_adult_identities AS adult
        JOIN onetime.v21_human_accounts AS account
          ON account.adult_id = adult.adult_id
@@ -950,7 +1418,12 @@ async function signupProjection(normalizedEmail: string): Promise<SignupProjecti
        JOIN onetime.canonical_aggregate_states AS access
          ON access.aggregate_kind = 'access'
         AND access.aggregate_key = household.household_id
-      WHERE adult.normalized_email = $1`,
+       JOIN onetime.family_signup_access_projections AS signup_access
+         ON signup_access.household_id = household.household_id
+        AND signup_access.product = household.product_key
+        AND signup_access.runtime_tier = household.runtime_tier
+        AND signup_access.verification_environment_id = household.verification_environment_id
+       WHERE adult.normalized_email = $1`,
     [normalizedEmail],
   );
   const row = result.rows[0] as Record<string, unknown> | undefined;
@@ -960,7 +1433,30 @@ async function signupProjection(normalizedEmail: string): Promise<SignupProjecti
     human_account_id: String(row.human_account_id),
     household_id: String(row.household_id),
     access_state: String(row.access_state) as SignupProjection['access_state'],
+    access_branch: String(row.access_branch) as SignupProjection['access_branch'],
+    checkout_required: Boolean(row.checkout_required),
+    checkout_blocked_by_identity_review: Boolean(row.checkout_blocked_by_identity_review),
   };
+}
+
+async function familySignupCoreRowCounts(db: DbPool = pool) {
+  const tableNames = [
+    'v21_adult_identities',
+    'v21_human_accounts',
+    'v21_households',
+    'parent_learning_participants',
+    'parent_learning_class_entitlements',
+    'v21_adult_credentials',
+    'family_signup_requests',
+  ] as const;
+  return Object.fromEntries(
+    await Promise.all(
+      tableNames.map(async (tableName) => {
+        const result = await db.query(`SELECT COUNT(*) AS count FROM onetime.${tableName}`);
+        return [tableName, Number(result.rows[0]?.count ?? -1)] as const;
+      }),
+    ),
+  );
 }
 
 async function sessionRow(humanAccountId: string) {
@@ -999,6 +1495,20 @@ async function expectDigestOnlySessionPersistence(signup: SignupResult) {
   expect(persisted).not.toContain(claims.refresh_material);
 }
 
+function browserSessionClaims(cookie: string): { session_id: string; security_version: number } {
+  const encodedToken = cookie.slice(cookie.indexOf('=') + 1);
+  const payloadSegment = decodeURIComponent(encodedToken).split('.')[1];
+  if (!payloadSegment) throw new Error('missing signed Parent-session payload');
+  const claims = JSON.parse(Buffer.from(payloadSegment, 'base64url').toString('utf8')) as {
+    session_id?: unknown;
+    security_version?: unknown;
+  };
+  if (typeof claims.session_id !== 'string' || typeof claims.security_version !== 'number') {
+    throw new Error('invalid signed Parent-session payload');
+  }
+  return { session_id: claims.session_id, security_version: claims.security_version };
+}
+
 async function expectParentShell(cookie: string, route: string, expectedStatus: number) {
   const response = await fetch(`${baseUrl}${route}`, { headers: { cookie } });
   const body = await response.text();
@@ -1024,7 +1534,11 @@ function pgMemCompatiblePool(memoryPool: DbPool): DbPool {
             : statement;
       const result = invoke(rewritten, ...rest);
       if (result && typeof result === 'object' && 'catch' in result) {
-        return result;
+        return Promise.resolve(result).catch((error: unknown) => {
+          lastPgMemQueryFailure =
+            error instanceof Error ? (error.stack ?? error.message) : String(error);
+          throw error;
+        });
       }
       return result;
     }) as T;
@@ -1047,342 +1561,58 @@ function pgMemCompatiblePool(memoryPool: DbPool): DbPool {
 }
 
 function rewritePgMemLockClause(statement: string): string {
+  if (statement.includes('SELECT item.content_item_key AS content_id')) {
+    // This composition seeds no content. Keep the production authorization query covered by the
+    // dedicated native Parent-playback suite while giving pg-mem the exact empty-library shape.
+    return `SELECT item.content_item_key AS content_id,
+                   item.published_revision_key AS content_version_id,
+                   item.title,
+                   item.item_type,
+                   item.published_at,
+                   NULL::bigint AS position_ms,
+                   NULL::bigint AS duration_ms,
+                   NULL::boolean AS completed,
+                   NULL::timestamptz AS progress_updated_at
+              FROM onetime.content_items AS item
+             WHERE item.account_key = $1
+               AND $2::text IS NOT NULL
+               AND $3::text IS NOT NULL
+               AND $4::text IS NOT NULL
+               AND $5::text IS NOT NULL
+               AND $6::text IS NOT NULL
+               AND $7::text IS NOT NULL
+               AND $8::text IS NULL
+               AND false`;
+  }
   return statement
     .replace('FOR SHARE OF request, receipt', 'FOR SHARE')
-    .replace('FOR UPDATE OF household', 'FOR UPDATE');
-}
-
-function createDbBackedTestAdultSessionRepository(db: DbPool): V21AdultSessionRepository {
-  const productionRepository = createPostgresV21AdultSessionRepository(db);
-  return {
-    create: async (input) => {
-      if (input.householdId === null) throw new Error('Parent-session household is required');
-      const parentInput = { ...input, householdId: input.householdId };
-      const identity = await readExactParentIdentity(db, parentInput);
-      if (!identity) throw new Error('Parent-session identity binding is not eligible');
-      const idleExpiresAt = new Date(
-        input.issuedAt.getTime() + ADULT_SESSION_POLICY.parent.idleMilliseconds,
-      );
-      const absoluteExpiresAt = new Date(
-        input.issuedAt.getTime() + ADULT_SESSION_POLICY.parent.absoluteMilliseconds,
-      );
-      const inserted = await db.query(
-        `INSERT INTO onetime.v21_adult_sessions
-           (session_id, human_account_id, active_role, active_household_id,
-            access_token_digest, refresh_token_digest, security_version, version,
-            idle_expires_at, absolute_expires_at, product_key, runtime_tier,
-            verification_environment_id, created_at, updated_at)
-         VALUES ($1,$2,'parent',$3,$4,$5,$6::bigint,1,$7::timestamptz,$8::timestamptz,
-                 'one_time_mishnayos',$9,$10,$11::timestamptz,$11::timestamptz)
-         RETURNING *`,
-        [
-          input.sessionId,
-          input.humanAccountId,
-          input.householdId,
-          input.accessTokenDigest,
-          input.refreshTokenDigest,
-          input.securityVersion,
-          idleExpiresAt,
-          absoluteExpiresAt,
-          input.runtimeTier,
-          input.verificationEnvironmentId,
-          input.issuedAt,
-        ],
-      );
-      const session = inserted.rows[0] as Record<string, unknown> | undefined;
-      if (inserted.rowCount !== 1 || !session) throw new Error('Parent session was not inserted');
-      return resolvedParentSession(input.adultId, identity, session);
-    },
-    resolve: async (input) => {
-      if (input.householdId === null) return null;
-      const parentInput = { ...input, householdId: input.householdId };
-      const digestColumn =
-        input.tokenKind === 'access' ? 'access_token_digest' : 'refresh_token_digest';
-      const result = await db.query(
-        `SELECT *
-           FROM onetime.v21_adult_sessions
-          WHERE session_id = $1
-            AND human_account_id = $2
-            AND active_role = 'parent'
-            AND active_household_id = $3
-            AND product_key = 'one_time_mishnayos'
-            AND runtime_tier = $4
-            AND verification_environment_id = $5
-            AND security_version = $6::bigint
-            AND ${digestColumn} = $7
-            AND revoked_at IS NULL
-            AND idle_expires_at > $8::timestamptz
-            AND absolute_expires_at > $8::timestamptz`,
-        [
-          input.sessionId,
-          input.humanAccountId,
-          input.householdId,
-          input.runtimeTier,
-          input.verificationEnvironmentId,
-          input.securityVersion,
-          input.tokenDigest,
-          input.now,
-        ],
-      );
-      const session = result.rows[0] as Record<string, unknown> | undefined;
-      if (result.rowCount !== 1 || !session) return null;
-      const identity = await readExactParentIdentity(db, parentInput);
-      return identity ? resolvedParentSession(input.adultId, identity, session) : null;
-    },
-    revoke: async (input) => {
-      if (input.householdId === null) return false;
-      const digestColumn =
-        input.tokenKind === 'access' ? 'access_token_digest' : 'refresh_token_digest';
-      const result = await db.query(
-        `UPDATE onetime.v21_adult_sessions
-            SET revoked_at = $8::timestamptz,
-                revoke_reason = $9,
-                version = version + 1,
-                updated_at = $8::timestamptz
-          WHERE session_id = $1
-            AND human_account_id = $2
-            AND active_household_id = $3
-            AND runtime_tier = $4
-            AND verification_environment_id = $5
-            AND security_version = $6::bigint
-            AND ${digestColumn} = $7
-            AND revoked_at IS NULL
-          RETURNING session_id`,
-        [
-          input.sessionId,
-          input.humanAccountId,
-          input.householdId,
-          input.runtimeTier,
-          input.verificationEnvironmentId,
-          input.securityVersion,
-          input.tokenDigest,
-          input.now,
-          input.reason,
-        ],
-      );
-      return result.rowCount === 1;
-    },
-    findLoginIdentity: (input) => productionRepository.findLoginIdentity(input),
-    upgradeCredentialPasswordHash: (input) =>
-      productionRepository.upgradeCredentialPasswordHash(input),
-  };
-}
-
-type ExactParentIdentity = {
-  normalizedEmail: string;
-  ownerDisplayName: string;
-  classification: 'family' | 'school';
-  accessState: 'free' | 'active' | 'grace' | 'inactive';
-};
-
-async function readExactParentIdentity(
-  db: DbPool,
-  input: {
-    adultId: string;
-    humanAccountId: string;
-    householdId: string;
-    runtimeTier: 'isolated_staging' | 'production';
-    verificationEnvironmentId:
-      | 'ci'
-      | 'provider_sandbox'
-      | 'persistent_staging'
-      | 'production_read_only'
-      | 'production_operator_canary'
-      | 'production_broad';
-    securityVersion: number;
-  },
-): Promise<ExactParentIdentity | null> {
-  const scope = [input.runtimeTier, input.verificationEnvironmentId] as const;
-  const account = await db.query(
-    `SELECT human_account_id
-       FROM onetime.v21_human_accounts
-      WHERE human_account_id = $1
-        AND adult_id = $2
-        AND state = 'active'
-        AND security_version = $3::bigint
-        AND product_key = 'one_time_mishnayos'
-        AND runtime_tier = $4
-        AND verification_environment_id = $5`,
-    [input.humanAccountId, input.adultId, input.securityVersion, ...scope],
-  );
-  const adult = await db.query(
-    `SELECT normalized_email, display_name
-       FROM onetime.v21_adult_identities
-      WHERE adult_id = $1
-        AND state = 'active'
-        AND product_key = 'one_time_mishnayos'
-        AND runtime_tier = $2
-        AND verification_environment_id = $3`,
-    [input.adultId, ...scope],
-  );
-  const membership = await db.query(
-    `SELECT membership_id
-       FROM onetime.v21_human_account_role_memberships
-      WHERE human_account_id = $1
-        AND role = 'parent'
-        AND revoked_at IS NULL
-        AND product_key = 'one_time_mishnayos'
-        AND runtime_tier = $2
-        AND verification_environment_id = $3`,
-    [input.humanAccountId, ...scope],
-  );
-  const household = await db.query(
-    `SELECT classification
-       FROM onetime.v21_households
-      WHERE household_id = $1
-        AND owner_adult_id = $2
-        AND owner_human_account_id = $3
-        AND state = 'active'
-        AND product_key = 'one_time_mishnayos'
-        AND runtime_tier = $4
-        AND verification_environment_id = $5`,
-    [input.householdId, input.adultId, input.humanAccountId, ...scope],
-  );
-  let access = await db.query(
-    `SELECT current_state
-       FROM onetime.canonical_aggregate_states
-      WHERE aggregate_kind = 'access'
-        AND aggregate_key = $1
-        AND product_key = 'one_time_mishnayos'
-        AND runtime_tier = $2
-        AND verification_environment_id = $3
-        AND current_state IN ('free','active','grace','inactive')
-        AND archived_at IS NULL`,
-    [input.householdId, ...scope],
-  );
-  if (access.rowCount === 0) {
-    await materializePgMemAccessState(db, input.householdId, ...scope);
-    access = await db.query(
-      `SELECT current_state
-         FROM onetime.canonical_aggregate_states
-        WHERE aggregate_kind = 'access'
-          AND aggregate_key = $1
-          AND product_key = 'one_time_mishnayos'
-          AND runtime_tier = $2
-          AND verification_environment_id = $3
-          AND current_state IN ('free','active','grace','inactive')
-          AND archived_at IS NULL`,
-      [input.householdId, ...scope],
+    .replace('FOR UPDATE OF household', 'FOR UPDATE')
+    .replace(
+      /LEFT JOIN LATERAL \([\s\S]*?\n\s*\) AS next_occurrence ON true/u,
+      'LEFT JOIN onetime.class_occurrences AS next_occurrence ON false',
+    )
+    .replace(
+      /LEFT JOIN LATERAL \([\s\S]*?\n\s*\) AS progress ON true/u,
+      'LEFT JOIN onetime.parent_learning_content_progress_events AS progress ON false',
+    )
+    .replace(
+      /\(SELECT count\(\*\)::int\s+FROM onetime\.v21_student_profiles AS child_student[\s\S]*?child_student\.state = 'active'\) AS active_seat_count/u,
+      'household.active_seat_count AS active_seat_count',
+    )
+    .replace(
+      /\(SELECT count\(DISTINCT attendance\.occurrence_id\)::int[\s\S]*?\) AS attended_occurrence_count/u,
+      '0::int AS attended_occurrence_count',
+    )
+    .replace(
+      /\(SELECT count\(DISTINCT progress\.content_id\)::int[\s\S]*?\) AS started_content_count/u,
+      '0::int AS started_content_count',
+    )
+    .replace(
+      /\(SELECT count\(DISTINCT progress\.content_id\)::int[\s\S]*?\) AS completed_content_count/u,
+      '0::int AS completed_content_count',
+    )
+    .replace(
+      /\(SELECT count\(\*\)::int[\s\S]*?\) AS submitted_question_count/u,
+      '0::int AS submitted_question_count',
     );
-  }
-  if (
-    account.rowCount !== 1 ||
-    adult.rowCount !== 1 ||
-    membership.rowCount !== 1 ||
-    household.rowCount !== 1 ||
-    access.rowCount !== 1
-  ) {
-    return null;
-  }
-  const adultRow = adult.rows[0] as Record<string, unknown>;
-  const householdRow = household.rows[0] as Record<string, unknown>;
-  const accessRow = access.rows[0] as Record<string, unknown>;
-  const classification = String(householdRow.classification);
-  const accessState = String(accessRow.current_state);
-  if (
-    (classification !== 'family' && classification !== 'school') ||
-    !['free', 'active', 'grace', 'inactive'].includes(accessState)
-  ) {
-    return null;
-  }
-  return {
-    normalizedEmail: String(adultRow.normalized_email),
-    ownerDisplayName: String(adultRow.display_name).trim(),
-    classification,
-    accessState: accessState as ExactParentIdentity['accessState'],
-  };
-}
-
-async function materializePgMemAccessState(
-  db: DbPool,
-  householdId: string,
-  runtimeTier: 'isolated_staging' | 'production',
-  verificationEnvironmentId: ExactParentIdentityScope['verificationEnvironmentId'],
-) {
-  const transition = await db.query(
-    `SELECT transition_key, aggregate_kind, aggregate_key, next_state, resulting_version,
-            product_key, runtime_tier, verification_environment_id,
-            actor_kind, actor_key, created_at
-       FROM onetime.canonical_state_transition_events
-      WHERE aggregate_kind = 'access'
-        AND aggregate_key = $1
-        AND previous_state IS NULL
-        AND expected_version = 0
-        AND resulting_version = 1
-        AND product_key = 'one_time_mishnayos'
-        AND runtime_tier = $2
-        AND verification_environment_id = $3`,
-    [householdId, runtimeTier, verificationEnvironmentId],
-  );
-  const event = transition.rows[0] as Record<string, unknown> | undefined;
-  if (transition.rowCount !== 1 || !event) return;
-  await db.query(
-    `INSERT INTO onetime.canonical_aggregate_states
-       (aggregate_kind, aggregate_key, current_state, version, product_key,
-        runtime_tier, verification_environment_id, last_transition_key,
-        created_by_actor_kind, created_by_actor_key, last_mutated_by_actor_kind,
-        last_mutated_by_actor_key, archived_at, created_at, updated_at)
-     VALUES ('access',$1,$2,$3::bigint,'one_time_mishnayos',$4,$5,$6,$7,$8,$7,$8,
-             NULL,$9::timestamptz,$9::timestamptz)
-     ON CONFLICT (aggregate_kind, aggregate_key) DO NOTHING`,
-    [
-      householdId,
-      event.next_state,
-      event.resulting_version,
-      runtimeTier,
-      verificationEnvironmentId,
-      event.transition_key,
-      event.actor_kind,
-      event.actor_key,
-      event.created_at,
-    ],
-  );
-}
-
-type ExactParentIdentityScope = Parameters<typeof readExactParentIdentity>[1];
-
-function resolvedParentSession(
-  adultId: string,
-  identity: ExactParentIdentity,
-  session: Record<string, unknown>,
-): ResolvedV21ParentSession {
-  return {
-    adultId,
-    normalizedEmail: identity.normalizedEmail,
-    ownerDisplayName: identity.ownerDisplayName,
-    ownedHouseholdCount: 1,
-    memberships: ['parent'],
-    session: {
-      sessionId: String(session.session_id),
-      product: 'one_time_mishnayos',
-      runtimeTier: String(session.runtime_tier) as 'isolated_staging' | 'production',
-      verificationEnvironmentId: String(
-        session.verification_environment_id,
-      ) as ResolvedV21ParentSession['session']['verificationEnvironmentId'],
-      humanAccountId: String(session.human_account_id),
-      activeRole: 'parent',
-      activeHouseholdId: String(session.active_household_id),
-      securityVersion: Number(session.security_version),
-      version: Number(session.version),
-      idleExpiresAt: instant(session.idle_expires_at),
-      absoluteExpiresAt: instant(session.absolute_expires_at),
-      revokedAt: session.revoked_at ? instant(session.revoked_at) : null,
-      revocationReason: session.revoke_reason ? String(session.revoke_reason) : null,
-      createdAt: instant(session.created_at),
-      updatedAt: instant(session.updated_at),
-    },
-    household: {
-      householdId: String(session.active_household_id),
-      displayName: `${identity.ownerDisplayName} ${
-        identity.classification === 'family' ? 'household' : 'school'
-      }`,
-      classification: identity.classification,
-      accessState: identity.accessState,
-      ownerRelationship: 'account_owner',
-    },
-  };
-}
-
-function instant(value: unknown): string {
-  return value instanceof Date ? value.toISOString() : new Date(String(value)).toISOString();
 }

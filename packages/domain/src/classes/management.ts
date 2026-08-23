@@ -306,7 +306,7 @@ export async function updateManagedClassOccurrence(input: {
         new Date(startsAt.getTime() - 15 * 60_000),
         endsAt,
         Math.max(1, Math.ceil((endsAt.getTime() - startsAt.getTime()) / 60_000)),
-        input.payload.status,
+        persistedOccurrenceState(input.payload.status),
         input.payload.version,
       ],
     );
@@ -418,7 +418,7 @@ export async function enrollLearnerInClass(input: {
     if (!occurrence.rows[0]) {
       throw new ClassManagementError('NOT_FOUND', 'Class occurrence was not found.');
     }
-    if (occurrence.rows[0].occurrence_state === 'cancelled') {
+    if (occurrence.rows[0].occurrence_state === 'canceled') {
       throw new ClassManagementError(
         'INVALID_STATE',
         'A cancelled class cannot accept enrollment.',
@@ -1075,7 +1075,7 @@ function managedOccurrenceFromRow(row: Record<string, unknown>): ManagedClassOcc
     starts_at: asDate(row.starts_at).toISOString(),
     ends_at: asDate(row.scheduled_ends_at ?? row.joinable_until).toISOString(),
     timezone: String(row.timezone),
-    status: String(row.occurrence_state) as ManagedClassOccurrence['status'],
+    status: publicOccurrenceState(String(row.occurrence_state)),
     access_state: String(row.access_state) as ManagedClassOccurrence['access_state'],
     recording_state: String(row.recording_state) as ManagedClassOccurrence['recording_state'],
     enrolled_learner_count: Number(row.enrolled_learner_count ?? 0),
@@ -1085,6 +1085,14 @@ function managedOccurrenceFromRow(row: Record<string, unknown>): ManagedClassOcc
     created_at: asDate(row.created_at).toISOString(),
     updated_at: asDate(row.updated_at).toISOString(),
   };
+}
+
+function persistedOccurrenceState(status: UpdateClassOccurrencePayload['status']) {
+  return status === 'cancelled' ? 'canceled' : status;
+}
+
+function publicOccurrenceState(state: string): ManagedClassOccurrence['status'] {
+  return state === 'canceled' ? 'cancelled' : (state as ManagedClassOccurrence['status']);
 }
 
 function classEnrollmentFromRow(row: Record<string, unknown>): ClassEnrollment {

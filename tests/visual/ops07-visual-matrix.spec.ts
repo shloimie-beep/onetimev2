@@ -27,8 +27,8 @@ test.describe('OPS-07 visual matrix', () => {
         body: JSON.stringify({
           success: true,
           idempotency_key: 'a'.repeat(43),
-          csrf_token: `1789315200.${'b'.repeat(43)}.${'c'.repeat(43)}`,
-          expires_at: '2026-09-13T16:40:00.000Z',
+          csrf_token: `1789138800.${'b'.repeat(43)}.${'c'.repeat(43)}`,
+          expires_at: '2026-09-11T15:20:00.000Z',
           writes_allowed: true,
         }),
       }),
@@ -41,7 +41,7 @@ test.describe('OPS-07 visual matrix', () => {
         await captureRoute(page, `landing-${viewport.name}`, '/', 'MISHNAYOS MADE MEMORABLE'),
       );
       results.push(
-        await captureRoute(page, `signup-${viewport.name}`, '/signup', 'Pre-register Your Family'),
+        await captureRoute(page, `signup-${viewport.name}`, '/signup', 'Create Family Account'),
       );
     }
 

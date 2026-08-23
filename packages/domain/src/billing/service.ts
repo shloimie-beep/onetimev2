@@ -16,6 +16,7 @@ import {
 } from '../../../contracts/src/billing/index.ts';
 import type { createPostgresBillingRepositories } from '../../../db/src/billing/repository.ts';
 import { buildBillingReturnPaths } from './return-paths.ts';
+import { deriveBillingGhlLifecycleEvent } from './highlevel-lifecycle.ts';
 import { evaluateBillingEntitlement } from './policy.ts';
 import type {
   BillingActorContext,
@@ -264,14 +265,6 @@ export function createBillingServices(deps: BillingServicesDeps) {
       }
       const envelope = toEnvelope(verified, input.rawBody);
       const receipt = await deps.repositories.recordVerifiedEvent(envelope);
-      if (receipt.status === 'duplicate') {
-        await deps.repositories.recordAttempt({
-          event_key: receipt.eventKey,
-          disposition: 'duplicate',
-          reason: 'duplicate_event_same_digest',
-        });
-        return disposition('duplicate', 'Billing event was already recorded.', 200);
-      }
       if (receipt.status === 'digest_mismatch') {
         await deps.repositories.recordAttempt({
           event_key: receipt.eventKey,
@@ -280,21 +273,52 @@ export function createBillingServices(deps: BillingServicesDeps) {
         });
         return disposition('digest_mismatch', 'Billing event digest mismatch.', 409);
       }
-      if (!deps.config.webhookProjectionEnabled) {
+
+      const claim = await deps.repositories.claimVerifiedEventProcessing(receipt.eventKey);
+      if (claim.status === 'completed') {
         await deps.repositories.recordAttempt({
-          event_key: envelope.event_key,
-          disposition: 'accepted',
-          reason: 'webhook_projection_disabled',
+          event_key: receipt.eventKey,
+          disposition: 'duplicate',
+          reason: 'duplicate_event_same_digest_completed',
         });
-        return disposition('accepted', 'Billing event ledgered without projection.', 200);
+        return disposition('duplicate', 'Billing event was already processed.', 200);
       }
-      const processed = await processVerifiedEvent(envelope, verified.object_refs, account.value);
-      await deps.repositories.recordAttempt({
-        event_key: envelope.event_key,
-        disposition: processed.disposition,
-        reason: processed.reason,
-      });
-      return disposition(processed.disposition, processed.reason, processed.status);
+      if (claim.status === 'busy') {
+        await deps.repositories.recordAttempt({
+          event_key: receipt.eventKey,
+          disposition: 'provider_error',
+          reason: 'verified_event_processing_in_progress',
+        });
+        return disposition('provider_error', 'Billing event processing is in progress.', 503);
+      }
+
+      try {
+        if (!deps.config.webhookProjectionEnabled) {
+          await deps.repositories.completeVerifiedEventProcessing({
+            event_key: envelope.event_key,
+            claim_key: claim.claimKey,
+            disposition: 'accepted',
+            reason: 'webhook_projection_disabled',
+          });
+          return disposition('accepted', 'Billing event ledgered without projection.', 200);
+        }
+        const processed = await processVerifiedEvent(envelope, verified.object_refs, account.value);
+        await deps.repositories.completeVerifiedEventProcessing({
+          event_key: envelope.event_key,
+          claim_key: claim.claimKey,
+          disposition: processed.disposition,
+          reason: processed.reason,
+        });
+        return disposition(processed.disposition, processed.reason, processed.status);
+      } catch (error) {
+        await deps.repositories
+          .abandonVerifiedEventProcessing({
+            event_key: envelope.event_key,
+            claim_key: claim.claimKey,
+          })
+          .catch(() => undefined);
+        throw error;
+      }
     },
     async billingSummary(input: { actor: BillingActorContext; principal_key: string }) {
       const principal = await withPrincipal(input.actor, input.principal_key, 'billing:read');
@@ -479,7 +503,10 @@ export function createBillingServices(deps: BillingServicesDeps) {
           policyVersion: deps.config.policyVersion,
           emergencyMode: deps.config.entitlementEmergencyMode,
         });
-        await deps.repositories.upsertEntitlementProjection(entitlement);
+        await deps.repositories.upsertEntitlementProjection(
+          entitlement,
+          deriveBillingGhlLifecycleEvent(entitlement),
+        );
         return {
           disposition: 'contradictory_event',
           reason: 'equal_time_subscription_contradiction',
@@ -581,7 +608,10 @@ export function createBillingServices(deps: BillingServicesDeps) {
       policyVersion: deps.config.policyVersion,
       emergencyMode: deps.config.entitlementEmergencyMode,
     });
-    await deps.repositories.upsertEntitlementProjection(entitlement);
+    await deps.repositories.upsertEntitlementProjection(
+      entitlement,
+      deriveBillingGhlLifecycleEvent(entitlement),
+    );
     return entitlement;
   }
 

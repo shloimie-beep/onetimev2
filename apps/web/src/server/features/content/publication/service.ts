@@ -66,15 +66,17 @@ export function createContentPublicationService(deps: {
         return approvalUnavailable();
       }
       return deps.repository.inTransaction(async (unit) => {
-        const canonicalOccurrence = await unit.getCanonicalGovernedOccurrence(
-          scope,
-          evidence.contentId,
-        );
-        if (!canonicalOccurrence) return governedOccurrenceUnavailable();
+        const canonicalOccurrence =
+          evidence.reviewKind === 'existing_reviewed_recording'
+            ? undefined
+            : ((await unit.getCanonicalGovernedOccurrence(scope, evidence.contentId)) ?? undefined);
+        if (evidence.reviewKind !== 'existing_reviewed_recording' && !canonicalOccurrence) {
+          return governedOccurrenceUnavailable();
+        }
         const proposed = createReviewReadyContentFromProjection({
           principal: input.principal,
           evidence,
-          canonicalOccurrence,
+          ...(canonicalOccurrence ? { canonicalOccurrence } : {}),
         });
         const registration = await unit.registerContent(proposed);
         assertRegisteredProjectionReplay(registration.record, evidence, canonicalOccurrence);

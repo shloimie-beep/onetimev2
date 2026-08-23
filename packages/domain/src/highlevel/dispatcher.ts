@@ -53,6 +53,7 @@ export class DeterministicFakeHighLevelAdapter implements HighLevelAdapter {
   private readonly receipts = new Map<string, string>();
   private readonly tagged = new Set<string>();
   private readonly projections = new Map<string, HighLevelProjection>();
+  private readonly eventProjections = new Map<HighLevelEventName, HighLevelProjection>();
   private readonly contactTags = new Map<string, string[]>();
 
   async upsertContact(input: HighLevelProjection, context: HighLevelProviderOperationContext) {
@@ -61,6 +62,7 @@ export class DeterministicFakeHighLevelAdapter implements HighLevelAdapter {
     const providerContactId = stableKey('fake_ghl_contact', [input.adult.contactKey]);
     this.receipts.set(context.operationKey, providerContactId);
     this.projections.set(providerContactId, input);
+    this.eventProjections.set(input.eventName, input);
     this.upsertCalls.push(context.operationKey);
     return { providerContactId };
   }
@@ -82,6 +84,10 @@ export class DeterministicFakeHighLevelAdapter implements HighLevelAdapter {
 
   async readTags(input: { providerContactId: string }) {
     return [...(this.contactTags.get(input.providerContactId) ?? [])];
+  }
+
+  projectionForEvent(eventName: HighLevelEventName): HighLevelProjection | undefined {
+    return this.eventProjections.get(eventName);
   }
 }
 
@@ -1103,11 +1109,11 @@ function projection(event: HighLevelOutboundEvent, row: ClaimedRow): HighLevelPr
   ];
   if (event.event_name !== 'event.registration.recorded' && event.consent) {
     customFields.push(
-      { id: 'olSxPkya7mkkB61vSXHx', value: event.consent.email },
-      { id: 'XhBuFbkwtbpD9gyVNDdG', value: event.consent.whatsapp },
+      { id: 'olSxPkya7mkkB61vSXHx', value: projectedEmailConsent(event.consent) },
+      { id: 'XhBuFbkwtbpD9gyVNDdG', value: projectedWhatsappConsent(event.consent) },
       { id: '5ID7x61OAXaLHf2VrzVb', value: event.consent.policy_version },
       { id: 'dzvudcSnnaVzuw4Y5QzL', value: event.consent.captured_at },
-      { id: 'rdWsApvquRfHwkzvp5mS', value: event.consent.suppression_state },
+      { id: 'rdWsApvquRfHwkzvp5mS', value: projectedSuppressionState(event.consent) },
     );
   }
   if (event.data.classification) {
@@ -1117,7 +1123,10 @@ function projection(event: HighLevelOutboundEvent, row: ClaimedRow): HighLevelPr
     customFields.push({ id: 'PIuJBPvZGI3FTp4ZRpay', value: event.data.household_key });
   }
   if (event.data.portal_status) {
-    customFields.push({ id: 'hxancKIMgrEWUeVSSUYF', value: event.data.portal_status });
+    customFields.push({
+      id: 'hxancKIMgrEWUeVSSUYF',
+      value: event.data.portal_status === 'active' ? 'Active' : 'Invited',
+    });
   }
   if (event.data.starts_at) {
     customFields.push({ id: 'yH9qCXXoeIMKIltiiBZM', value: event.data.starts_at });
@@ -1141,6 +1150,24 @@ function projection(event: HighLevelOutboundEvent, row: ClaimedRow): HighLevelPr
         : [tagsToAdd[event.event_name]],
     customFields,
   };
+}
+
+function projectedEmailConsent(consent: NonNullable<HighLevelOutboundEvent['consent']>) {
+  if (consent.suppression_state === 'suppressed') return 'suppressed';
+  return consent.email === 'granted' ? 'opted_in' : 'unknown';
+}
+
+function projectedWhatsappConsent(consent: NonNullable<HighLevelOutboundEvent['consent']>) {
+  if (consent.suppression_state === 'suppressed') return 'suppressed';
+  return consent.whatsapp === 'granted' ? 'opted_in' : 'unknown';
+}
+
+function projectedSuppressionState(consent: NonNullable<HighLevelOutboundEvent['consent']>) {
+  if (consent.suppression_state === 'active') return 'active';
+  if (consent.email_dnd && consent.whatsapp_dnd) return 'all_marketing_suppressed';
+  if (consent.email_dnd) return 'email_suppressed';
+  if (consent.whatsapp_dnd) return 'whatsapp_suppressed';
+  return 'all_marketing_suppressed';
 }
 
 function eventPayloadMatchesClaim(

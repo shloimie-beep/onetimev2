@@ -16,10 +16,12 @@ export function StudentLibraryWorkspace({
   csrfToken,
   actorFingerprint,
   onProtectedStateCleared,
+  selectedContentId,
 }: {
   csrfToken: string;
   actorFingerprint: string;
   onProtectedStateCleared: () => void;
+  selectedContentId?: string | null | undefined;
 }) {
   const [query, setQuery] = useState('');
   const [items, setItems] = useState<readonly StudentLibraryItem[]>([]);
@@ -29,12 +31,18 @@ export function StudentLibraryWorkspace({
   const [playbackStatus, setPlaybackStatus] = useState('');
   const [resumePosition, setResumePosition] = useState('0');
   const view = useMemo(() => buildStudentLibraryView({ query, items }), [query, items]);
+  const detailMode = selectedContentId !== undefined;
+  const selectedItem =
+    typeof selectedContentId === 'string'
+      ? (view.items.find((item) => item.contentId === selectedContentId) ?? null)
+      : null;
 
   useEffect(() => {
     setGrant(null);
     setPlaybackStatus('');
+    setItems([]);
     void search('');
-  }, [actorFingerprint]);
+  }, [actorFingerprint, selectedContentId]);
 
   async function search(nextQuery = query) {
     setLoading(true);
@@ -111,71 +119,153 @@ export function StudentLibraryWorkspace({
   }
 
   return (
-    <section aria-labelledby="student-publication-library-heading">
+    <div className="student-publication-library">
       <header>
         <p className="ot-kicker">Approved private lessons</p>
-        <h2 id="student-publication-library-heading">{view.heading}</h2>
-        <p>Only lessons assigned to this Student account are available here.</p>
+        <h3 id="student-publication-library-heading">
+          {detailMode ? 'Lesson details' : 'Private lesson search'}
+        </h3>
+        <p>
+          {detailMode
+            ? 'Playback and review stay inside this Student account.'
+            : 'Only lessons assigned to this Student account are available here.'}
+        </p>
       </header>
-      <form
-        onSubmit={(event) => {
-          event.preventDefault();
-          void search();
-        }}
-      >
-        <label>
-          <span>Search lessons</span>
-          <Input
-            value={query}
-            maxLength={120}
-            onChange={(event) => setQuery(event.currentTarget.value)}
-          />
-        </label>
-        <Button type="submit" disabled={loading}>
-          Search
-        </Button>
-      </form>
-      {loading && <p role="status">Loading private library...</p>}
+      {!detailMode && (
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            void search();
+          }}
+        >
+          <label>
+            <span>Search lessons</span>
+            <Input
+              value={query}
+              maxLength={120}
+              onChange={(event) => setQuery(event.currentTarget.value)}
+            />
+          </label>
+          <Button type="submit" disabled={loading}>
+            Search
+          </Button>
+        </form>
+      )}
+      {loading && !detailMode && <p role="status">Loading private library...</p>}
       {error && (
         <p className="notice-banner error" role="alert">
           {error}
         </p>
       )}
-      {!loading && !error && <p role="status">{view.resultCountLabel}</p>}
-      <div>
-        {view.items.map((item) => (
-          <Card key={item.contentId}>
-            <h3>{item.title}</h3>
-            <p>{item.classTopic}</p>
-            <p>{item.mishnahReferences.join(', ')}</p>
-            <p>{formatDuration(item.resumePositionMs)} watched</p>
-            <Button type="button" variant="primary" onClick={() => void open(item)}>
-              Open protected lesson
-            </Button>
-          </Card>
-        ))}
-      </div>
-      {grant && (
+      {detailMode ? (
+        <StudentLibraryDetail
+          item={selectedItem}
+          loading={loading}
+          unavailable={!error}
+          onOpen={(item) => void open(item)}
+        />
+      ) : (
+        <>
+          {!loading && !error && (
+            <p role="status">
+              {view.items.length === 0
+                ? 'The class library is being migrated. Recordings and review materials will begin appearing soon.'
+                : view.resultCountLabel}
+            </p>
+          )}
+          <div>
+            {view.items.map((item) => (
+              <Card key={item.contentId}>
+                <h3>{item.title}</h3>
+                <p>{item.classTopic}</p>
+                <p>{item.mishnahReferences.join(', ')}</p>
+                <p>{formatDuration(item.resumePositionMs)} watched</p>
+                <a
+                  className="ot-button ot-button-primary"
+                  href={`/app/student/library/${encodeURIComponent(item.contentId)}`}
+                >
+                  View lesson details
+                </a>
+              </Card>
+            ))}
+          </div>
+        </>
+      )}
+      {grant && detailMode && (
         <Card>
           <h3>Protected playback</h3>
           <p role="status">{playbackStatus}</p>
-          <label>
-            <span>Resume position in milliseconds</span>
-            <Input
-              type="number"
-              min="0"
-              value={resumePosition}
-              onChange={(event) => setResumePosition(event.currentTarget.value)}
-            />
-          </label>
-          <div className="ot-action-row">
-            <Button type="button" onClick={() => void saveResume()}>
-              Save progress
-            </Button>
-            <Button type="button" onClick={() => void renew()}>
-              Renew protected access
-            </Button>
-          </div>
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              void saveResume();
+            }}
+          >
+            <label>
+              <span>Resume position in milliseconds</span>
+              <Input
+                type="number"
+                min="0"
+                value={resumePosition}
+                onChange={(event) => setResumePosition(event.currentTarget.value)}
+              />
+            </label>
+            <div className="ot-action-row">
+              <Button type="submit">Save progress</Button>
+              <Button type="button" onClick={() => void renew()}>
+                Renew protected access
+              </Button>
+            </div>
+          </form>
+        </Card>
+      )}
+    </div>
+  );
+}
+
+export function StudentLibraryDetail({
+  item,
+  loading,
+  unavailable = true,
+  onOpen,
+}: {
+  item: StudentLibraryItem | null;
+  loading: boolean;
+  unavailable?: boolean;
+  onOpen: (item: StudentLibraryItem) => void;
+}) {
+  return (
+    <section aria-labelledby="student-library-detail-heading">
+      <a href="/app/student/library">Back to library</a>
+      {loading && <p role="status">Loading private lesson...</p>}
+      {!loading && !item && unavailable && (
+        <div className="ot-empty" role="status">
+          <h3 id="student-library-detail-heading">Lesson not available</h3>
+          <p>This lesson is not assigned to this Student account.</p>
+        </div>
+      )}
+      {!loading && item && (
+        <Card>
+          <p className="ot-kicker">Playback and review</p>
+          <h3 id="student-library-detail-heading">{item.title}</h3>
+          <p>{item.classTopic}</p>
+          <dl>
+            <div>
+              <dt>Mishnah references</dt>
+              <dd>{item.mishnahReferences.join(', ') || 'No references listed'}</dd>
+            </div>
+            <div>
+              <dt>Lesson length</dt>
+              <dd>{formatDuration(item.durationMs)}</dd>
+            </div>
+            <div>
+              <dt>Resume from</dt>
+              <dd>{formatDuration(item.resumePositionMs)}</dd>
+            </div>
+          </dl>
+          <Button type="button" variant="primary" onClick={() => onOpen(item)}>
+            Open protected lesson
+          </Button>
         </Card>
       )}
     </section>

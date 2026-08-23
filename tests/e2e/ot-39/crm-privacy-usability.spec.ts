@@ -1,6 +1,7 @@
 import { mkdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { expect, test, type Page } from '@playwright/test';
+import { W12_E2E_ADMIN_COOKIES } from '../../support/w12-portal-test-lab-session.ts';
 
 const screenshotDir = path.resolve(process.cwd(), 'ops/evidence/ot-39/screenshots');
 
@@ -83,7 +84,7 @@ test('synthetic search text appears nowhere prohibited in the browser', async ({
   expect(consoleMessages.some((message) => message.includes(syntheticSearch))).toBe(false);
 });
 
-test('authenticated shell keeps one Contacts destination, no BNA/Operations requests, and mobile controls', async ({
+test('authenticated shell keeps one Contacts compatibility destination, no BNA/Operations requests, and mobile controls', async ({
   page,
 }) => {
   const requested: string[] = [];
@@ -97,13 +98,12 @@ test('authenticated shell keeps one Contacts destination, no BNA/Operations requ
   await expect(
     page
       .getByRole('navigation', { name: 'One Time app' })
-      .getByRole('link', { name: 'Contacts', exact: true }),
+      .getByRole('link', { name: 'People', exact: true }),
   ).toHaveCount(1);
 
   for (const label of [
     'Home',
     'CRM',
-    'Communications',
     'Tasks',
     'Relationships',
     'Classes',
@@ -158,7 +158,7 @@ test('mobile drawer traps focus, closes by every shell action, and restores focu
   await menu.click();
   await page
     .getByRole('dialog', { name: 'One Time navigation' })
-    .getByRole('link', { name: 'Contacts', exact: true })
+    .getByRole('link', { name: 'People', exact: true })
     .click();
   await expect(page.getByRole('dialog', { name: 'One Time navigation' })).toBeHidden();
 
@@ -200,7 +200,9 @@ test('rows open by keyboard and Back restores focus from cached list without ref
   expect(page.url()).not.toContain(email);
 });
 
-test('403 clears retained protected CRM details before recovery UI renders', async ({ page }) => {
+test('403 clears retained protected CRM details without expiring the valid session', async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await login(page);
   const email = `ot39-expired-${Date.now()}@example.test`;
@@ -218,12 +220,12 @@ test('403 clears retained protected CRM details before recovery UI renders', asy
     });
   });
   await page.goto(contactPath);
-  await expect(page.getByRole('heading', { name: 'Session expired' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Contacts' }).first()).toBeVisible();
   await expect(page.getByText('OT39 Expired Parent')).toHaveCount(0);
   await expect(page.getByText(email)).toHaveCount(0);
-  await expect(
-    page.getByLabel('Session expired').getByRole('button', { name: 'Sign in' }),
-  ).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Session expired' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Sign in' })).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: 'Contacts' }).first()).toBeVisible();
 });
 
 test('captures corrected CRM screenshots at OT-39 viewport matrix', async ({ page }) => {
@@ -264,11 +266,8 @@ test('captures corrected CRM screenshots at OT-39 viewport matrix', async ({ pag
 });
 
 async function login(page: Page) {
-  await page.goto('/login');
-  await page.getByLabel('Email').fill('ot-admin@example.test');
-  await page.getByLabel('Password').fill('TestPassword!234');
-  await page.getByRole('button', { name: 'Login' }).click();
-  await page.waitForURL('**/app/crm');
+  await page.context().addCookies([...W12_E2E_ADMIN_COOKIES]);
+  await page.goto('/app/contacts');
   await waitForUsableList(page);
 }
 

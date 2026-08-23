@@ -61,11 +61,12 @@ test('authenticated CRM shell passes axe, reflow, and width-height target gates'
 });
 
 async function login(page: Page) {
-  await page.goto('/login');
+  await page.context().clearCookies();
+  await page.goto('/login?return_to=%2Fapp%2Fcontacts');
   await page.getByLabel('Email').fill('ot-admin@example.test');
   await page.getByLabel('Password').fill('TestPassword!234');
   await page.getByRole('button', { name: 'Login' }).click();
-  await page.waitForURL('**/app/crm');
+  await page.waitForURL('**/app/contacts');
   await page.waitForFunction(() => performance.getEntriesByName('ot-crm-list-usable').length > 0);
 }
 

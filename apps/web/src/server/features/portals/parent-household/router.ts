@@ -13,6 +13,7 @@ import type {
   V21ParentSessionContext,
 } from '../../auth/v21-adult-session.ts';
 import type { ParentHouseholdService } from './service.ts';
+import { ParentSummaryError, type ParentSummaryService } from '../parent-summary/index.ts';
 
 const revisionSchema = z.number().int().positive();
 const studentIdSchema = z
@@ -30,13 +31,13 @@ const profileSchema = z
   .strict();
 const credentialSchema = z
   .object({
-    new_password: z.string().min(12).max(128),
-    password_confirmation: z.string().min(12).max(128),
+    new_password: z.string().regex(/^[0-9]{6}$/u),
+    password_confirmation: z.string().regex(/^[0-9]{6}$/u),
   })
   .strict();
 const createSchema = profileSchema
   .extend({
-    relationship: z.enum(['self', 'dependent']),
+    relationship: z.literal('dependent'),
     expected_revision: revisionSchema,
     new_password: credentialSchema.shape.new_password,
     password_confirmation: credentialSchema.shape.password_confirmation,
@@ -50,6 +51,7 @@ const SHA256 = /^[0-9a-f]{64}$/u;
 
 export function createParentHouseholdRouter(input: {
   service: ParentHouseholdService;
+  summaryService?: ParentSummaryService;
   sessions: Pick<V21AdultSessionRuntime, 'bootstrapCookieHeader' | 'verifyCsrf'>;
   fingerprintPasswordForIdempotency: (password: string) => Promise<string>;
   clock?: () => Date;
@@ -78,6 +80,35 @@ export function createParentHouseholdRouter(input: {
         success: true,
         data: { snapshot, csrf_token: bootstrap.csrf_token },
       });
+    }),
+  );
+
+  router.get(
+    '/summary',
+    asyncRoute(async (req, res) => {
+      if (!input.summaryService) {
+        sendError(
+          res,
+          503,
+          'PARENT_SUMMARY_UNAVAILABLE',
+          'Parent summary is temporarily unavailable.',
+        );
+        return;
+      }
+      const bootstrap = await input.sessions.bootstrapCookieHeader({
+        cookie_header: req.header('cookie'),
+        now: clock(),
+      });
+      if (bootstrap.status === 'invalid') {
+        sendError(res, 401, 'UNAUTHENTICATED', 'Please sign in again.');
+        return;
+      }
+      if (bootstrap.status === 'unavailable') {
+        sendError(res, 503, 'SESSION_UNAVAILABLE', 'Parent access is temporarily unavailable.');
+        return;
+      }
+      const snapshot = await input.summaryService.overview(principalFrom(bootstrap.context));
+      res.status(200).json({ success: true, data: { snapshot } });
     }),
   );
 
@@ -327,6 +358,16 @@ function errorHandler(error: unknown, _req: Request, res: Response, _next: NextF
   }
   if (error instanceof ParentHouseholdError) {
     const status = statusFor(error.code);
+    sendError(res, status, error.code, error.message);
+    return;
+  }
+  if (error instanceof ParentSummaryError) {
+    const status =
+      error.code === 'parent_summary_role_denied'
+        ? 403
+        : error.code === 'parent_summary_scope_denied' || error.code === 'parent_summary_missing'
+          ? 404
+          : 500;
     sendError(res, status, error.code, error.message);
     return;
   }

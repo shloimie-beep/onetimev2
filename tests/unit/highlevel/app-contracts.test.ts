@@ -134,14 +134,14 @@ describe('HighLevel application contracts', () => {
       loadConfig({
         NODE_ENV: 'test',
         HIGHLEVEL_EVENT_SYNC_MODE: 'provider',
-        HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN: 'test-provider-token',
+        HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN: 'test-provider-token',
       }),
     ).toThrow(/exact canary run ID/i);
     expect(() =>
       loadConfig({
         NODE_ENV: 'test',
         HIGHLEVEL_EVENT_SYNC_MODE: 'provider',
-        HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN: 'test-provider-token',
+        HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN: 'test-provider-token',
         HIGHLEVEL_CANARY_RUN_ID: 'canary-run-0001',
         HIGHLEVEL_CANARY_DELIVERY_KEYS: 'delivery-a,delivery-b',
         HIGHLEVEL_CANARY_BUDGET: '1',
@@ -153,7 +153,7 @@ describe('HighLevel application contracts', () => {
     const config = loadConfig({
       NODE_ENV: 'test',
       HIGHLEVEL_EVENT_SYNC_MODE: 'provider',
-      HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN: 'test-provider-token',
+      HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN: 'test-provider-token',
       HIGHLEVEL_CANARY_RUN_ID: ' canary-run-0001 ',
       HIGHLEVEL_CANARY_DELIVERY_KEYS: ' delivery-b,delivery-a,delivery-b ',
       HIGHLEVEL_CANARY_BUDGET: '2',
@@ -176,7 +176,7 @@ describe('HighLevel application contracts', () => {
       loadConfig({
         NODE_ENV: 'test',
         HIGHLEVEL_EVENT_SYNC_MODE: 'provider',
-        HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN: 'test-provider-token',
+        HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN: 'test-provider-token',
         HIGHLEVEL_CANARY_RUN_ID: 'canary-run-0001',
         HIGHLEVEL_CANARY_DELIVERY_KEYS: deliveryKeys,
         HIGHLEVEL_CANARY_BUDGET: budget,

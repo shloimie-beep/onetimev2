@@ -21,6 +21,7 @@ import {
   parentExportCategories,
   planSharedMediaPrivacyTreatment,
   redeemExportDownloadGrant,
+  studentExportCategories,
   transitionDataRightsRequest,
   verifyPurgeLedgerChain,
   visiblePrivacyStatus,
@@ -209,6 +210,30 @@ describe('data-rights actor scope and request lifecycle', () => {
     ).toThrow(/not authorized/i);
   });
 
+  it('authorizes only the exact adult self Student and excludes other-participant detail', () => {
+    const request = createDataRightsRequest({
+      ...rightsInput(studentActor(SELF.student_id)),
+      subject: {
+        kind: 'student',
+        student_id: SELF.student_id,
+        household_id: SELF.household_id,
+        relationship: 'self',
+        self_adult_id: SELF.self_adult_id,
+      },
+    });
+    expect(request.requester_kind).toBe('adult_self_student');
+    expect(request.requester_ref).toBe('credential-student');
+    expect(request.excluded_categories).toEqual(
+      expect.arrayContaining([
+        'sibling_data',
+        'other_participant_data',
+        'shared_raw_recordings',
+        'provider_secrets',
+        'other_participant_leaderboard_details',
+      ]),
+    );
+  });
+
   it('requires recent password and separate Admin review for a dependent request', () => {
     expect(() =>
       createDataRightsRequest({
@@ -338,6 +363,26 @@ describe('data-rights actor scope and request lifecycle', () => {
   it('ordinary Parent export excludes private Student bodies and shared recordings', () => {
     expect(parentExportCategories().excluded).toEqual(
       expect.arrayContaining(['private_questions', 'rabbi_answers', 'student_support_bodies']),
+    );
+  });
+
+  it('self-managed adult Student export includes only own learning records', () => {
+    const disclosure = studentExportCategories();
+    expect(disclosure.included).toEqual(
+      expect.arrayContaining([
+        'own_student_profile',
+        'own_private_questions_rabbi_answers',
+        'own_student_support',
+      ]),
+    );
+    expect(disclosure.excluded).toEqual(
+      expect.arrayContaining([
+        'sibling_data',
+        'other_participant_data',
+        'shared_raw_recordings',
+        'provider_secrets',
+        'other_participant_leaderboard_details',
+      ]),
     );
   });
 });

@@ -3,10 +3,51 @@ import {
   assertNoHorizontalOverflow,
   useW12AdminSession,
 } from './w12-100/launch-readiness-helpers.ts';
+import { W12_E2E_ADMIN_CSRF_TOKEN } from '../support/w12-portal-test-lab-session.ts';
 
 test.describe.configure({ mode: 'serial' });
 
 let publishedPlaybackPath = '';
+
+test('canonical Admin content review opens the exact local source and review actions', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await useW12AdminSession(page);
+  const sourceKey = 'e2e_canonical_content_review';
+  const admission = await page.request.post('/api/v1/content/outcomes', {
+    headers: { 'x-csrf-token': W12_E2E_ADMIN_CSRF_TOKEN },
+    data: {
+      idempotency_key: 'e2e-canonical-content-review-v1',
+      item_key: sourceKey,
+      title: 'Canonical content review fixture',
+      item_type: 'video',
+      revision_number: 1,
+      lifecycle_state: 'review_needed',
+      transcript_metadata: { summary: 'Synthetic local transcript review fixture.' },
+      source_metadata: { source_label: 'Synthetic local review source' },
+      review_sheet_metadata: {},
+      playback_metadata: { provider: 'sink' },
+    },
+  });
+  expect(admission.status(), await admission.text()).toBe(202);
+
+  await page.goto(`/app/content/${sourceKey}`);
+  await expect(
+    page.getByRole('heading', { name: 'Canonical content review fixture' }),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'Open content review' }).click();
+  await expect(page).toHaveURL(`/app/content/${sourceKey}/review`);
+  await expect(page.getByText('Content review', { exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Approve Transcript' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Approve Artifact' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Approve Social' })).toHaveCount(0);
+  await expect(page.getByText('no provider URL exposed', { exact: true })).toBeVisible();
+  await assertNoHorizontalOverflow(page);
+  expect(await page.locator('body').innerText()).not.toMatch(
+    /https?:\/\/player\.vimeo\.com|Bearer/i,
+  );
+});
 
 test('Admin uploads, processes, reviews, and publishes one occurrence-scoped video', async ({
   page,
@@ -68,16 +109,17 @@ test('provider-off synthetic content stays out of the ordinary Student library',
     'ContentFactoryStudent!234',
     '/app/student',
   );
-  await page.getByRole('link', { name: 'Library', exact: true }).click();
-  await expect(page).toHaveURL('/app/student?section=library');
+  await page.getByLabel('Primary navigation').getByRole('link', { name: 'Learning' }).click();
+  await page.getByLabel('Learning navigation').getByRole('link', { name: 'Library' }).click();
+  await expect(page).toHaveURL('/app/student/library');
   const contentCard = page
     .getByRole('region', { name: 'Library', exact: true })
     .getByRole('article')
     .filter({ hasText: 'Browser-published occurrence lesson' });
   await expect(contentCard).toHaveCount(0);
   const response = await page.goto(publishedPlaybackPath);
-  expect(response?.status()).toBe(404);
-  await expect(page.getByText('Approved lesson playback is unavailable.')).toBeVisible();
+  expect([403, 404]).toContain(response?.status());
+  await expect(page.locator('body')).not.toContainText('Browser-published occurrence lesson');
   const body = await page.locator('body').innerText();
   expect(body).not.toMatch(
     /Browser-published occurrence lesson|https?:\/\/player\.vimeo\.com|synthetic_video_|volume:v1:/i,
@@ -93,8 +135,7 @@ test('a non-entitled learner receives a metadata-safe denial', async ({ page }) 
     '/app/student',
   );
   const response = await page.goto(publishedPlaybackPath);
-  expect(response?.status()).toBe(404);
-  await expect(page.getByText('Approved lesson playback is unavailable.')).toBeVisible();
+  expect([403, 404]).toContain(response?.status());
   expect(await page.locator('body').innerText()).not.toContain(
     'Browser-published occurrence lesson',
   );

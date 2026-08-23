@@ -1,6 +1,7 @@
 import { z } from 'zod';
 export * from './pipeline.ts';
 export * from './vimeo-runtime.ts';
+export * from './existing-vimeo-adoption.ts';
 export * from './publisher.ts';
 export * from './admin-workspace.ts';
 export * from './learning-delivery.ts';

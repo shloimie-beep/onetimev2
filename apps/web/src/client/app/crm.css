@@ -1,5 +1,424 @@
 @import '../../../../../packages/brand-system/src/styles/react.css';
 
+.parent-learning-workspace {
+  display: grid;
+  gap: var(--ot-space-4);
+  width: 100%;
+  min-width: 0;
+  padding: clamp(var(--ot-space-3), 3vw, var(--ot-space-5));
+}
+
+.parent-portal-loading-skeleton {
+  display: grid;
+  gap: var(--ot-space-4);
+  width: 100%;
+  min-width: 0;
+  padding: clamp(var(--ot-space-3), 3vw, var(--ot-space-5));
+}
+
+.parent-portal-loading-skeleton > p {
+  margin: 0;
+  color: var(--ot-color-text-muted);
+  font-weight: 700;
+}
+
+.parent-portal-loading-skeleton__panel,
+.parent-portal-loading-skeleton__cards > span {
+  border: 1px solid var(--ot-color-border);
+  border-radius: var(--ot-radius-panel);
+  background: var(--ot-color-surface-raised);
+}
+
+.parent-portal-loading-skeleton__panel {
+  display: grid;
+  gap: var(--ot-space-3);
+  min-height: 12rem;
+  padding: var(--ot-space-5);
+}
+
+.parent-portal-loading-skeleton__panel > span {
+  display: block;
+  width: min(100%, 28rem);
+  height: 1rem;
+  border-radius: 999px;
+  background: var(--ot-color-surface-muted);
+}
+
+.parent-portal-loading-skeleton__panel > span:first-child {
+  width: min(72%, 20rem);
+  height: 1.75rem;
+  background: color-mix(in srgb, var(--ot-color-action-auth) 28%, var(--ot-color-surface-muted));
+}
+
+.parent-portal-loading-skeleton__cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ot-space-3);
+}
+
+.parent-portal-loading-skeleton__cards > span {
+  min-height: 9rem;
+}
+
+.parent-learning-workspace__hero {
+  display: grid;
+  gap: var(--ot-space-2);
+  border: 1px solid var(--ot-color-border);
+  border-radius: var(--ot-radius-panel);
+  background: var(--ot-color-surface-raised);
+  padding: clamp(var(--ot-space-4), 4vw, var(--ot-space-6));
+}
+
+.parent-learning-workspace__hero h2,
+.parent-learning-workspace__hero p {
+  margin: 0;
+}
+
+.parent-learning-workspace__capacity {
+  color: var(--ot-color-text-muted);
+  font-weight: 700;
+}
+
+.parent-learning-workspace__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ot-space-2);
+  margin-top: var(--ot-space-2);
+}
+
+.parent-learning-workspace__actions > * {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: min(100%, 11rem);
+}
+
+.parent-learning-workspace__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: var(--ot-space-3);
+}
+
+.parent-learning-workspace__activity {
+  display: grid;
+  gap: var(--ot-space-2);
+  margin: 0;
+}
+
+.parent-learning-workspace__activity > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--ot-space-2);
+}
+
+.parent-learning-workspace__activity dd {
+  margin: 0;
+  font-weight: 800;
+}
+
+.parent-learning-workspace__question {
+  display: grid;
+  gap: var(--ot-space-2);
+  margin-top: var(--ot-space-3);
+}
+
+.parent-learning-workspace__question textarea {
+  width: 100%;
+  min-height: 8rem;
+  resize: vertical;
+}
+
+.parent-learning-workspace__welcome-video {
+  display: grid;
+  gap: var(--ot-space-2);
+  min-width: 0;
+}
+
+.parent-learning-workspace__welcome-video h2,
+.parent-learning-workspace__welcome-video p {
+  margin: 0;
+}
+
+.parent-learning-workspace__welcome-video video {
+  display: block;
+  width: 100%;
+  max-width: 48rem;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--ot-radius-panel);
+  background: var(--ot-color-surface-raised);
+}
+
+.parent-learning-workspace__classroom-sdk {
+  min-width: 0;
+}
+
+.parent-learning-workspace__classroom-sdk:empty {
+  display: none;
+}
+
+.parent-learning-workspace__library {
+  display: grid;
+  gap: var(--ot-space-3);
+  margin: var(--ot-space-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.parent-learning-workspace__library > li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--ot-space-3);
+  min-width: 0;
+  border-top: 1px solid var(--ot-color-border);
+  padding-top: var(--ot-space-3);
+}
+
+.parent-learning-workspace__library > li:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.parent-learning-workspace__library > li > div {
+  display: grid;
+  gap: var(--ot-space-1);
+  min-width: 0;
+}
+
+.parent-learning-workspace__library h3,
+.parent-learning-workspace__library p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 32rem) {
+  .parent-learning-workspace__library > li {
+    align-items: stretch;
+    display: grid;
+  }
+
+  .parent-learning-workspace__library button {
+    width: 100%;
+  }
+}
+
+.parent-student-workspace,
+.parent-student-form,
+.parent-student-management {
+  display: grid;
+  gap: var(--ot-space-3);
+  max-width: 46rem;
+  min-width: 0;
+}
+
+.parent-student-workspace {
+  width: min(100%, 50rem);
+  padding: clamp(var(--ot-space-3), 3vw, var(--ot-space-5));
+}
+
+.parent-student-workspace > section,
+.parent-student-workspace > details,
+.parent-student-workspace > ul {
+  min-width: 0;
+}
+
+.parent-student-workspace > ul {
+  display: grid;
+  gap: var(--ot-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.parent-student-workspace > ul > li {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--ot-space-2);
+  border: 1px solid var(--ot-color-border);
+  border-radius: var(--ot-radius-control);
+  background: var(--ot-color-surface-raised);
+  padding: var(--ot-space-3);
+}
+
+.parent-student-workspace > ul > li a {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-weight: 700;
+}
+
+.parent-student-workspace__seat-summary,
+.parent-student-form__enrollment,
+.parent-student-form__guidance,
+.parent-student-management__security > p {
+  margin: 0;
+  color: var(--ot-color-text-muted);
+}
+
+.parent-student-form {
+  border: 1px solid var(--ot-color-border);
+  border-radius: var(--ot-radius-panel);
+  background: var(--ot-color-surface-raised);
+  padding: var(--ot-space-4);
+}
+
+.parent-student-form__fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ot-space-3);
+}
+
+.parent-student-form__fields > label,
+.parent-student-form__fields > .parent-student-form__credential-field,
+.parent-student-management > .parent-student-form > label,
+.parent-student-management > .parent-student-form > .parent-student-form__credential-field,
+.parent-student-management__security .parent-student-form > label,
+.parent-student-management__security .parent-student-form > .parent-student-form__credential-field {
+  display: grid;
+  gap: var(--ot-space-1);
+  min-width: 0;
+  color: var(--ot-color-text-muted);
+}
+
+.parent-student-form__fields > label:first-child,
+.parent-student-form__guidance,
+.parent-student-form__field-error,
+.parent-student-management__security {
+  grid-column: 1 / -1;
+}
+
+.parent-student-form input,
+.parent-student-form select {
+  width: 100%;
+  min-height: var(--ot-size-touch-target);
+  border: 1px solid var(--ot-color-border-strong);
+  border-radius: var(--ot-radius-control);
+  background: var(--ot-color-surface-muted);
+  color: var(--ot-color-text);
+  padding: var(--ot-space-2) var(--ot-space-3);
+}
+
+.parent-student-form__field-error {
+  margin: 0;
+  border-left: 3px solid var(--ot-color-danger);
+  padding-left: var(--ot-space-2);
+  color: var(--ot-color-danger);
+}
+
+.parent-student-management__security {
+  display: grid;
+  gap: var(--ot-space-3);
+  border: 1px solid var(--ot-color-border);
+  border-radius: var(--ot-radius-control);
+  padding: var(--ot-space-3);
+}
+
+.parent-student-management__security summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.student-notification-center,
+.student-notification-center__panel,
+.student-notification-center__preferences,
+.student-notification-center__list,
+.student-notification-center__item > article {
+  display: grid;
+  gap: var(--ot-space-3);
+  min-width: 0;
+}
+
+.student-notification-center__header,
+.student-notification-center__preferences {
+  border: 1px solid var(--ot-color-border);
+  border-radius: var(--ot-radius-panel);
+  background: var(--ot-color-surface-raised);
+  padding: var(--ot-space-3);
+}
+
+.student-notification-center__header h2,
+.student-notification-center__header p,
+.student-notification-center__item h3,
+.student-notification-center__item p {
+  margin: 0;
+}
+
+.student-notification-center__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ot-space-2);
+}
+
+.student-notification-center__filters [role='tab'][aria-selected='true'] {
+  border-color: var(--ot-color-action-auth);
+  background: var(--ot-color-surface-muted);
+}
+
+.student-notification-center__preferences label {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ot-space-2);
+}
+
+.student-notification-center__preferences p,
+.student-notification-center__item time {
+  color: var(--ot-color-text-muted);
+}
+
+.student-notification-center__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.student-notification-center__item > article {
+  border: 1px solid var(--ot-color-border);
+  border-radius: var(--ot-radius-panel);
+  background: var(--ot-color-surface-raised);
+  padding: var(--ot-space-3);
+}
+
+@media (max-width: 680px) {
+  .parent-portal-loading-skeleton__cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .parent-student-workspace,
+  .parent-student-form,
+  .parent-student-management {
+    max-width: none;
+  }
+
+  .parent-student-workspace > ul > li {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .student-notification-center__preferences label {
+    align-items: flex-start;
+  }
+
+  .parent-student-form__fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .parent-student-form__fields > label,
+  .parent-student-form__fields > .parent-student-form__credential-field,
+  .parent-student-form__fields > label:first-child,
+  .parent-student-form__guidance,
+  .parent-student-form__field-error {
+    grid-column: auto;
+  }
+
+  .parent-student-form > .button-primary,
+  .parent-student-workspace > .button-primary {
+    width: 100%;
+  }
+}
+
 .live-console {
   display: grid;
   gap: var(--ot-space-4);
@@ -148,6 +567,31 @@
   display: grid;
   gap: var(--ot-space-4);
   min-width: 0;
+}
+
+html:fullscreen,
+html:fullscreen body,
+html:fullscreen #portal-root {
+  width: 100%;
+  height: 100%;
+  min-height: 100dvh;
+  margin: 0;
+  overflow: hidden;
+  background: #000;
+}
+
+@media (orientation: landscape) and (max-width: 1024px) {
+  html:fullscreen .student-classroom-sdk {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 2147483000 !important;
+    width: 100vw !important;
+    max-width: none !important;
+    height: 100dvh !important;
+    max-height: none !important;
+    margin: 0 !important;
+    background: #000;
+  }
 }
 
 .dashboard-overview-card {
@@ -748,6 +1192,12 @@
   }
 }
 
+@media (max-width: 599px) {
+  .detail-toolbar--loading {
+    min-height: 134px;
+  }
+}
+
 @media (max-width: 480px) {
   .launch-status__hero {
     align-items: stretch;
@@ -1052,6 +1502,35 @@
   margin: 0;
 }
 
+.admin-directory__detail-facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--ot-space-4);
+  margin: 0;
+}
+
+.admin-directory__detail-facts > div {
+  display: grid;
+  gap: var(--ot-space-1);
+  min-width: 0;
+}
+
+.admin-directory__detail-facts dt {
+  color: var(--ot-color-text-muted);
+  font-size: var(--ot-font-size-sm);
+  font-weight: 700;
+}
+
+.admin-directory__detail-facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.admin-directory__table {
+  display: block;
+  overflow-x: auto;
+}
+
 .admin-directory__table table {
   min-width: 56rem;
 }
@@ -1071,6 +1550,20 @@
   overflow-wrap: anywhere;
 }
 
+.admin-directory__record-link {
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ot-color-action-auth);
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  text-decoration: underline;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
 @media (max-width: 42rem) {
   .admin-directory__heading {
     align-items: stretch;
@@ -1081,7 +1574,8 @@
   }
 
   .admin-directory__filters,
-  .admin-directory__form {
+  .admin-directory__form,
+  .admin-directory__detail-facts {
     display: grid;
     grid-template-columns: 1fr;
   }

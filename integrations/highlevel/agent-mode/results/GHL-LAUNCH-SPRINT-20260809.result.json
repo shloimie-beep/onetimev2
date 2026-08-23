@@ -1,0 +1,185 @@
+{
+  "schema_version": "1.0",
+  "task_id": "GHL-LAUNCH-SPRINT-20260809",
+  "lane": "OT-P3",
+  "generated_at": "2026-08-09T12:35:00+03:00",
+  "repository": "shloimie-beep/onetimev2",
+  "source": {
+    "pull_request": 131,
+    "integration_branch": "codex/one-time-complete-production-launch-20260805",
+    "observed_head_sha": "aade78dd5d58808b80c11251274d8c27b78c9103"
+  },
+  "provider": {
+    "name": "HighLevel",
+    "location_id": "pBSnOK2nkdxp6gf9Rg3o"
+  },
+  "result_status": "partial_in_progress",
+  "delta_basis": {
+    "already_proven": [
+      "Existing One Time HighLevel location and canonical workflow registry were used.",
+      "The dedicated delivery domain mg.onetimeonetime.com was previously active.",
+      "The previous canonical Old App Active count was 29; it was not reused as a send authorization."
+    ],
+    "operator_changed_this_run": [
+      "Edited OT-01 workflow 95a6f461-1a04-4260-b379-246fdcc45af7 in place.",
+      "Saved and reopened the Family account confirmation email content.",
+      "Ran exactly one workflow test using an existing operator-owned seed contact.",
+      "Sent OT-P4 a bounded one-canary gate handoff; no general enrollment was authorized.",
+      "Disabled OT-01 Allow re-entry and Allow multiple opportunities, saved, reopened, and verified both remained off.",
+      "Renamed OT-01 to OT-01 Family Account Confirmation; verified folder 00 - Intake & Data.",
+      "Returned OT-01 from Published to Draft and verified Draft on the workflow list.",
+      "Changed the OT-01 action From name/address to the approved Rabbi identity; saved, reopened, and verified both fields persisted.",
+      "Set the dedicated email header to Rabbi Eli Scheller <rabbielischeller@onetimeonetime.com>; saved and verified exact provider readback.",
+      "Set the global Reply Address to rabbielischeller@onetimeonetime.com; saved, reopened, and verified exact readback.",
+      "Ran one final action-level operator inbox canary after the Reply Address change; no workflow publication or enrollment was used.",
+      "Replied from the operator inbox and verified the unique reply in the correct GHL contact conversation."
+    ],
+    "unresolved_delta_only": [
+      "Current Old App Active count, one migration seed proof, and any authorized send-once campaign.",
+      "OT-02B nurture configuration, save/reopen/readback, and seed test.",
+      "Stripe test-mode product/payment-link lifecycle and OT-04/05/06 workflows."
+    ]
+  },
+  "sender_identity": {
+    "requested": {
+      "from_name": "Rabbi Eli Scheller",
+      "visible_from": "rabbielischeller@onetimeonetime.com",
+      "reply_to": "rabbielischeller@onetimeonetime.com"
+    },
+    "observed_dedicated_header": {
+      "from_name": "Rabbi Eli Scheller",
+      "from_address": "rabbielischeller@onetimeonetime.com",
+      "save_readback": "passed"
+    },
+    "dns_readback": {
+      "spf": "verified",
+      "dkim": "verified",
+      "cname": "verified",
+      "mx": "verified",
+      "dmarc": "verified"
+    },
+    "mailbox_or_forwarder": "passed_by_bounded_reply_round_trip; destination and operator identity redacted",
+    "monitored_replies": "passed; operator reply appeared in the correct GHL contact conversation",
+    "provider_acceptance": "passed",
+    "seed_inbox": {
+      "status": "passed",
+      "received_at": "2026-08-09T12:32:28+03:00",
+      "visible_from": "Rabbi Eli Scheller <rabbielischeller@onetimeonetime.com>",
+      "reply_to": "rabbielischeller@onetimeonetime.com",
+      "spf": "pass",
+      "dkim": "pass",
+      "dmarc": "pass",
+      "recipient": "operator-owned inbox; redacted"
+    },
+    "reply_round_trip": {
+      "status": "passed",
+      "sent_at": "2026-08-09T12:33:00+03:00",
+      "proof_token": "OT-P3-REPLY-20260809T0934Z",
+      "destination": "approved Rabbi root address",
+      "ghl_conversation": "correct operator-owned contact conversation; identifying fields redacted"
+    },
+    "status": "passed",
+    "observed_action_override": {
+      "from_name": "Rabbi Eli Scheller",
+      "from_address": "rabbielischeller@onetimeonetime.com",
+      "save_reopen": "passed"
+    },
+    "global_reply_address": {
+      "address": "rabbielischeller@onetimeonetime.com",
+      "save_reopen": "passed"
+    }
+  },
+  "workflows": {
+    "ot_01": {
+      "workflow_id": "95a6f461-1a04-4260-b379-246fdcc45af7",
+      "requested_name": "OT-01 Family Account Confirmation",
+      "observed_name": "OT-01 Family Account Confirmation",
+      "status": "Draft",
+      "trigger_readback": "no trigger; direct/API enrollment shape preserved",
+      "current_action_count": 1,
+      "action_type": "Email",
+      "action_sender_readback": {
+        "from_name": "Rabbi Eli Scheller",
+        "from_email": "rabbielischeller@onetimeonetime.com"
+      },
+      "subject": "Your One Time Family account is ready",
+      "preheader": "Sign in and add your Student accounts.",
+      "body_and_signature": "exact requested Family copy persisted on reopen",
+      "cta": {
+        "label": "Sign in to One Time",
+        "url": "https://app.onetimeonetime.com/login",
+        "implementation": "quick-compose hyperlink"
+      },
+      "save_readback": "Saved",
+      "reopen_readback": "passed_after_name_folder_status_sender_changes",
+      "allow_reentry_readback": false,
+      "folder_readback": "00 - Intake & Data",
+      "seed_test": {
+        "attempted_contacts": 1,
+        "completed_enrollments": 1,
+        "enrollment_reason": "Workflow test page",
+        "enrolled_at": "2026-08-09T11:32:07+03:00",
+        "execution_id": "01KZJTD4ZXZCK4S4P0GMNPJT5G",
+        "email_action_status": "Executed",
+        "email_action_at": "2026-08-09T11:32:08+03:00",
+        "workflow_end_status": "finished",
+        "workflow_end_at": "2026-08-09T11:32:08+03:00",
+        "inbox_receipt": "passed; final bounded header canary delivered",
+        "seed_contact": "operator-owned launch seed; identifying fields redacted"
+      },
+      "general_enrollment": "disabled",
+      "bounded_canary_gate": "one operator-owned Family signup canary may run with immediate runner disablement afterward; general enrollment remains disabled",
+      "acceptance_status": "passed_for_save_reopen_seed_and_sender_reply_gate",
+      "remaining_blockers": [],
+      "allow_multiple_opportunities_readback": false,
+      "duplicate_controls_save_reopen": "passed",
+      "final_state_readback": {
+        "status": "Draft",
+        "draft_publish_switch_aria_checked": false,
+        "verified_at": "2026-08-09T12:34:00+03:00"
+      }
+    },
+    "ot_02b": {
+      "workflow_id": "a703",
+      "status": "not_modified",
+      "broad_enrollment": "disabled"
+    },
+    "ot_04_ot_05_ot_06": {
+      "status": "not_modified",
+      "live_billing": "unchanged_and_not_activated"
+    }
+  },
+  "migration_campaign": {
+    "status": "not_created_or_sent",
+    "previous_canonical_old_app_active_count": 29,
+    "current_count_readback": "not_performed",
+    "seed_send": "not_performed",
+    "broad_send": "not_performed",
+    "reason": "Approved Rabbi sender acceptance remains incomplete."
+  },
+  "billing": {
+    "stripe_test_mode": "not_modified",
+    "live_product_or_link": "not_published",
+    "live_customer_billing": "unchanged"
+  },
+  "external_effects": {
+    "highlevel_workflows_modified": 1,
+    "completed_operator_owned_workflow_enrollments": 3,
+    "action_level_test_emails_sent": 2,
+    "total_operator_owned_email_deliveries_observed": 5,
+    "operator_reply_canaries_sent": 1,
+    "broad_campaign_recipients": 0,
+    "live_billing_mutations": 0,
+    "live_enrollment_runner_changes": 0,
+    "student_contacts_created": 0,
+    "adult_operator_qa_contacts_created": 2,
+    "skipped_reentry_attempts_without_email": 1
+  },
+  "safety": {
+    "secrets_redacted": true,
+    "child_data_recorded": false,
+    "student_contacts_created": false,
+    "broad_send_performed": false,
+    "live_billing_altered": false
+  }
+}

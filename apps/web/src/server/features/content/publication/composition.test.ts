@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { loadConfig } from '../../../../../../../packages/config/src/index.ts';
 import type { DbPool } from '../../../../../../../packages/db/src/index.ts';
 import {
@@ -45,6 +45,31 @@ describe('P21 content-publication composition', () => {
     await expect(
       disabledVimeoReadbackAdapter().readCanonical({} as never, new AbortController().signal),
     ).rejects.toThrow('content_publication_vimeo_readback_unavailable');
+  });
+
+  it('ignores an injected Vimeo readback seam while the media gate is off', () => {
+    const readCanonical = vi.fn();
+    expect(() =>
+      composeContentPublicationService({
+        config: testConfig(),
+        pool: unusedPool(),
+        vimeoReadbackAdapter: { readCanonical },
+        providerBinding: {
+          registry_binding_key: 'vimeo_publication_primary',
+          provider: 'vimeo',
+          scope: {
+            product: 'one_time_mishnayos',
+            runtime_tier: 'isolated_staging',
+            verification_environment_id: 'ci',
+          },
+          provider_account_ref_hash: 'a'.repeat(64),
+          allowed_operation_types: ['publish_private'],
+          mutation_policy: 'allowed',
+          active: true,
+        },
+      }),
+    ).not.toThrow();
+    expect(readCanonical).not.toHaveBeenCalled();
   });
 });
 

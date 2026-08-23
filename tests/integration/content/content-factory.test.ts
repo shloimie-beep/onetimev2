@@ -586,16 +586,28 @@ describe('durable occurrence-scoped content factory', () => {
         }),
       ]);
 
-      for (const session of [parent, student]) {
-        const response = await playback(server.baseUrl, session, 'factory_sample_2026_07_22');
-        const html = await response.text();
-        expect(response.status, html).toBe(200);
-        expect(html).toContain('Protected One Time lesson');
-        expect(html).toContain('<dt>Captions</dt><dd>Active</dd>');
-        expect(html).toContain('/api/v1/content/factory/factory_sample_2026_07_22/embed');
-        expect(html).not.toContain('player.vimeo.com');
-        expect(html).not.toContain('private_video_123');
-      }
+      const studentPlayback = await playback(server.baseUrl, student, 'factory_sample_2026_07_22');
+      const studentHtml = await studentPlayback.text();
+      expect(studentPlayback.status, studentHtml).toBe(200);
+      expect(studentHtml).toContain('Protected One Time lesson');
+      expect(studentHtml).toContain('<dt>Captions</dt><dd>Active</dd>');
+      expect(studentHtml).toContain('/api/v1/content/factory/factory_sample_2026_07_22/embed');
+      expect(studentHtml).not.toContain('player.vimeo.com');
+      expect(studentHtml).not.toContain('private_video_123');
+
+      const legacyParentPlayback = await playback(
+        server.baseUrl,
+        parent,
+        'factory_sample_2026_07_22',
+      );
+      expect(legacyParentPlayback.status).toBe(404);
+      expect(await legacyParentPlayback.text()).not.toContain('private_video_123');
+      const legacyParentEmbed = await fetch(
+        `${server.baseUrl}/api/v1/content/factory/factory_sample_2026_07_22/embed`,
+        { headers: { cookie: parent.cookie }, redirect: 'manual' },
+      );
+      expect(legacyParentEmbed.status).toBe(404);
+      expect(await legacyParentEmbed.text()).not.toContain('private_video_123');
 
       const embed = await fetch(
         `${server.baseUrl}/api/v1/content/factory/factory_sample_2026_07_22/embed`,
@@ -771,9 +783,11 @@ async function seedOccurrenceRoster(input: {
   await pool.query(
     `INSERT INTO onetime.class_occurrences
        (occurrence_key, account_key, product_key, class_series_key, local_class_date,
-        starts_at, reminder_due_at, joinable_until, occurrence_state)
+        starts_at, reminder_due_at, joinable_until, occurrence_state, scheduled_ends_at,
+        join_opens_at, join_closes_at)
      VALUES ('occurrence_video_e2e',$1,$2,'series_video_e2e','2026-07-22',
-       '2026-07-22T15:00:00Z','2026-07-22T14:30:00Z','2026-07-22T17:00:00Z','completed')`,
+       '2026-07-22T15:00:00Z','2026-07-22T14:30:00Z','2026-07-22T17:00:00Z','completed',
+       '2026-07-22T16:00:00Z','2026-07-22T14:50:00Z','2026-07-22T17:00:00Z')`,
     [config.accountKey, config.productKey],
   );
   if (input.relationships === false) return;

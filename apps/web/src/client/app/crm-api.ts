@@ -30,6 +30,12 @@ import type {
   LearningAnnouncement,
   LearningQuestion,
 } from '@onetime/contracts';
+import type {
+  SupportAdminView,
+  SupportCategory,
+  SupportLifecycleState,
+  SupportRequesterView,
+} from '../../../../../packages/contracts/src/support/v21.ts';
 
 export type ApiSession = {
   authenticated: true;
@@ -37,6 +43,7 @@ export type ApiSession = {
   user: SessionUser;
   csrf_token: string;
   expires_at: string;
+  credential_version?: number;
   account_context?: {
     active_role: 'admin' | 'parent';
     available_roles: readonly ('admin' | 'parent')[];
@@ -115,6 +122,7 @@ export type SupportTicketSummary = {
   delivery_state: string;
   public_summary: string;
   updated_at: string;
+  messages?: SupportRequesterView['messages'];
 };
 
 export type SupportTicketListResponse = {
@@ -536,35 +544,178 @@ export async function confirmReply(input: {
 }
 
 export async function getSupportEligibility() {
-  return authenticatedJson<SupportEligibilityResponse>('/api/v1/support/eligibility');
+  const response = await authenticatedJson<{
+    success: true;
+    role: 'admin' | 'parent' | 'student';
+    csrf_token: string;
+    can_create_ticket: boolean;
+    categories: Array<{ value: string; label: string }>;
+  }>('/api/v1/support/v21/context');
+  return {
+    success: true,
+    available: response.can_create_ticket,
+    can_create_ticket: response.can_create_ticket,
+    reason: response.can_create_ticket ? 'authorized' : 'support_unavailable',
+    csrf_token: response.csrf_token,
+    categories: response.categories,
+  } satisfies SupportEligibilityResponse;
 }
 
 export async function listSupportTickets() {
-  return authenticatedJson<SupportTicketListResponse>('/api/v1/support/tickets');
+  const response = await authenticatedJson<{ success: true; data: SupportRequesterView[] }>(
+    '/api/v1/support/v21/tickets',
+  );
+  return {
+    success: true,
+    tickets: response.data.map(supportTicketSummary),
+  } satisfies SupportTicketListResponse;
 }
 
 export async function getSupportReceiptStatus(receiptId: string) {
-  return authenticatedJson<SupportReceiptStatusResponse>(
-    `/api/v1/support/receipts/${encodeURIComponent(receiptId)}/status`,
+  const response = await authenticatedJson<{ success: true; data: SupportRequesterView }>(
+    `/api/v1/support/v21/tickets/${encodeURIComponent(receiptId)}`,
   );
+  return {
+    success: true,
+    receipt: {
+      ...supportTicketSummary(response.data),
+      source_ticket_id: response.data.ticketId,
+      bna_ticket_ref: null,
+      status_version: response.data.version,
+    },
+  } satisfies SupportReceiptStatusResponse;
 }
 
 export async function submitSupportTicket(csrfToken: string, payload: Record<string, unknown>) {
-  return authenticatedJson<{
-    success: true;
-    receipt_id: string;
-    source_ticket_id: string;
-    status_path: string;
-    delivery_state: string;
-    duplicate_submission: boolean;
-  }>('/api/v1/support/tickets', {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-      'x-csrf-token': csrfToken,
+  const category = supportCategory(payload.category);
+  const response = await authenticatedJson<{ success: true; data: SupportRequesterView }>(
+    '/api/v1/support/v21/tickets',
+    {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-csrf-token': csrfToken,
+      },
+      body: JSON.stringify({
+        kind:
+          category === 'class_question' || category === 'torah_question'
+            ? 'rabbi_question'
+            : 'technical_support',
+        category,
+        subject: String(payload.title ?? ''),
+        body: String(payload.message ?? ''),
+        idempotency_key: String(payload.idempotency_key ?? ''),
+      }),
     },
-    body: JSON.stringify(payload),
+  );
+  return {
+    success: true,
+    receipt_id: response.data.ticketId,
+    source_ticket_id: response.data.ticketId,
+    status_path: `/api/v1/support/v21/tickets/${encodeURIComponent(response.data.ticketId)}`,
+    delivery_state: 'saved_locally',
+    duplicate_submission: false,
+  };
+}
+
+export async function listAdminSupportTickets() {
+  return authenticatedJson<{ success: true; data: SupportAdminView[] }>(
+    '/api/v1/admin/support/v21/tickets',
+  );
+}
+
+export async function getAdminSupportTicket(ticketId: string) {
+  return authenticatedJson<{ success: true; data: SupportAdminView }>(
+    `/api/v1/admin/support/v21/tickets/${encodeURIComponent(ticketId)}`,
+  );
+}
+
+export async function assignAdminSupportTicket(input: {
+  csrfToken: string;
+  ticketId: string;
+  assigneeAdminId: string;
+  expectedVersion: number;
+}) {
+  return supportAdminWrite(input.csrfToken, input.ticketId, 'assign', {
+    assignee_admin_id: input.assigneeAdminId,
+    expected_version: input.expectedVersion,
   });
+}
+
+export async function updateAdminSupportTicketStatus(input: {
+  csrfToken: string;
+  ticketId: string;
+  status: SupportLifecycleState;
+  expectedVersion: number;
+}) {
+  return supportAdminWrite(input.csrfToken, input.ticketId, 'status', {
+    status: input.status,
+    expected_version: input.expectedVersion,
+  });
+}
+
+export async function replyAdminSupportTicket(input: {
+  csrfToken: string;
+  ticketId: string;
+  body: string;
+  expectedVersion: number;
+  idempotencyKey: string;
+}) {
+  return supportAdminWrite(input.csrfToken, input.ticketId, 'reply', {
+    body: input.body,
+    expected_version: input.expectedVersion,
+    idempotency_key: input.idempotencyKey,
+  });
+}
+
+function supportTicketSummary(ticket: SupportRequesterView): SupportTicketSummary {
+  return {
+    receipt_id: ticket.ticketId,
+    status: ticket.status,
+    delivery_state: 'saved_locally',
+    public_summary: ticket.subject,
+    updated_at: ticket.updatedAt,
+    messages: ticket.messages,
+  };
+}
+
+function supportCategory(value: unknown): SupportCategory {
+  const category = String(value ?? 'support');
+  if (
+    category === 'billing' ||
+    category === 'support' ||
+    category === 'access' ||
+    category === 'technical' ||
+    category === 'system' ||
+    category === 'class_question' ||
+    category === 'torah_question'
+  ) {
+    return category;
+  }
+  if (category === 'access_login') return 'access';
+  if (category === 'class_zoom' || category === 'content' || category === 'technical_bug') {
+    return 'technical';
+  }
+  return 'support';
+}
+
+function supportAdminWrite(
+  csrfToken: string,
+  ticketId: string,
+  action: 'assign' | 'status' | 'reply',
+  body: Record<string, unknown>,
+) {
+  return authenticatedJson<{ success: true; data: SupportAdminView }>(
+    `/api/v1/admin/support/v21/tickets/${encodeURIComponent(ticketId)}/${action}`,
+    {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-csrf-token': csrfToken,
+      },
+      body: JSON.stringify(body),
+    },
+  );
 }
 
 export async function getOwnerDashboard() {
@@ -593,6 +744,79 @@ export async function getAdminLearningSnapshot(): Promise<AdminLearningSnapshot>
     announcements: announcements.data.map((entry) => entry.announcement),
     attendance: attendance.data,
   };
+}
+
+export type AdminQuestionTransitionInput = {
+  questionId: string;
+  to: Exclude<LearningQuestion['state'], 'submitted'>;
+  answer?: string;
+  reason?: string;
+  expectedVersion: number;
+  idempotencyKey: string;
+  auditRef: string;
+};
+
+export async function transitionAdminQuestion(
+  csrfToken: string,
+  input: AdminQuestionTransitionInput,
+) {
+  return authenticatedJson<{
+    success: true;
+    data: { question: LearningQuestion; replay: boolean };
+  }>(`/api/app/learning/questions/${encodeURIComponent(input.questionId)}/transitions`, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      'x-csrf-token': csrfToken,
+    },
+    body: JSON.stringify({
+      to: input.to,
+      ...(input.answer?.trim() ? { answer: input.answer.trim() } : {}),
+      ...(input.reason?.trim() ? { reason: input.reason.trim() } : {}),
+      expected_version: input.expectedVersion,
+      idempotency_key: input.idempotencyKey,
+      audit_ref: input.auditRef,
+    }),
+  });
+}
+
+export async function getAdminAttendanceSnapshot(): Promise<AdminLearningSnapshot> {
+  const attendance = await authenticatedJson<{ success: true; data: AttendanceRecord[] }>(
+    '/api/app/classroom/attendance/admin',
+  );
+  return { questions: [], announcements: [], attendance: attendance.data };
+}
+
+export type AdminAttendanceCorrectionInput = {
+  studentId: string;
+  occurrenceId: string;
+  joinedAt: string;
+  leftAt: string;
+  reason: string;
+  idempotencyKey: string;
+};
+
+export async function correctAdminAttendance(
+  csrfToken: string,
+  input: AdminAttendanceCorrectionInput,
+) {
+  return authenticatedJson<{ success: true; data: { disposition: 'accepted' } }>(
+    '/api/app/classroom/attendance/admin-correction',
+    {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-csrf-token': csrfToken,
+      },
+      body: JSON.stringify({
+        student_id: input.studentId,
+        occurrence_id: input.occurrenceId,
+        intervals: [{ joined_at: input.joinedAt, left_at: input.leftAt }],
+        reason: input.reason,
+        idempotency_key: input.idempotencyKey,
+      }),
+    },
+  );
 }
 
 export async function getClasses() {
@@ -951,7 +1175,7 @@ async function authenticatedJson<T>(path: string, init: RequestInit = {}): Promi
     headers: privateHeaders(init.headers),
   });
   const json = await response.json().catch(() => ({}));
-  if (response.status === 401 || response.status === 403) throw new AuthExpiredError();
+  if (response.status === 401) throw new AuthExpiredError();
   if (!response.ok || json.success === false) {
     throw new ApiRequestError(json);
   }

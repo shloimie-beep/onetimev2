@@ -93,8 +93,8 @@ async function run() {
   if (!secretKey) report.missing.push('secret_key');
   if (!expectedAccount) report.missing.push('account');
   if (!text(process.env.DATABASE_URL)) report.missing.push('database_url');
-  if (secretKey && !/^sk_test_[A-Za-z0-9_]+$/.test(secretKey)) {
-    report.failures.push('ONE_TIME_STRIPE_TEST_SECRET_KEY must be a Stripe test secret key.');
+  if (secretKey && !/^(?:sk|rk)_test_[A-Za-z0-9_]+$/.test(secretKey)) {
+    report.failures.push('ONE_TIME_STRIPE_TEST_SECRET_KEY must be a Stripe test server key.');
   }
 
   if (report.failures.length > 0 || report.missing.length > 0 || !secretKey || !expectedAccount) {

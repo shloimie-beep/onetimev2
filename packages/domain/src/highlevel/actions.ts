@@ -183,6 +183,7 @@ async function executeAction(input: {
         contact.contact_key,
         action.data.household_key,
       );
+      await claimHighLevelBillingEpisodeAuthority(db, input.config, action);
       return applyHouseholdAccessStateWithClient({
         db,
         accountKey: input.config.accountKey,
@@ -190,7 +191,17 @@ async function executeAction(input: {
         sourceKind: 'highlevel_payment_state',
         actorKind: 'highlevel_action',
         idempotencyKey: action.idempotency_key,
-        command: action.data,
+        command: {
+          household_key: action.data.household_key,
+          state: action.data.state,
+          effective_at: action.data.effective_at,
+          expires_at: action.data.expires_at,
+          opaque_source_reference: action.data.opaque_source_reference,
+          source_revision: action.data.source_revision,
+          source_updated_at: action.data.source_updated_at,
+          policy_version: action.data.policy_version,
+          revocation_reason: action.data.revocation_reason,
+        },
         ...(input.now ? { now: input.now } : {}),
       });
     });
@@ -288,6 +299,119 @@ async function proveExactParentHouseholdIdentity(
   }
   if (String(result.rows[0]?.highlevel_location_id ?? '') !== config.highLevelLocationId) {
     throw new HighLevelAccessIdentityError('HIGHLEVEL_ACCESS_IDENTITY_MISMATCH');
+  }
+}
+
+async function claimHighLevelBillingEpisodeAuthority(
+  db: Queryable,
+  config: AppConfig,
+  action: Extract<HighLevelInboundAction, { action_name: 'access.apply_current_state' }>,
+) {
+  const authorityKey = stableKey('billing_access_episode_authority', [
+    config.accountKey,
+    config.productKey,
+    action.data.household_key,
+    action.data.billing_episode,
+  ]);
+  await db.query(
+    `INSERT INTO onetime.billing_access_episode_authority
+       (authority_key, account_key, product_key, household_key, billing_episode,
+        source_kind, first_event_id, latest_event_id,
+        provider_customer_ref_hash, provider_subscription_ref_hash)
+     VALUES ($1,$2,$3,$4,$5,'highlevel_signed_event',$6,$6,$7,$8)
+     ON CONFLICT (account_key, product_key, household_key, billing_episode) DO NOTHING`,
+    [
+      authorityKey,
+      config.accountKey,
+      config.productKey,
+      action.data.household_key,
+      action.data.billing_episode,
+      action.data.event_id,
+      action.data.provider_customer_ref_hash,
+      action.data.provider_subscription_ref_hash,
+    ],
+  );
+  const authority = await db.query(
+    `UPDATE onetime.billing_access_episode_authority
+        SET latest_event_id = $1,
+            provider_customer_ref_hash = COALESCE(provider_customer_ref_hash, $2),
+            provider_subscription_ref_hash = COALESCE(provider_subscription_ref_hash, $3),
+            updated_at = now()
+      WHERE account_key = $4
+        AND product_key = $5
+        AND household_key = $6
+        AND billing_episode = $7
+        AND source_kind = 'highlevel_signed_event'
+        AND (
+          provider_customer_ref_hash IS NULL
+          OR $2::text IS NULL
+          OR provider_customer_ref_hash = $2
+        )
+        AND (
+          provider_subscription_ref_hash IS NULL
+          OR $3::text IS NULL
+          OR provider_subscription_ref_hash = $3
+        )
+      RETURNING authority_key`,
+    [
+      action.data.event_id,
+      action.data.provider_customer_ref_hash,
+      action.data.provider_subscription_ref_hash,
+      config.accountKey,
+      config.productKey,
+      action.data.household_key,
+      action.data.billing_episode,
+    ],
+  );
+  if ((authority.rowCount ?? 0) !== 1) {
+    throw new AccountAccessError(
+      'ACCESS_SOURCE_PRECEDENCE',
+      'This billing episode already has a different authoritative ingestion source or identity.',
+    );
+  }
+
+  const eventDigest = digest(action.data);
+  const eventKey = stableKey('billing_access_episode_event', [action.data.event_id]);
+  const inserted = await db.query(
+    `INSERT INTO onetime.billing_access_episode_events
+       (event_key, event_id, authority_key, account_key, product_key, household_key,
+        billing_episode, idempotency_key, verified_state, effective_at, event_digest,
+        source_revision, source_updated_at)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+     ON CONFLICT DO NOTHING
+     RETURNING event_key`,
+    [
+      eventKey,
+      action.data.event_id,
+      authorityKey,
+      config.accountKey,
+      config.productKey,
+      action.data.household_key,
+      action.data.billing_episode,
+      action.idempotency_key,
+      action.data.verified_state,
+      action.data.effective_at,
+      eventDigest,
+      action.data.source_revision,
+      action.data.source_updated_at,
+    ],
+  );
+  if ((inserted.rowCount ?? 0) === 1) return;
+  const existing = await db.query(
+    `SELECT event_digest, authority_key
+       FROM onetime.billing_access_episode_events
+      WHERE event_id = $1`,
+    [action.data.event_id],
+  );
+  if (
+    existing.rows.length !== 1 ||
+    String(existing.rows[0]?.event_digest ?? '') !== eventDigest ||
+    String(existing.rows[0]?.authority_key ?? '') !== authorityKey
+  ) {
+    throw new AccountAccessError(
+      'ACCESS_SOURCE_CONFLICT',
+      'The verified billing event identifier conflicts with previously accepted evidence.',
+    );
   }
 }
 

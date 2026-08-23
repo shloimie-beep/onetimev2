@@ -522,7 +522,7 @@ Family signup collects no card.
 If a Parent accepts paid continuation before the configured free end:
 
 - the GHL-orchestrated, Stripe-hosted flow clearly displays the $67 monthly offer and start date;
-- the standard subscription is scheduled/trialed so the first charge occurs no earlier than `2026-09-13T19:24:00+03:00`;
+- the standard subscription is scheduled/trialed so the first charge occurs no earlier than `2026-09-11T18:00:00+03:00`;
 - successful card collection or browser return alone does not replace signed Stripe event/readback;
 - no immediate-charge exception is allowed unless the UI separately states the immediate amount/date and the Parent explicitly confirms it;
 - one household may have at most one current standard subscription.
@@ -656,7 +656,7 @@ Credentials are separate by capability, held in protected configuration, and nev
 
 ### 8.3 Schedule and preparation boundary
 
-The canonical launch series is Sunday through Thursday at 7:00 p.m. `Asia/Jerusalem` for 60 minutes. One Time, not Zoom, owns recurrence:
+The canonical launch series begins at `2026-08-16T19:00:00+03:00` and recurs Sunday through Thursday at 7:00 p.m. `Asia/Jerusalem` for 60 minutes. One Time, not Zoom, owns recurrence:
 
 - occurrences are generated in a rolling 90-day horizon from Jerusalem-local dates using the active timezone-database version;
 - automatic preparation begins exactly 24 hours before scheduled start;
@@ -723,9 +723,11 @@ Zoom webhook events are signature-verified and mapped through exact meeting/regi
 | Consent/access revoked | launch denied before SDK bootstrap |
 | Meeting ended | occurrence launch closes and attendance reconciles |
 
-### 8.9 OBS sole-capture contract
+### 8.9 OBS capture contract and the one existing-recording launch exception
 
 OBS is the sole launch recording mechanism. Zoom cloud recording, local Zoom recording, browser-side recording, and an alternate provider capture are forbidden.
+
+For the one immediate-launch library item only, One Time may accept an already existing One Time/Rabbi-owned source from the protected Drive tree or recordings collection. This is a typed `existing_reviewed_recording` provenance lane, not a capture fallback: before any OpenAI, Vimeo, or library effect, the Admin attests rights to process and privately publish, completes human review, and records either `none_present` or `redactions_complete` child-data disposition. It never invents an OBS profile/device/start-stop time, occurrence binding, recording notice, or participant-consent snapshot. It remains subject to the same managed-S3 checksum, Admin approval, private Vimeo, protected playback, cross-household denial, and safe-unpublish controls as an OBS source.
 
 For each recorded occurrence:
 

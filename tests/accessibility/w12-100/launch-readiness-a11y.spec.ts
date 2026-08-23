@@ -62,7 +62,7 @@ test('public and app navigation restore focus after drawer close', async ({ page
 
   await useW12AdminSession(page);
   await page.goto('/app/dashboard');
-  await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Today' })).toBeVisible();
   const appMenu = page.getByRole('button', { name: 'Open navigation' });
   await appMenu.click();
   await expect(page.locator('.drawer-close')).toBeFocused();
@@ -75,7 +75,7 @@ test('authenticated routes pass serious axe checks with mobile and desktop layou
 }) => {
   test.setTimeout(90_000);
   const checks = [
-    { role: 'admin_session' as const, route: '/app/dashboard', heading: 'Dashboard' },
+    { role: 'admin_session' as const, route: '/app/dashboard', heading: 'Today' },
     { role: 'admin_session' as const, route: '/app/crm', heading: 'Contacts' },
     { role: 'admin_session' as const, route: '/app/communications', heading: 'Communications' },
     { role: 'admin_session' as const, route: '/app/classes', heading: 'Classes' },

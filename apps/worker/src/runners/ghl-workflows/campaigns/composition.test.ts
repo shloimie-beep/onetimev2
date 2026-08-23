@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto';
+
 import { describe, expect, it, vi } from 'vitest';
 
 import { loadConfig } from '../../../../../../packages/config/src/index.ts';
@@ -6,14 +8,27 @@ import type {
   CommunicationSuppressionSnapshot,
 } from '../../../../../../packages/contracts/src/communications/foundation/index.ts';
 import type { ProviderDispatchOutcome } from '../../../../../../packages/contracts/src/jobs/index.ts';
-import type { CampaignAudienceCandidate } from '../../../../../../packages/domain/src/communications/workflows/campaigns/index.ts';
+import type {
+  ProviderRegistryBindingEvidence,
+  ProviderRegistryBindingReadRequest,
+} from '../../../../../../packages/contracts/src/providers/v21-provider-core.ts';
+import {
+  ot16OperationId,
+  type CampaignAudienceCandidate,
+} from '../../../../../../packages/domain/src/communications/workflows/campaigns/index.ts';
 import type { WorkerRunnerContext } from '../../registry/index.ts';
 import {
   inspectDefaultOt16Authority,
   matchesApprovedOt16Digests,
+  ot16ProviderReadbackEvidenceDigest,
   readCanonicalLaunchCampaign,
+  readOt16F06Binding,
 } from './adapters.ts';
-import { runOt16CheckpointWorker, type Ot16WorkerDependencies } from './composition.ts';
+import {
+  createDefaultOt16Dependencies,
+  runOt16CheckpointWorker,
+  type Ot16WorkerDependencies,
+} from './composition.ts';
 import type { CampaignEmailDispatchReceipt } from './runner.ts';
 
 const h = (value: string) => value.repeat(64).slice(0, 64);
@@ -221,6 +236,10 @@ describe('P30 OT-16 worker composition', () => {
       deliveryProviderTransportEnabled: true,
       highLevelEventSyncMode: 'provider',
       highLevelPrivateIntegrationsToken: 'test-highlevel-token',
+      oneTimeOt16TransportMode: 'broad',
+      oneTimeOt16AuthorizationId: 'test-ot16-authorization',
+      oneTimeOt16CanaryOperationIds: [],
+      oneTimeOt16PerRunBudget: 1,
       highLevelLocationId: 'pBSnOK2nkdxp6gf9Rg3o',
       oneTimeFreeAccessExpiresAt: undefined,
     };
@@ -230,6 +249,81 @@ describe('P30 OT-16 worker composition', () => {
       reason: 'provider_configuration_missing',
     });
     expect(workerContext.pool.query).not.toHaveBeenCalled();
+  });
+
+  it('requires and returns the exact F06-bound OT-16 workflow readback', async () => {
+    const workerContext = context();
+    const providerReadAt = '2026-08-05T20:00:00.000Z';
+    const registry = {
+      ghlId: 'provider-workflow-ot16',
+      observedStatus: 'SAVED_REOPENED',
+      registryDigest: h('2'),
+      renderedBodyDigest: h('3'),
+    };
+    const workflowRef = createHash('sha256').update(registry.ghlId).digest('hex');
+    workerContext.config = {
+      ...workerContext.config,
+      oneTimeVerificationEnvironmentId: 'provider_sandbox',
+      oneTimeVerificationWritesAllowed: true,
+      deliveryProviderMode: 'provider',
+      deliveryProviderTransportEnabled: true,
+      highLevelEventSyncMode: 'provider',
+      highLevelPrivateIntegrationsToken: 'test-highlevel-token',
+      oneTimeOt16TransportMode: 'broad',
+      oneTimeOt16AuthorizationId: 'test-ot16-authorization',
+      oneTimeOt16CanaryOperationIds: [],
+      oneTimeOt16PerRunBudget: 1,
+      highLevelLocationId: 'pBSnOK2nkdxp6gf9Rg3o',
+      oneTimeFreeAccessExpiresAt: expiryAt,
+    };
+    workerContext.pool.query = vi.fn(async () => ({
+      rows: [
+        {
+          readback: {
+            workflow_key: 'OT-16',
+            provider_workflow_ref_hash: workflowRef,
+            readiness: 'SAVED_REOPENED',
+            registry_digest: registry.registryDigest,
+            rendered_body_digest: registry.renderedBodyDigest,
+            delivery: { provider_read_at: providerReadAt },
+          },
+          provider_read_at: providerReadAt,
+          version: 2,
+        },
+      ],
+      rowCount: 1,
+    })) as never;
+    const bindingReader = {
+      readActiveRegistryBinding: vi.fn(async (request: ProviderRegistryBindingReadRequest) =>
+        f06Evidence(request),
+      ),
+    };
+
+    await expect(
+      inspectDefaultOt16Authority(workerContext, {
+        readRegistry: vi.fn(async () => registry),
+        bindingReader,
+      }),
+    ).resolves.toEqual({ ready: true, safeProviderReference: workflowRef });
+    expect(bindingReader.readActiveRegistryBinding).toHaveBeenCalledWith(
+      expect.objectContaining({
+        registry_binding_key: 'highlevel.ot16.primary',
+        provider: 'highlevel',
+        operation_type: 'ghl.workflow.ot16_checkpoint',
+        effect_kind: 'mutation',
+        expected_registry_evidence_digest: registry.registryDigest,
+        expected_provider_readback_evidence_digest: ot16ProviderReadbackEvidenceDigest({
+          workflowKey: 'OT-16',
+          providerWorkflowRefHash: workflowRef,
+          readiness: 'SAVED_REOPENED',
+          registryDigest: registry.registryDigest,
+          renderedBodyDigest: registry.renderedBodyDigest,
+          providerReadAt,
+        }),
+        expected_version: 2,
+        observed_not_before: providerReadAt,
+      }),
+    );
   });
 
   it('registers and runs the deterministic checkpoint through the classified provider port', async () => {
@@ -253,6 +347,55 @@ describe('P30 OT-16 worker composition', () => {
     );
   });
 
+  it('limits the default due reader to the exact canary operation allowlist and per-run budget', async () => {
+    const workerContext = context();
+    const canaryExpiry = new Date(Date.now() + 13.5 * 24 * 60 * 60 * 1_000).toISOString();
+    const allowedOperation = ot16OperationId({
+      adult_id: 'adult-canary',
+      expiry_at: canaryExpiry,
+      checkpoint_days: 14,
+    });
+    workerContext.config = {
+      ...workerContext.config,
+      oneTimeFreeAccessExpiresAt: canaryExpiry,
+      oneTimeOt16TransportMode: 'canary',
+      oneTimeOt16AuthorizationId: 'test-ot16-authorization',
+      oneTimeOt16CanaryOperationIds: [allowedOperation],
+      oneTimeOt16PerRunBudget: 1,
+    };
+    workerContext.pool.query = vi.fn(async (sql: string) => {
+      if (sql.includes('onetime.family_signup_access_projections')) {
+        return {
+          rows: [
+            {
+              adult_id: 'adult-canary',
+              household_id: 'household-canary',
+              free_access_expires_at: canaryExpiry,
+            },
+            {
+              adult_id: 'adult-not-allowed',
+              household_id: 'household-not-allowed',
+              free_access_expires_at: canaryExpiry,
+            },
+          ],
+          rowCount: 2,
+        };
+      }
+      return { rows: [], rowCount: 0 };
+    }) as never;
+
+    await expect(
+      createDefaultOt16Dependencies(workerContext).listDueCheckpoints(workerContext),
+    ).resolves.toEqual([
+      {
+        adultId: 'adult-canary',
+        expiryAt: canaryExpiry,
+        checkpointDays: 14,
+        expectedVersion: 0,
+      },
+    ]);
+  });
+
   it('accepts only the exact approved registry and rendered-body digest pair', () => {
     const approved = { registryDigest: h('e'), renderedBodyDigest: h('f') };
     expect(
@@ -273,6 +416,99 @@ describe('P30 OT-16 worker composition', () => {
         approved,
       ),
     ).toBe(false);
+  });
+
+  it('reads the exact active F06 HighLevel binding for OT-16 mutation authority', async () => {
+    const expected = {
+      account: h('1'),
+      registry: h('2'),
+      readback: h('3'),
+      version: 4,
+      observedAt: '2026-08-05T20:00:00.000Z',
+    };
+    let request: ProviderRegistryBindingReadRequest | undefined;
+    const reader = {
+      readActiveRegistryBinding: vi.fn(async (value: ProviderRegistryBindingReadRequest) => {
+        request = value;
+        return f06Evidence(value);
+      }),
+    };
+
+    await expect(
+      readOt16F06Binding({
+        reader,
+        runtimeTier: 'production',
+        verificationEnvironmentId: 'production_operator_canary',
+        expectedProviderAccountRefHash: expected.account,
+        expectedRegistryEvidenceDigest: expected.registry,
+        expectedProviderReadbackEvidenceDigest: expected.readback,
+        expectedVersion: expected.version,
+        observedNotBefore: expected.observedAt,
+      }),
+    ).resolves.toMatchObject({
+      binding: {
+        registry_binding_key: 'highlevel.ot16.primary',
+        provider: 'highlevel',
+        provider_account_ref_hash: expected.account,
+        mutation_policy: 'orchestration_only',
+      },
+      registry_evidence_digest: expected.registry,
+      provider_readback_evidence_digest: expected.readback,
+      version: expected.version,
+    });
+    expect(request).toEqual({
+      registry_binding_key: 'highlevel.ot16.primary',
+      provider: 'highlevel',
+      scope: {
+        product: 'one_time_mishnayos',
+        runtime_tier: 'production',
+        verification_environment_id: 'production_operator_canary',
+      },
+      operation_type: 'ghl.workflow.ot16_checkpoint',
+      effect_kind: 'mutation',
+      expected_provider_account_ref_hash: expected.account,
+      expected_registry_evidence_digest: expected.registry,
+      expected_provider_readback_evidence_digest: expected.readback,
+      expected_version: expected.version,
+      observed_not_before: expected.observedAt,
+    });
+  });
+
+  it('rejects a prohibited or mismatched F06 binding and hashes only sanitized readback facts', async () => {
+    const common = {
+      runtimeTier: 'production' as const,
+      verificationEnvironmentId: 'production_operator_canary' as const,
+      expectedProviderAccountRefHash: h('1'),
+      expectedRegistryEvidenceDigest: h('2'),
+      expectedProviderReadbackEvidenceDigest: h('3'),
+      expectedVersion: 4,
+      observedNotBefore: '2026-08-05T20:00:00.000Z',
+    };
+    const prohibited = {
+      readActiveRegistryBinding: vi.fn(async (value: ProviderRegistryBindingReadRequest) => ({
+        ...f06Evidence(value),
+        binding: { ...f06Evidence(value).binding, mutation_policy: 'prohibited' as const },
+      })),
+    };
+    await expect(readOt16F06Binding({ reader: prohibited, ...common })).resolves.toBeNull();
+
+    const digestInput = {
+      workflowKey: 'OT-16' as const,
+      providerWorkflowRefHash: h('4'),
+      readiness: 'SAVED_REOPENED',
+      registryDigest: h('5'),
+      renderedBodyDigest: h('6'),
+      providerReadAt: '2026-08-05T20:00:00.000Z',
+    };
+    const digest = ot16ProviderReadbackEvidenceDigest(digestInput);
+    expect(digest).toMatch(/^[a-f0-9]{64}$/u);
+    expect(ot16ProviderReadbackEvidenceDigest(digestInput)).toBe(digest);
+    expect(
+      ot16ProviderReadbackEvidenceDigest({
+        ...digestInput,
+        providerReadAt: '2026-08-05T20:00:01.000Z',
+      }),
+    ).not.toBe(digest);
   });
 
   it('rejects an invalid authority-owned provider reference before scheduling', async () => {
@@ -382,3 +618,21 @@ describe('P30 OT-16 worker composition', () => {
     });
   });
 });
+
+function f06Evidence(request: ProviderRegistryBindingReadRequest): ProviderRegistryBindingEvidence {
+  return {
+    binding: {
+      registry_binding_key: request.registry_binding_key,
+      provider: request.provider,
+      scope: request.scope,
+      provider_account_ref_hash: request.expected_provider_account_ref_hash,
+      allowed_operation_types: [request.operation_type],
+      mutation_policy: 'orchestration_only',
+      active: true,
+    },
+    registry_evidence_digest: request.expected_registry_evidence_digest,
+    provider_readback_evidence_digest: request.expected_provider_readback_evidence_digest,
+    observed_at: request.observed_not_before,
+    version: request.expected_version,
+  };
+}
