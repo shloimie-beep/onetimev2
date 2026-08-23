@@ -1,6 +1,6 @@
 ## 1. Route and shell convergence
 
-- [ ] 1.1 Define and test Admin/Rabbi primary and contextual navigation with direct-link behavior.
+- [x] 1.1 Define and test Admin/Rabbi primary and contextual navigation with direct-link behavior.
 - [ ] 1.2 Converge Today, Learning, People, Communications, Operations, and Account route ownership.
 
 ## 2. Canonical class operation

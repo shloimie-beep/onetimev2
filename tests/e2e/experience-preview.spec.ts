@@ -72,6 +72,7 @@ test('ordinary Admin application removes preview and launch-status surfaces in e
     const primaryLabels = [
       'Today',
       'Learning',
+      'Live Console',
       'People',
       'Communications',
       'Operations',

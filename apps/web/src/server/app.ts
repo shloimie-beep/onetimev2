@@ -7651,7 +7651,7 @@ function handleApiError(error: unknown, req: RequestWithTrace, res: Response) {
   }
   res
     .status(500)
-    .json(publicError('SERVER_ERROR', 'The CRM request could not be completed.', req.traceId));
+    .json(publicError('SERVER_ERROR', 'The request could not be completed.', req.traceId));
 }
 
 function statusForPortalError(code: string) {
