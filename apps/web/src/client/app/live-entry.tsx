@@ -19,6 +19,7 @@ import { WorkspaceTabs } from './shell/WorkspaceTabs.js';
 import './crm.css';
 import { startZoomMeetingProductionBasic } from './zoom-meeting-sdk-client.ts';
 import {
+  confirmProductionBasicHostEnded,
   confirmProductionBasicHostLive,
   readHostProductionBasicReadiness,
   requestHostProductionBasicLaunch,
@@ -39,6 +40,7 @@ type ApiSession = {
 };
 
 type Notice = { kind: 'info' | 'success' | 'error'; message: string };
+type HostClassState = 'ready' | 'live' | 'closing' | 'zoom_ended' | 'access_close_failed';
 
 function LiveApp() {
   const stageSession = stageSessionFromPath(location.pathname);
@@ -57,7 +59,7 @@ function LiveConsole() {
   const [notice, setNotice] = useState<Notice | null>(null);
   const [loading, setLoading] = useState(true);
   const [productionBasicReady, setProductionBasicReady] = useState(false);
-  const [hostClassState, setHostClassState] = useState<'ready' | 'live' | 'zoom_ended'>('ready');
+  const [hostClassState, setHostClassState] = useState<HostClassState>('ready');
   const occurrenceKey = useMemo(() => {
     const routeMatch = /^\/app\/live\/([^/]+)$/u.exec(location.pathname);
     return routeMatch?.[1]
@@ -104,9 +106,10 @@ function LiveConsole() {
 
   async function startProductionBasic() {
     if (!session) return;
+    let zoomEnded = false;
     try {
       const artifact = await requestHostProductionBasicLaunch(session.csrf_token);
-      let zoomEnded = false;
+      let pendingAccessClose: Promise<void> | null = null;
       await startZoomMeetingProductionBasic({
         sdkWebVersion: artifact.sdk_web_version,
         meetingNumber: artifact.meeting_number,
@@ -118,26 +121,41 @@ function LiveConsole() {
         onMeetingStatus: (status) => {
           if (status === 3) {
             zoomEnded = true;
-            setHostClassState('zoom_ended');
-            setNotice({
-              kind: 'info',
-              message: 'Zoom ended. One Time access will close automatically.',
-            });
+            pendingAccessClose = closeProductionBasicAccess();
           }
         },
       });
+      if (zoomEnded) {
+        await pendingAccessClose;
+        return;
+      }
       await confirmProductionBasicHostLive(session.csrf_token);
       if (zoomEnded) {
-        setNotice({
-          kind: 'info',
-          message: 'Zoom ended. One Time access will close automatically.',
-        });
+        await pendingAccessClose;
+        await closeProductionBasicAccess();
       } else {
         setHostClassState('live');
         setNotice({ kind: 'success', message: 'Protected class started.' });
       }
     } catch {
-      setNotice({ kind: 'error', message: 'Classroom is unavailable.' });
+      if (!zoomEnded) setNotice({ kind: 'error', message: 'Classroom is unavailable.' });
+    }
+  }
+
+  async function closeProductionBasicAccess() {
+    if (!session) return;
+    setHostClassState('closing');
+    setNotice({ kind: 'info', message: 'Zoom ended. Closing One Time Student access…' });
+    try {
+      await confirmProductionBasicHostEnded(session.csrf_token);
+      setHostClassState('zoom_ended');
+      setNotice({ kind: 'success', message: 'Zoom ended. One Time Student access is closed.' });
+    } catch {
+      setHostClassState('access_close_failed');
+      setNotice({
+        kind: 'error',
+        message: 'Zoom ended, but One Time Student access may still be open. Retry access close.',
+      });
     }
   }
 
@@ -338,6 +356,7 @@ function LiveConsole() {
               occurrenceKey={occurrenceKey}
               productionBasicReady={productionBasicReady}
               onStartProductionBasic={() => void startProductionBasic()}
+              onRetryCloseAccess={() => void closeProductionBasicAccess()}
               hostClassState={hostClassState}
               onOpenClassroom={() =>
                 occurrenceKey &&
@@ -566,6 +585,7 @@ function ZoomHealth({
   onChooseOccurrence,
   productionBasicReady,
   onStartProductionBasic,
+  onRetryCloseAccess,
   hostClassState,
 }: {
   data: ConsoleData | null;
@@ -574,7 +594,8 @@ function ZoomHealth({
   onChooseOccurrence: () => void;
   productionBasicReady: boolean;
   onStartProductionBasic: () => void;
-  hostClassState: 'ready' | 'live' | 'zoom_ended';
+  onRetryCloseAccess: () => void;
+  hostClassState: HostClassState;
 }) {
   const legacyHostControlsReady = occurrenceKey && data?.zoom.host_control_configured;
   return (
@@ -598,9 +619,13 @@ function ZoomHealth({
         {productionBasicReady
           ? hostClassState === 'live'
             ? 'Class is live. Continue in Zoom’s native host controls.'
-            : hostClassState === 'zoom_ended'
-              ? 'Zoom ended. One Time access will close automatically.'
-              : 'Protected recurring Zoom is ready. Start class only when the Rabbi is ready to begin.'
+            : hostClassState === 'closing'
+              ? 'Zoom ended. Closing One Time Student access…'
+              : hostClassState === 'zoom_ended'
+                ? 'Zoom ended. One Time Student access is closed.'
+                : hostClassState === 'access_close_failed'
+                  ? 'Zoom ended, but One Time Student access may still be open.'
+                  : 'Protected recurring Zoom is ready. Start class only when the Rabbi is ready to begin.'
           : occurrenceKey
             ? data?.zoom.host_control_configured
               ? 'Secure host controls are ready for this class occurrence.'
@@ -617,7 +642,11 @@ function ZoomHealth({
             >
               Continue Class
             </button>
-          ) : hostClassState === 'zoom_ended' ? null : (
+          ) : hostClassState === 'access_close_failed' ? (
+            <button type="button" className="ot-button" onClick={onRetryCloseAccess}>
+              Retry access close
+            </button>
+          ) : hostClassState === 'zoom_ended' || hostClassState === 'closing' ? null : (
             <button type="button" className="ot-button" onClick={onStartProductionBasic}>
               Start Class
             </button>
@@ -637,8 +666,8 @@ function ZoomHealth({
       ) : null}
       {productionBasicReady ? (
         <p>
-          End the meeting using Zoom’s End Meeting for All control. One Time access closes
-          automatically within the existing two-hour safety window.
+          End the meeting using Zoom’s End Meeting for All control. When Zoom reports that the
+          meeting ended, One Time closes Student access immediately.
         </p>
       ) : legacyHostControlsReady ? (
         <p>

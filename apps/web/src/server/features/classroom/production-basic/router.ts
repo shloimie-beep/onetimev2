@@ -26,6 +26,7 @@ type ProductionBasicRouterInput = {
     ready(actor: ProductionBasicActor): Promise<boolean>;
     request(actor: ProductionBasicActor): Promise<ProductionBasicLaunchResult>;
     confirmHostLive(actor: ProductionBasicActor): Promise<ProductionBasicHostLiveResult>;
+    confirmHostEnded(actor: ProductionBasicActor): Promise<ProductionBasicHostLiveResult>;
   };
   onLaunchFailure?: ((event: ProductionBasicLaunchFailureEvent) => void) | undefined;
 };
@@ -83,7 +84,12 @@ function createRoleBoundProductionBasicRouter(
     response.json({ success: true, data: { launch_artifact: result.artifact } });
   });
   if (boundary === 'host') {
-    router.post('/host-live', (request, response) => handleHostMarker(input, request, response));
+    router.post('/host-live', (request, response) =>
+      handleHostMarker(input, request, response, 'live'),
+    );
+    router.post('/host-ended', (request, response) =>
+      handleHostMarker(input, request, response, 'ended'),
+    );
   }
   router.get('/status', async (request, response) => {
     const identity = await input.identities.resolve(request, response);
@@ -105,6 +111,7 @@ async function handleHostMarker(
   input: ProductionBasicRouterInput,
   request: Request,
   response: Response,
+  state: 'live' | 'ended',
 ) {
   if (requestHasBody(request)) {
     response.status(400).json(unavailable());
@@ -117,7 +124,10 @@ async function handleHostMarker(
   }
   let result: ProductionBasicHostLiveResult;
   try {
-    result = await input.service.confirmHostLive(identity.actor);
+    result =
+      state === 'live'
+        ? await input.service.confirmHostLive(identity.actor)
+        : await input.service.confirmHostEnded(identity.actor);
   } catch (error) {
     reportLaunchFailure(input.onLaunchFailure, classifyLaunchFailure(error));
     response.status(503).json(unavailable());
@@ -129,7 +139,7 @@ async function handleHostMarker(
   }
   response.json({
     success: true,
-    data: { state: 'live' as const },
+    data: { state },
   });
 }
 

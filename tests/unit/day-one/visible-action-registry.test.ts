@@ -251,6 +251,13 @@ const EXPECTED_ACTION_BINDINGS = [
     '/api/v1/admin-directory/users',
   ],
   [
+    'admin.production_basic.access_close_retry.button',
+    '/app/live-console',
+    ['admin', 'rabbi'],
+    'POST',
+    '/api/v1/admin/classroom/production-basic/host-ended',
+  ],
+  [
     'admin.production_basic.start.button',
     '/app/live-console',
     ['admin', 'rabbi'],
@@ -770,7 +777,7 @@ describe('v2.1 visible action registry', () => {
     );
     const actionIds = registry.actions.map(({ action_id }) => action_id);
     const sourcePaths = new Set(registry.source_inputs.map(({ path }) => path));
-    expect(registry.actions).toHaveLength(97);
+    expect(registry.actions).toHaveLength(98);
     expect(actionIds).toEqual([...actionIds].sort());
     expect(new Set(actionIds).size).toBe(actionIds.length);
     expect(actionIds).not.toContain('admin.directory.student.setup.form');

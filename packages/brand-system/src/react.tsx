@@ -243,8 +243,11 @@ export function SectionTabs({
   className?: string;
   onSelect?: (tab: { id: string; label: string; href?: string; disabled?: boolean }) => void;
 }) {
+  const tabsRef = React.useRef<HTMLElement>(null);
+  React.useEffect(() => revealCurrentSectionTab(tabsRef.current), [currentId]);
+
   return (
-    <nav className={className} aria-label={label} data-ot-primitive="SectionTabs">
+    <nav ref={tabsRef} className={className} aria-label={label} data-ot-primitive="SectionTabs">
       {tabs.map((tab) =>
         tab.href && !tab.disabled ? (
           <a
@@ -273,6 +276,18 @@ export function SectionTabs({
       )}
     </nav>
   );
+}
+
+export function revealCurrentSectionTab(nav: HTMLElement | null) {
+  if (!nav) return;
+  const current = nav.querySelector<HTMLElement>('[aria-current="page"], [aria-pressed="true"]');
+  if (!current) return;
+  const currentLeft = current.offsetLeft;
+  const currentRight = currentLeft + current.offsetWidth;
+  const visibleLeft = nav.scrollLeft;
+  const visibleRight = visibleLeft + nav.clientWidth;
+  if (currentLeft < visibleLeft) nav.scrollLeft = currentLeft;
+  else if (currentRight > visibleRight) nav.scrollLeft = currentRight - nav.clientWidth;
 }
 
 export function MetricTile({

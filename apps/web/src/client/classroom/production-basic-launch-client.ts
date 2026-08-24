@@ -64,6 +64,20 @@ export async function confirmProductionBasicHostLive(csrfToken: string): Promise
   }
 }
 
+/** Close only One Time access after the Zoom Meeting SDK reports status 3. */
+export async function confirmProductionBasicHostEnded(csrfToken: string): Promise<void> {
+  const response = await fetch(`${HOST_ENDPOINT}/host-ended`, {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: { 'x-csrf-token': csrfToken },
+  });
+  const payload = (await response.json()) as
+    { success: true; data: { state: 'ended' } } | { success: false; message?: string };
+  if (!response.ok || payload.success !== true || payload.data.state !== 'ended') {
+    throw new Error('One Time class access could not be closed.');
+  }
+}
+
 export function isStudentProductionBasicLaunchArtifact(
   value: unknown,
 ): value is StudentProductionBasicLaunchArtifact {

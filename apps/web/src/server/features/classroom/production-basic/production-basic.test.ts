@@ -161,7 +161,42 @@ describe('production-basic Meeting SDK launch', () => {
     expect(studentConfirm).not.toHaveBeenCalled();
   });
 
-  it('retires every app-managed host end, status, and cleanup route', async () => {
+  it('clears the exact One Time live receipt only for an authorized host and is retry-safe', async () => {
+    const admin: ProductionBasicActor = {
+      kind: 'admin',
+      scope: STUDENT.scope,
+      actor_user_ref: 'admin-derived',
+      display_name: 'Admin',
+      authorized_to_start: true,
+    };
+    const clear = vi.fn<ProductionBasicHostLiveMarker['clear']>().mockResolvedValue();
+    const baseUrl = await start({ actor: admin, issue: async () => artifact(1), clear });
+
+    const first = await post(baseUrl, '/host-ended');
+    expect(first.status).toBe(200);
+    await expect(first.json()).resolves.toEqual({ success: true, data: { state: 'ended' } });
+    await expect(post(baseUrl, '/host-ended').then((response) => response.status)).resolves.toBe(
+      200,
+    );
+    expect(clear).toHaveBeenCalledTimes(2);
+    expect(clear).toHaveBeenNthCalledWith(1, {
+      scope: STUDENT.scope,
+      meeting_ref_digest: expect.stringMatching(/^[a-f0-9]{64}$/u),
+      cleared_at: new Date('2026-08-12T10:00:00.000Z'),
+    });
+
+    const studentClear = vi.fn<ProductionBasicHostLiveMarker['clear']>().mockResolvedValue();
+    const studentBaseUrl = await start({
+      actor: STUDENT,
+      boundary: 'host',
+      issue: async () => artifact(0),
+      clear: studentClear,
+    });
+    expect((await post(studentBaseUrl, '/host-ended')).status).toBe(403);
+    expect(studentClear).not.toHaveBeenCalled();
+  });
+
+  it('retires the legacy app-managed host end, status, and cleanup routes', async () => {
     const admin: ProductionBasicActor = {
       kind: 'admin',
       scope: STUDENT.scope,
@@ -176,7 +211,6 @@ describe('production-basic Meeting SDK launch', () => {
       '/host-end-confirmed',
       '/host-end-status',
       '/host-end-cleanup',
-      '/host-ended',
     ]) {
       const response =
         path === '/host-end-status' ? await fetch(`${baseUrl}${path}`) : await post(baseUrl, path);
@@ -274,15 +308,17 @@ describe('production-basic Meeting SDK launch', () => {
   it('fails a dual-session conflict before artifact, ZAK, provider, or live-marker work', async () => {
     const issue = vi.fn(async () => artifact(1));
     const confirm = vi.fn<ProductionBasicHostLiveMarker['confirm']>().mockResolvedValue(true);
+    const clear = vi.fn<ProductionBasicHostLiveMarker['clear']>().mockResolvedValue();
     const baseUrl = await start({
       actor: null,
       boundary: 'host',
       identityStatus: 'session_context_conflict',
       issue,
       confirm,
+      clear,
     });
 
-    for (const path of ['/launch', '/host-live']) {
+    for (const path of ['/launch', '/host-live', '/host-ended']) {
       const response = await post(baseUrl, path);
       expect(response.status).toBe(409);
       await expect(response.json()).resolves.toEqual({
@@ -293,6 +329,7 @@ describe('production-basic Meeting SDK launch', () => {
     }
     expect(issue).not.toHaveBeenCalled();
     expect(confirm).not.toHaveBeenCalled();
+    expect(clear).not.toHaveBeenCalled();
   });
 
   it('requires an injected, current read-only verification receipt even when canonical config exists', async () => {
@@ -503,6 +540,7 @@ async function start(input: {
     role: 0 | 1;
   }) => Promise<ProductionBasicLaunchArtifact>;
   confirm?: ProductionBasicHostLiveMarker['confirm'];
+  clear?: ProductionBasicHostLiveMarker['clear'];
   current?: ProductionBasicHostLiveMarker['currentForStudent'];
   currentForParent?: ProductionBasicHostLiveMarker['currentForParent'];
   onLaunchFailure?: ((event: ProductionBasicLaunchFailureEvent) => void) | undefined;
@@ -518,10 +556,11 @@ async function start(input: {
           issue: async (launch) => input.issue!({ actor: launch.actor, role: launch.role }),
         }
       : createUnavailableProductionBasicMeetingBinding(),
-    ...(input.issue || input.confirm || input.current
+    ...(input.issue || input.confirm || input.clear || input.current || input.currentForParent
       ? {
           hostLiveMarker: {
             confirm: input.confirm ?? (async () => true),
+            clear: input.clear ?? (async () => undefined),
             currentForStudent: input.current ?? (async () => true),
             currentForParent: input.currentForParent ?? (async () => true),
           },

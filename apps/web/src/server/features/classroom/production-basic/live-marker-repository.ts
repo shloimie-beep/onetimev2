@@ -74,6 +74,39 @@ export function createProductionBasicHostLiveMarker(pool: DbPool): ProductionBas
       );
       return (result.rowCount ?? 0) === 1;
     },
+    async clear({ scope, meeting_ref_digest, cleared_at }) {
+      const localClassDate = jerusalemLocalDate(cleared_at);
+      await pool.query(
+        `UPDATE onetime.class_occurrences
+            SET production_basic_live_confirmed_at = NULL,
+                production_basic_live_expires_at = NULL,
+                production_basic_meeting_ref_digest = NULL,
+                version = version + 1,
+                updated_at = $4
+          WHERE account_key = $1
+            AND product_key = $2
+            AND local_class_date = $5::date
+            AND production_basic_meeting_ref_digest = $3
+            AND production_basic_live_confirmed_at <= $4
+            AND occurrence_key = (
+              SELECT candidate.occurrence_key
+                FROM onetime.class_occurrences AS candidate
+                JOIN onetime.class_series AS series
+                  ON series.account_key = candidate.account_key
+                 AND series.product_key = candidate.product_key
+                 AND series.class_series_key = candidate.class_series_key
+               WHERE candidate.account_key = $1
+                 AND candidate.product_key = $2
+                 AND candidate.local_class_date = $5::date
+                 AND series.is_canonical = true
+                 AND series.status = 'active'
+                 AND series.series_state = 'active'
+               ORDER BY candidate.starts_at, candidate.occurrence_key
+               LIMIT 1
+            )`,
+        [scope.account_key, scope.product_key, meeting_ref_digest, cleared_at, localClassDate],
+      );
+    },
     async currentForStudent({ scope, learner_key, meeting_ref_digest, observed_at }) {
       const result = await pool.query(
         `SELECT 1
@@ -204,15 +237,16 @@ export function createProductionBasicLiveClassAccessAdapter(input: {
   return {
     async upcomingForLearner(args) {
       const scheduled = await input.base.upcomingForLearner(args);
-      if (
-        args.actor.actor_role !== 'student' ||
-        !args.actor.student_learner ||
-        args.actor.student_learner.learner_key !== args.learner.learner_key ||
-        !input.meeting_ref_digest ||
-        (input.binding_ready && !(await input.binding_ready()))
-      ) {
-        return scheduled;
-      }
+      const studentScoped =
+        args.actor.actor_role === 'student' &&
+        args.actor.student_learner?.learner_key === args.learner.learner_key;
+      if (!studentScoped || !input.meeting_ref_digest) return scheduled;
+      const withoutUnconfirmedLive = scheduled.map((occurrence) =>
+        occurrence.status === 'live'
+          ? { ...occurrence, status: 'upcoming' as const, launch_action: null }
+          : occurrence,
+      );
+      if (input.binding_ready && !(await input.binding_ready())) return withoutUnconfirmedLive;
 
       const now = clock();
       const householdAccess = input.household_has_learning_access ?? householdHasLearningAccess;
@@ -226,7 +260,7 @@ export function createProductionBasicLiveClassAccessAdapter(input: {
           now,
         }))
       ) {
-        return scheduled;
+        return withoutUnconfirmedLive;
       }
 
       const result = await input.pool.query(
@@ -301,9 +335,9 @@ export function createProductionBasicLiveClassAccessAdapter(input: {
 
       const liveOccurrence = result.rows[0];
       const liveOccurrenceKey = liveOccurrence?.occurrence_key;
-      if (typeof liveOccurrenceKey !== 'string') return scheduled;
+      if (typeof liveOccurrenceKey !== 'string') return withoutUnconfirmedLive;
       if (scheduled.some((occurrence) => occurrence.class_key === liveOccurrenceKey)) {
-        return scheduled.map((occurrence) =>
+        return withoutUnconfirmedLive.map((occurrence) =>
           occurrence.class_key === liveOccurrenceKey
             ? { ...occurrence, status: 'live' as const, launch_action: null }
             : occurrence,
@@ -319,7 +353,7 @@ export function createProductionBasicLiveClassAccessAdapter(input: {
             ? new Date(rawStartsAt)
             : null;
       if (typeof liveTitle !== 'string' || !liveStartsAt || Number.isNaN(liveStartsAt.getTime())) {
-        return scheduled;
+        return withoutUnconfirmedLive;
       }
       return [
         {
@@ -329,7 +363,7 @@ export function createProductionBasicLiveClassAccessAdapter(input: {
           status: 'live' as const,
           launch_action: null,
         },
-        ...scheduled,
+        ...withoutUnconfirmedLive,
       ];
     },
     protectedLaunch: (args) => input.base.protectedLaunch(args),

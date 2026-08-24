@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
+  confirmProductionBasicHostEnded,
   confirmProductionBasicHostLive,
   readStudentProductionBasicReadiness,
   requestHostProductionBasicLaunch,
@@ -127,6 +128,32 @@ describe('production-basic launch client', () => {
     await expect(confirmProductionBasicHostLive('csrf-derived')).resolves.toBeUndefined();
     expect(fetchMock).toHaveBeenCalledWith(
       '/api/v1/admin/classroom/production-basic/host-live',
+      expect.objectContaining({
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'x-csrf-token': 'csrf-derived' },
+      }),
+    );
+    const [, requestInit] = (fetchMock.mock.calls as unknown as Array<[string, RequestInit]>)[0]!;
+    expect(requestInit).not.toHaveProperty('body');
+  });
+
+  it('closes One Time access with one body-less request after Zoom reports ended', async () => {
+    const fetchMock = vi.fn(
+      async () =>
+        new Response(
+          JSON.stringify({
+            success: true,
+            data: { state: 'ended' },
+          }),
+          { status: 200 },
+        ),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(confirmProductionBasicHostEnded('csrf-derived')).resolves.toBeUndefined();
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/v1/admin/classroom/production-basic/host-ended',
       expect.objectContaining({
         method: 'POST',
         credentials: 'same-origin',
