@@ -72,11 +72,11 @@
     },
     {
       "path": "apps/web/src/server/features/classroom/production-basic/router.ts",
-      "sha256": "f2c19d80d209a7cbcb26839d094ce969d2052590fc6706f7859af771485545e9"
+      "sha256": "ae6567ea3808f0eb9978aee609c5d2b160144e6d3e995a95f165a09a76ac85da"
     },
     {
       "path": "apps/web/src/server/features/classroom/production-basic/service.ts",
-      "sha256": "d66bbce55380eec23096b17f62f8d3ae66ca2c85cb44d8a490b1cc740e1c905e"
+      "sha256": "fb2f552d013793d93ed96d1b0b948f543f271b715d79ce6fc6d5aa1de8984ab8"
     },
     {
       "path": "apps/web/src/server/features/learning/router.ts",
@@ -152,7 +152,7 @@
     },
     {
       "path": "apps/web/src/client/app/live-entry.tsx",
-      "sha256": "8f8e531a5c5c091c6277418bee750bda04eaef6178fab02f0a1e70a965648863"
+      "sha256": "19888b2ba1a68742387cd1124b84b05df1b11ad3aa7cb3b8b964287af1f4c11f"
     },
     {
       "path": "apps/web/src/client/app/zoom-meeting-sdk-client.ts",
@@ -184,7 +184,7 @@
     },
     {
       "path": "apps/web/src/client/classroom/production-basic-launch-client.ts",
-      "sha256": "df19cba26052c6a13814323a00bc3965859e55915af08e58f79c7a496f76d1a3"
+      "sha256": "44a515f98c9bad75e826f16b1b44ee1297f6e173832ae8aa03e0bef7f6eca542"
     },
     {
       "path": "apps/web/src/client/features/portals/PortalFeatures.tsx",
@@ -220,7 +220,7 @@
     },
     {
       "path": "packages/brand-system/src/styles/react.css",
-      "sha256": "21359812ad995bd5f68a98ebaf7205f0ac107f08d887dd92927d34d3d395cca0"
+      "sha256": "932e8ae9d89c9286f9dcacd8bc704ea0d0bb46cdda3bd7bf3ec68217642c1206"
     },
     {
       "path": "packages/brand-system/src/route-branding.ts",
@@ -1795,6 +1795,49 @@
       "test_evidence": [
         "tests/integration/admin-directory/admin-directory.test.ts",
         "tests/e2e/admin-information-architecture.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.production_basic.access_close_retry.button",
+      "label": "Retry access close",
+      "surface": "button",
+      "route": "/app/live-console",
+      "roles": ["admin", "rabbi"],
+      "canonical_binding": {
+        "route": "/app/live",
+        "roles": ["admin", "rabbi"]
+      },
+      "capability": "admin:class:start",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/admin/classroom/production-basic/host-ended"
+      },
+      "request_body": {
+        "mode": "none",
+        "client_controlled_fields": []
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "none",
+        "event": "production_basic_host_access_receipt_close"
+      },
+      "states": {
+        "loading": "Closing only One Time Student access for the current recurring class.",
+        "success": "One Time Student access is closed without issuing a Zoom provider command.",
+        "error": "Student access may still be open and the same bounded close can be retried.",
+        "permission": "Only a server-authorized Admin or Rabbi may retry the app-only access close.",
+        "offline": "The app-only access close is unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/server/features/classroom/production-basic/production-basic.test.ts",
+        "apps/web/src/client/classroom/production-basic-launch-client.test.ts",
+        "apps/web/src/client/app/live-entry.test.ts"
       ]
     },
     {

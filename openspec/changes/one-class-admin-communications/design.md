@@ -18,17 +18,17 @@ The accepted controller already isolates Meeting SDK artifacts by role and brows
 ## Decisions
 
 - The canonical Today route is `/app/today`; legacy Admin routes remain only as semantic redirects or advanced technical entry points. This removes duplicate primary navigation without breaking secure direct links.
-- The host client never issues a provider End command. A status-3 event may update local explanatory UI only; it never clears the live marker or claims server-confirmed closure. The host uses Zoom’s native End Meeting for All control.
+- The host client never issues a provider End command. A status-3 event may clear only One Time's live-access receipt through the authorized host boundary; it never claims provider-confirmed closure. The host uses Zoom’s native End Meeting for All control.
 - Existing entitlement projections remain authoritative. The canonical class resolves eligible Parent and Student identities at access time, avoiding duplicate attendance/CRM identities.
-- The live marker remains bounded at its existing two-hour TTL. Parent and Student launch checks require the current marker; expiry is automatic and does not mutate Zoom or require a cleanup route.
+- The live marker remains bounded at its existing two-hour TTL as a failure fallback. Parent and Student launch checks require the current marker; app-only closure and TTL expiry do not mutate Zoom.
 - Communications uses an allow-list of app account lifecycle email sources/intents at its global endpoint. Workflow readback remains read-only but is surfaced only through Operations technical navigation.
 
 ## Risks / Trade-offs
 
-- [Zoom ends while the host browser is open] → show that One Time access will close automatically; do not infer provider-confirmed server closure.
+- [Zoom ends while the host browser is open] → close One Time access through the authorized host boundary; do not infer provider-confirmed closure.
 - [Existing legacy URLs have broader semantics] → retain only aliases whose title, active category, and Back/Forward behavior remain correct.
 - [Entitlement data is unavailable] → render unavailable state rather than a manual enrollment workaround.
 
 ## Migration Plan
 
-No migration is required. Migration 2288 is removed because it is unmerged and undeployed. Provider-verified event ingestion, exact meeting-instance proof, host-session lifecycle, reconciliation, and app-managed End/Cleanup remain later work.
+No migration is required. Migration 2288 is removed because it is unmerged and undeployed. Provider-verified event ingestion, exact meeting-instance proof, host-session lifecycle, and reconciliation remain later work.

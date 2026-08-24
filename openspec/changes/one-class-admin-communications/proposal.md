@@ -6,7 +6,7 @@ The launch product has one recurring class, but its Admin surfaces still present
 
 - Converge Admin and Rabbi navigation on a stable role-correct shell.
 - Present the one canonical Sunday–Thursday 7:00 PM Asia/Jerusalem class as Today.
-- Add safe governed host start and bounded automatic learner-access expiry.
+- Add safe governed host start, app-only host-ended access closure, and bounded automatic learner-access expiry.
 - Present One Time People rather than a duplicate adult CRM.
 - Restrict Communications to read-only info@ account-email history and move workflow readback to technical Operations.
 

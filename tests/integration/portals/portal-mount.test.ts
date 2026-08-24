@@ -331,6 +331,21 @@ describe('OT-71 mounted parent and student portals', () => {
         },
       });
 
+      const hostEnded = await fetch(
+        `${server.baseUrl}/api/v1/admin/classroom/production-basic/host-ended`,
+        {
+          method: 'POST',
+          headers: { cookie: admin.cookies, 'x-csrf-token': admin.json.csrf_token },
+        },
+      );
+      expect(hostEnded.status).toBe(200);
+      await expect(hostEnded.json()).resolves.toMatchObject({
+        success: true,
+        data: { state: 'ended' },
+      });
+      await expectProductionBasicStatus(server.baseUrl, student.cookies, false);
+      await expectProductionBasicLaunchStatus(server.baseUrl, student, 503);
+
       await seedLegacyOccurrenceEntitlement();
       await pool.query(
         `UPDATE onetime.class_series_enrollments
@@ -355,7 +370,6 @@ describe('OT-71 mounted parent and student portals', () => {
         'host-end-confirmed',
         'host-end-status',
         'host-end-cleanup',
-        'host-ended',
       ]) {
         const response = await fetch(
           `${server.baseUrl}/api/v1/admin/classroom/production-basic/${path}`,

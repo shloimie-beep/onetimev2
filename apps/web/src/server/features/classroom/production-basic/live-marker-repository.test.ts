@@ -76,6 +76,36 @@ describe('production-basic live-class receipt', () => {
     expect(jerusalemLocalDate(new Date('2026-08-12T21:00:00.000Z'))).toBe('2026-08-13');
   });
 
+  it('clears only the exact canonical receipt for the current Jerusalem class date', async () => {
+    const query = vi.fn().mockResolvedValue({ rowCount: 1, rows: [] });
+    const marker = createProductionBasicHostLiveMarker({ query } as unknown as DbPool);
+
+    await expect(
+      marker.clear({
+        scope: { account_key: STUDENT.account_key, product_key: STUDENT.product_key },
+        meeting_ref_digest: MEETING_DIGEST,
+        cleared_at: NOW,
+      }),
+    ).resolves.toBeUndefined();
+
+    const [sql, parameters] = query.mock.calls[0] as [string, unknown[]];
+    expect(sql).toMatch(/^UPDATE onetime\.class_occurrences/u);
+    expect(sql).toContain('production_basic_live_confirmed_at = NULL');
+    expect(sql).toContain('production_basic_live_expires_at = NULL');
+    expect(sql).toContain('production_basic_meeting_ref_digest = NULL');
+    expect(sql).toContain('production_basic_meeting_ref_digest = $3');
+    expect(sql).toContain('production_basic_live_confirmed_at <= $4');
+    expect(sql).toContain('local_class_date = $5::date');
+    expect(sql).toContain('series.is_canonical = true');
+    expect(parameters).toEqual([
+      STUDENT.account_key,
+      STUDENT.product_key,
+      MEETING_DIGEST,
+      NOW,
+      '2026-08-13',
+    ]);
+  });
+
   it('reads live state only through the exact Student enrollment and meeting digest', async () => {
     const query = vi.fn().mockResolvedValue({ rowCount: 1, rows: [{ '?column?': 1 }] });
     const marker = createProductionBasicHostLiveMarker({ query } as unknown as DbPool);
@@ -247,6 +277,65 @@ describe('production-basic live-class receipt', () => {
       MEETING_DIGEST,
       lateNow,
     ]);
+  });
+
+  it('demotes a wall-clock live occurrence when the exact live receipt is absent', async () => {
+    const query = vi.fn().mockResolvedValue({ rowCount: 0, rows: [] });
+    const scheduled = [
+      {
+        class_key: OCCURRENCE_KEY,
+        title: 'Daily One Time Mishnayos',
+        starts_at: '2026-08-13T10:00:00.000Z',
+        status: 'live' as const,
+        launch_action: action(),
+      },
+    ];
+    const adapter = createProductionBasicLiveClassAccessAdapter({
+      base: {
+        upcomingForLearner: vi.fn().mockResolvedValue(scheduled),
+        protectedLaunch: vi.fn(),
+      },
+      pool: { query } as unknown as DbPool,
+      meeting_ref_digest: MEETING_DIGEST,
+      clock: () => NOW,
+    });
+
+    await expect(adapter.upcomingForLearner({ actor: STUDENT, learner: LEARNER })).resolves.toEqual(
+      [
+        expect.objectContaining({
+          class_key: OCCURRENCE_KEY,
+          status: 'upcoming',
+          launch_action: null,
+        }),
+      ],
+    );
+  });
+
+  it('preserves the legacy classroom live projection when production-basic is not configured', async () => {
+    const query = vi.fn();
+    const scheduled = [
+      {
+        class_key: OCCURRENCE_KEY,
+        title: 'Daily One Time Mishnayos',
+        starts_at: '2026-08-13T10:00:00.000Z',
+        status: 'live' as const,
+        launch_action: action(),
+      },
+    ];
+    const adapter = createProductionBasicLiveClassAccessAdapter({
+      base: {
+        upcomingForLearner: vi.fn().mockResolvedValue(scheduled),
+        protectedLaunch: vi.fn(),
+      },
+      pool: { query } as unknown as DbPool,
+      meeting_ref_digest: null,
+      clock: () => NOW,
+    });
+
+    await expect(adapter.upcomingForLearner({ actor: STUDENT, learner: LEARNER })).resolves.toEqual(
+      scheduled,
+    );
+    expect(query).not.toHaveBeenCalled();
   });
 
   it('does not recover a late live occurrence when household learning access is denied', async () => {
